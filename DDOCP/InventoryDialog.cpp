@@ -182,7 +182,6 @@ BOOL CInventoryDialog::OnInitDialog()
     }
     // create the menu used for Filigree selection
     m_filigrees = CompatibleAugments("Filigree");
-    std::sort(m_filigrees.begin(), m_filigrees.end());
 
     return TRUE;  // return TRUE unless you set the focus to a control
                   // EXCEPTION: OCX Property Pages should return FALSE
@@ -515,11 +514,11 @@ void CInventoryDialog::OnLButtonDown(UINT nFlags, CPoint point)
                                 bInPopupMenu = false;
                                 if (sel > 0)
                                 {
-                                    std::vector<Augment>::const_iterator cit = m_filigrees.begin();
+                                    auto cit = m_filigrees.begin();
                                     std::advance(cit, sel - 1);
                                     if (cit != m_filigrees.end())
                                     {
-                                        std::string selectedItem = (*cit).Name();
+                                        std::string selectedItem = (*cit)->Name();
                                         SentientJewel jewel = m_gearSet.SentientIntelligence();
                                         if (isArtifactFiligree)
                                         {
@@ -922,7 +921,7 @@ void CInventoryDialog::EditFiligree(int filigreeIndex, bool isArtifactFiligree, 
     {
         // its the sentient jewel type being edited
         // populate with the list of available personalities
-        std::vector<Augment> augments = CompatibleAugments("Personality");
+        const auto augments = CompatibleAugments("Personality");
         // build the image list for this control
         BuildImageList(augments);
         m_comboFiligreeSelect.SetImageList(&m_filigreeImagesList);
@@ -930,19 +929,18 @@ void CInventoryDialog::EditFiligree(int filigreeIndex, bool isArtifactFiligree, 
         m_comboFiligreeSelect.ResetContent();
         std::string selectedPersonality;
         size_t index = 0;
-        std::vector<Augment>::iterator it = augments.begin();
-        while (it != augments.end())
-        {
-            size_t pos = m_comboFiligreeSelect.AddString((*it).Name().c_str());
-            m_comboFiligreeSelect.SetItemData(pos, index);
+        auto it = augments.begin();
+        for (int i = 0; i < augments.size(); i++) {
+            const Augment* aug = augments[i];
+
+            size_t pos = m_comboFiligreeSelect.AddString(aug->Name().c_str());
+            m_comboFiligreeSelect.SetItemData(pos, i);
             if (jewel.HasPersonality()
-                    && (*it).Name() == jewel.Personality())
+                && aug->Name() == jewel.Personality())
             {
-                 // this is the selected personality, select it
-                sel = index;
+                // this is the selected personality, select it
+                sel = i;
             }
-            ++it;
-            ++index;
         }
     }
     else
@@ -950,7 +948,7 @@ void CInventoryDialog::EditFiligree(int filigreeIndex, bool isArtifactFiligree, 
         // must be a filigree being edited
         // populate with the list of available filigree minus any selections
         // made in other filigree slots
-        std::vector<Augment> augments = CompatibleAugments("Filigree");
+        auto augments = CompatibleAugments("Filigree");
 
         // DDO BUG - It is possible to slot the same filigree multiple times
         // if they are in different items. But we don't allow the same filigree
@@ -967,10 +965,10 @@ void CInventoryDialog::EditFiligree(int filigreeIndex, bool isArtifactFiligree, 
                     if (filigree != "")
                     {
                         // remove it from the augments list
-                        std::vector<Augment>::iterator it = augments.begin();
+                        auto it = augments.begin();
                         while (it != augments.end())
                         {
-                            if ((*it).Name() == filigree)
+                            if ((*it)->Name() == filigree)
                             {
                                 it = augments.erase(it);
                             }
@@ -995,10 +993,10 @@ void CInventoryDialog::EditFiligree(int filigreeIndex, bool isArtifactFiligree, 
                     if (filigree != "")
                     {
                         // remove it from the augments list
-                        std::vector<Augment>::iterator it = augments.begin();
+                        auto it = augments.begin();
                         while (it != augments.end())
                         {
-                            if ((*it).Name() == filigree)
+                            if ((*it)->Name() == filigree)
                             {
                                 it = augments.erase(it);
                             }
@@ -1015,22 +1013,22 @@ void CInventoryDialog::EditFiligree(int filigreeIndex, bool isArtifactFiligree, 
         m_comboFiligreeSelect.SetImageList(&m_filigreeImagesList);
 
         // now add the filigree names to the combo control
-        std::vector<Augment>::const_iterator it = augments.begin();
+        auto it = augments.begin();
         size_t fi = 0;
         while (it != augments.end())
         {
-            size_t pos = m_comboFiligreeSelect.AddString((*it).Name().c_str());
+            size_t pos = m_comboFiligreeSelect.AddString((*it)->Name().c_str());
             m_comboFiligreeSelect.SetItemData(pos, fi);
             if (isArtifactFiligree)
             {
-                 if (jewel.GetArtifactFiligree(filigreeIndex) == (*it).Name())
+                 if (jewel.GetArtifactFiligree(filigreeIndex) == (*it)->Name())
                 {
                     sel = fi;
                 }
            }
             else
             {
-                if (jewel.GetFiligree(filigreeIndex) == (*it).Name())
+                if (jewel.GetFiligree(filigreeIndex) == (*it)->Name())
                 {
                     sel = fi;
                 }
@@ -1164,7 +1162,7 @@ void CInventoryDialog::OnCancel()
     // do nothing to stop dialog being dismissed
 }
 
-void CInventoryDialog::BuildImageList(const std::vector<Augment> & augments)
+void CInventoryDialog::BuildImageList(const std::vector<const Augment*>& augments)
 {
     m_filigreeImagesList.DeleteImageList();
     m_filigreeImagesList.Create(
@@ -1173,11 +1171,9 @@ void CInventoryDialog::BuildImageList(const std::vector<Augment> & augments)
             ILC_COLOR32,
             0,
             augments.size());
-    std::vector<Augment>::const_iterator it = augments.begin();
-    while (it != augments.end())
-    {
-        (*it).AddImage(&m_filigreeImagesList);
-        ++it;
+
+    for (const Augment* aug : augments) {
+        aug->AddImage(&m_filigreeImagesList);
     }
 }
 
@@ -1206,10 +1202,10 @@ void CInventoryDialog::CreateFiligreeMenu(int filigreeIndex, bool bArtifact)
     AddMenuItem(m_filigreeMenu.GetSafeHmenu(), "Raid:", 0);
     // create a new sub menu for each filigree group
     int iItemIndex = 1;
-    std::vector<Augment>::const_iterator cit = m_filigrees.begin();
+    auto cit = m_filigrees.begin();
     while (cit != m_filigrees.end())
     {
-        std::string fullName = (*cit).Name();
+        std::string fullName = (*cit)->Name();
         if (fullName.find("/") != std::string::npos)
         {
             if (fullName.find(":") != std::string::npos)
@@ -1227,7 +1223,7 @@ void CInventoryDialog::CreateFiligreeMenu(int filigreeIndex, bool bArtifact)
                 if (fi != filigreeIndex)
                 {
                     std::string filigree = jewel.GetArtifactFiligree(fi);
-                    if ((*cit).Name() == filigree)
+                    if ((*cit)->Name() == filigree)
                     {
                         bAdd = false;
                     }
@@ -1243,7 +1239,7 @@ void CInventoryDialog::CreateFiligreeMenu(int filigreeIndex, bool bArtifact)
                 {
                     // get current selection (if any)
                     std::string filigree = jewel.GetFiligree(fi);
-                    if ((*cit).Name() == filigree)
+                    if ((*cit)->Name() == filigree)
                     {
                         bAdd = false;
                     }

@@ -622,11 +622,11 @@ void EquippedGear::ApplyItemAugment(Item* pItem, CString augmentText)
         {
             // this augment has no selection, see if we can place this augment here
             // first find the list of compatible augments for this augment slot
-            std::vector<Augment> compatibleAugments = CompatibleAugments(augments[i].Type());
-            std::vector<Augment>::const_iterator it = compatibleAugments.begin();
-            while (!bPlaced && it != compatibleAugments.end())
-            {
-                CString description = (*it).Description().c_str();
+            const auto compatibleAugments = CompatibleAugments(augments[i].Type());
+            auto it = compatibleAugments.begin();
+
+            for (const Augment* aug : compatibleAugments) {
+                CString description = aug->Description().c_str();
                 description.MakeLower();
                 bPlaced = true;     // assume, gets cleared if not compatible
                 for (size_t j = 0; bPlaced && j < augmentComponents.size(); ++j)
@@ -637,9 +637,9 @@ void EquippedGear::ApplyItemAugment(Item* pItem, CString augmentText)
                 if (bPlaced)
                 {
                     // this augment goes in this slot. Place it
-                    augments[i].Set_SelectedAugment((*it).Name());
+                    augments[i].Set_SelectedAugment(aug->Name());
+                    break;
                 }
-                ++it;
             }
         }
     }

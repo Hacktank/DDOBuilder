@@ -125,7 +125,7 @@ class CInventoryDialog :
         void NotifySlotLeftClicked(InventorySlotType slot);
         void NotifySlotRightClicked(InventorySlotType slot);
         void EditFiligree(int filigreeIndex, bool isArtifactFiligree, CRect itemRect);
-        void BuildImageList(const std::vector<Augment> & augments);
+        void BuildImageList(const std::vector<const Augment*>& augments);
         void ToggleRareState(int filigree, bool isArtifactFiligree);
         void CreateFiligreeMenu(int filigree, bool bArtifact);
 
@@ -153,7 +153,7 @@ class CInventoryDialog :
         bool m_bIgnoreNextMessage;
         int m_filigreeIndex;        // index of filigree being edited
         bool m_bIsArtifactFiligree;
-        std::vector<Augment> m_filigrees;
+        std::vector<const Augment*> m_filigrees;
         CMenu m_filigreeMenu;
         bool m_bUseFiligreeMenu;
 };

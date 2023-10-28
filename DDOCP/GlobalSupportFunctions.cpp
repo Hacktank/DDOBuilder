@@ -693,22 +693,23 @@ const Augment & FindAugmentByName(const std::string & name)
     return badAugment;
 }
 
-std::vector<Augment> CompatibleAugments(const std::string & name)
+std::vector<const Augment*> CompatibleAugments(const std::string & name)
 {
-    std::vector<Augment> compatibleAugments;
-    const std::list<Augment> & augments = Augments();
-    std::list<Augment>::const_iterator it = augments.begin();
-    while (it != augments.end())
-    {
-        if ((*it).IsCompatibleWithSlot(name)
-                || ((*it).Name() == " No Augment"))
+    std::vector<const Augment*> compatibleAugments;
+    for (const auto& aug : Augments()) {
+        if (aug.IsCompatibleWithSlot(name)
+            || (aug.Name() == " No Augment"))
         {
-            compatibleAugments.push_back((*it));
+            compatibleAugments.push_back(&aug);
         }
-        ++it;
     }
-    std::sort(compatibleAugments.begin(), compatibleAugments.end());
-    return compatibleAugments;
+
+    auto sortFunc = [](const Augment* a, const Augment* b) {
+        return *a < *b;
+    };
+    std::sort(compatibleAugments.begin(), compatibleAugments.end(), sortFunc);
+
+    return std::move(compatibleAugments);
 }
 
 const SetBonus& FindSetBonus(const std::string& name)

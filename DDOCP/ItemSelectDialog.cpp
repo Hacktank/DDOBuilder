@@ -406,8 +406,8 @@ void CItemSelectDialog::PopulateAugmentList(
     combo->LockWindowUpdate();
     combo->ResetContent();
     // get all the augments compatible with this slot type
-    std::vector<Augment> augments = CompatibleAugments(augment.Type());
-    std::vector<Augment>::const_iterator it = augments.begin();
+    const auto augments = CompatibleAugments(augment.Type());
+    auto it = augments.begin();
     std::string selectedAugment = augment.HasSelectedAugment()
             ? augment.SelectedAugment()
             : "";
@@ -416,7 +416,7 @@ void CItemSelectDialog::PopulateAugmentList(
     int index = 0;
     while (it != augments.end())
     {
-        int itemIndex = combo->AddString((*it).Name().c_str());
+        int itemIndex = combo->AddString((*it)->Name().c_str());
         combo->SetItemData(itemIndex, index);
         ++it;
         ++index;

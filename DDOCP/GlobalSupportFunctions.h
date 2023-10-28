@@ -93,7 +93,7 @@ const EnhancementTreeItem * FindEnhancement(const std::string & internalName, st
 std::vector<TrainableFeatTypes> ClassSpecificFeatTypes(ClassType type);
 std::vector<TrainableFeatTypes> RaceSpecificFeatTypes(RaceType type);
 const Augment & FindAugmentByName(const std::string & name);
-std::vector<Augment> CompatibleAugments(const std::string & name);
+std::vector<const Augment*> CompatibleAugments(const std::string & name);
 const SetBonus& FindSetBonus(const std::string& name);
 
 AbilityType StatFromSkill(SkillType skill);
