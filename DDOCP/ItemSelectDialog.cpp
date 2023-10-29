@@ -6,6 +6,8 @@
 #include "Character.h"
 #include "GlobalSupportFunctions.h"
 #include "MouseHook.h"
+#include <set>
+#include <algorithm>
 
 // CItemSelectDialog dialog
 
@@ -200,13 +202,13 @@ void CItemSelectDialog::PopulateAvailableItemList()
     std::vector<size_t> classLevels = m_pCharacter->ClassLevels(m_pCharacter->MaxLevel());
     // need to know which feats have already been trained by this point
     // include any feats also trained at the current level
-    std::list<TrainedFeat> currentFeats = m_pCharacter->CurrentFeats(m_pCharacter->MaxLevel());
+    std::vector<TrainedFeat> currentFeats = m_pCharacter->CurrentFeats(m_pCharacter->MaxLevel());
 
     RaceType race = m_pCharacter->Race();
     // filter the list of items loaded to those that match the slot type
-    const std::list<Item> & allItems = Items();
+    const std::vector<Item> & allItems = Items();
     m_availableItems.clear();
-    std::list<Item>::const_iterator it = allItems.begin();
+    std::vector<Item>::const_iterator it = allItems.begin();
     while (it != allItems.end())
     {
         if ((*it).CanEquipToSlot(m_slot))
@@ -281,26 +283,7 @@ void CItemSelectDialog::PopulateAvailableItemList()
     m_availableItemsCtrl.SetImageList(&m_itemImages, LVSIL_NORMAL);
 
     // now populate the control
-    size_t itemIndex = 0;
-    it = m_availableItems.begin();
-    while (it != m_availableItems.end())
-    {
-        int item = m_availableItemsCtrl.InsertItem(
-                m_availableItemsCtrl.GetItemCount(),
-                (*it).Name().c_str(),
-                itemIndex);
-        CString level;
-        level.Format("%d", (*it).MinLevel());
-        m_availableItemsCtrl.SetItemText(item, 1, level);
-        m_availableItemsCtrl.SetItemData(item, itemIndex);
-
-        ++itemIndex;
-        ++it;
-    }
-
-    m_availableItemsCtrl.SortItems(
-            CItemSelectDialog::SortCompareFunction,
-            (long)GetSafeHwnd());
+    rebuildDialogItemList();
 
     CString text;
     text.Format("Item Selection and Configuration - %s",
@@ -380,10 +363,12 @@ void CItemSelectDialog::EnableControls()
     std::vector<ItemAugment>::const_iterator it = itemAugments.begin();
     while (it != itemAugments.end())
     {
-        const Augment & augment = FindAugmentByName((*it).SelectedAugment());
-        if (augment.HasSuppressSetBonus())
-        {
-            ++count;
+        if (it->HasSelectedAugment()) {
+            const Augment& augment = FindAugmentByName((*it).SelectedAugment());
+            if (augment.HasSuppressSetBonus())
+            {
+                ++count;
+            }
         }
         ++it;
     }
@@ -476,7 +461,7 @@ void CItemSelectDialog::OnItemSelected(NMHDR* pNMHDR, LRESULT* pResult)
             if (sel >= 0 && sel < (int)m_availableItems.size())
             {
                 // must be a different item to the one already selected
-                std::list<Item>::const_iterator it = m_availableItems.begin();
+                std::vector<Item>::const_iterator it = m_availableItems.begin();
                 std::advance(it, sel);
                 if ((*it).Name() != m_item.Name())
                 {
@@ -548,8 +533,8 @@ void CItemSelectDialog::OnAugmentSelect(UINT nID)
             // if an augment selected has AddAugment fields, add them to the
             // item also if they do not already exist
             const Augment & augment = FindAugmentByName((LPCTSTR)text);
-            std::list<std::string> augmentsToAdd = augment.AddAugment();
-            std::list<std::string>::const_iterator it = augmentsToAdd.begin();
+            std::vector<std::string> augmentsToAdd = augment.AddAugment();
+            auto it = augmentsToAdd.begin();
             bool bSuppressSetBonus = augment.HasSuppressSetBonus(); // a single item can only have one augment that does this
             while (it != augmentsToAdd.end())
             {
@@ -740,71 +725,62 @@ void CItemSelectDialog::OnColumnclickListItems(NMHDR* pNMHDR, LRESULT* pResult)
         column = columnToSort;
     }
     m_sortHeader.SetSortArrow(column, bAscending);
-    m_availableItemsCtrl.SortItems(CItemSelectDialog::SortCompareFunction, (long)GetSafeHwnd());
+    
+    rebuildDialogItemList();
 
     *pResult = 0;
 }
 
-int CItemSelectDialog::SortCompareFunction(
-        LPARAM lParam1,
-        LPARAM lParam2,
-        LPARAM lParamSort)
-{
-    // this is a static function so we need to make our own this pointer
-    CWnd * pWnd = CWnd::FromHandle((HWND)lParamSort);
-    CItemSelectDialog * pThis = static_cast<CItemSelectDialog*>(pWnd);
-
-    int sortResult = 0;
-    size_t index1 = lParam1; // item data index
-    size_t index2 = lParam2; // item data index
-
-    // need to find the actual current entry in the list control to compare the
-    // text content
-    index1 = FindItemIndexByItemData(&pThis->m_availableItemsCtrl, index1);
-    index2 = FindItemIndexByItemData(&pThis->m_availableItemsCtrl, index2);
+void CItemSelectDialog::rebuildDialogItemList() {
+    std::vector<int> itemIdsSorted;
+    itemIdsSorted.reserve(m_availableItems.size());
+    for (int i = 0; i < m_availableItems.size(); i++)
+        itemIdsSorted.push_back(i);
 
     // get the current sort settings
     int column;
     bool bAscending;
-    pThis->m_sortHeader.GetSortArrow(&column, &bAscending);
+    m_sortHeader.GetSortArrow(&column, &bAscending);
+    int directionMultiplier = bAscending ? -1 : 1;
 
-    // get the control text entries for the column being sorted
-    CString index1Text = pThis->m_availableItemsCtrl.GetItemText(index1, column);
-    CString index2Text = pThis->m_availableItemsCtrl.GetItemText(index2, column);
+    auto lam_sortCompare = [&](const int aInd, const int& bInd)->bool {
+        const Item& a = m_availableItems[aInd];
+        const Item& b = m_availableItems[bInd];
 
-    // some columns are converted to numeric to do the sort
-    // while others are compared as ASCII
-    switch (column)
-    {
-    case ILC_name:
-        // ASCII sorts
-        sortResult = (index1Text < index2Text) ? -1 : 1;
-        break;
-    case ILC_level:
-        {
-            // numeric sorts
-            double val1 = atof(index1Text);
-            double val2 = atof(index2Text);
-            if (val1 == val2)
-            {
-                // if numeric match, sort by item name instead
-                index1Text = pThis->m_availableItemsCtrl.GetItemText(index1, ILC_name);
-                index2Text = pThis->m_availableItemsCtrl.GetItemText(index2, ILC_name);
-                sortResult = (index1Text < index2Text) ? -1 : 1;
-            }
-            else
-            {
-                sortResult = (val1 < val2) ? -1 : 1;
-            }
+        int cmp = 0;
+
+        switch (column) {
+        case ILC_name:
+            cmp = directionMultiplier * strcmp(a.Name().c_str(), b.Name().c_str());
+            break;
+        case ILC_level:
+            cmp = a.MinLevel() - b.MinLevel();
+            if (cmp == 0)
+                cmp = strcmp(a.Name().c_str(), b.Name().c_str());
+            cmp *= directionMultiplier;
+            break;
         }
-        break;
+
+        return cmp > 0;
+    };
+
+    std::sort(itemIdsSorted.begin(), itemIdsSorted.end(), lam_sortCompare);
+
+    m_availableItemsCtrl.DeleteAllItems();
+
+    for (int i = 0; i < m_availableItems.size(); i++) {
+        const int sortedActualIndex = itemIdsSorted[i];
+        const int itemListIndex = m_availableItemsCtrl.InsertItem(
+            m_availableItemsCtrl.GetItemCount(),
+            m_availableItems[sortedActualIndex].Name().c_str(),
+            sortedActualIndex
+        );
+        
+        CString levelText;
+        levelText.Format("%d", m_availableItems[sortedActualIndex].MinLevel());
+        m_availableItemsCtrl.SetItemText(itemListIndex, 1, levelText);
+        m_availableItemsCtrl.SetItemData(itemListIndex, sortedActualIndex);
     }
-    if (!bAscending)
-    {
-        // switch sort direction result
-        sortResult = -sortResult;
-    }
-    return sortResult;
 }
 
 void CItemSelectDialog::OnHoverListItems(NMHDR* pNMHDR, LRESULT* pResult)
@@ -833,7 +809,7 @@ void CItemSelectDialog::OnHoverListItems(NMHDR* pNMHDR, LRESULT* pResult)
             m_availableItemsCtrl.ClientToScreen(&rect);
             CPoint tipTopLeft(rect.left, rect.bottom);
             CPoint tipAlternate(rect.left, rect.top);
-            std::list<Item>::const_iterator it = m_availableItems.begin();
+            std::vector<Item>::const_iterator it = m_availableItems.begin();
             std::advance(it, itemIndex);
             SetTooltipText((*it), tipTopLeft, tipAlternate);
             m_showingTip = true;

@@ -313,8 +313,8 @@ void CEquipmentView::PopulateCombobox()
     bool selected = false;
     if (m_pCharacter != NULL)
     {
-        const std::list<EquippedGear> & setups = m_pCharacter->GearSetups();
-        std::list<EquippedGear>::const_iterator it = setups.begin();
+        const std::vector<EquippedGear> & setups = m_pCharacter->GearSetups();
+        std::vector<EquippedGear>::const_iterator it = setups.begin();
         size_t indexIntoList = 0;
         while (it != setups.end())
         {
@@ -384,7 +384,7 @@ void CEquipmentView::EnableControls()
     }
     else
     {
-        const std::list<EquippedGear> & setups = m_pCharacter->GearSetups();
+        const std::vector<EquippedGear> & setups = m_pCharacter->GearSetups();
         m_comboGearSelections.EnableWindow(setups.size() > 1);
         m_inventoryView->EnableWindow(setups.size() > 0);
         m_buttonNew.EnableWindow(TRUE);     // always available
@@ -494,7 +494,7 @@ void CEquipmentView::OnUpdateGearCopy(CCmdUI * pCmdUi)
     if (m_pCharacter != NULL)
     {
         // can copy a gear set if we have an active one
-        const std::list<EquippedGear> & setups = m_pCharacter->GearSetups();
+        const std::vector<EquippedGear> & setups = m_pCharacter->GearSetups();
         pCmdUi->Enable(setups.size() > 0);
     }
     else
@@ -517,7 +517,7 @@ void CEquipmentView::OnUpdateGearDelete(CCmdUI * pCmdUi)
     if (m_pCharacter != NULL)
     {
         // can delete a gear set if we have an active one
-        const std::list<EquippedGear> & setups = m_pCharacter->GearSetups();
+        const std::vector<EquippedGear> & setups = m_pCharacter->GearSetups();
         pCmdUi->Enable(setups.size() > 0);
     }
     else

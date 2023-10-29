@@ -57,7 +57,7 @@ class CFindGearDialog : public CDialog
                 CEdit * edit2,
                 const ItemAugment & augment);
         void PopulateSlotUpgradeList(size_t controlIndex, const SlotUpgrade & upgrade);
-        void PopulateDropList(size_t controlIndex, const std::list<std::string> & types);
+        void PopulateDropList(size_t controlIndex, const std::vector<std::string> & types);
         void ShowTip(const Item & item, CRect itemRect);
         void HideTip();
         void SetTooltipText(const Item & item, CPoint tipTopLeft, CPoint tipAlternate);
@@ -93,7 +93,7 @@ class CFindGearDialog : public CDialog
         Item m_item;
         CButton m_checkExcludeRaidItems;
 
-        std::list<Item> m_availableItems;
+        std::vector<Item> m_availableItems;
         CImageList m_itemImages;
         bool m_bInitialising;
         // item tooltips

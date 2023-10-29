@@ -216,16 +216,16 @@ BOOL CEnhancementsView::OnEraseBkgnd(CDC* pDC)
     return OnEraseBackground(this, pDC, controlsNotToBeErased);
 }
 
-std::list<EnhancementTree> CEnhancementsView::DetermineTrees()
+std::vector<EnhancementTree> CEnhancementsView::DetermineTrees()
 {
-    std::list<EnhancementTree> trees;
+    std::vector<EnhancementTree> trees;
     // see which classes we have and then make our race and class trees available
     if (m_pCharacter != NULL)
     {
         // to determine which tree's we need to know how many class levels we have in each class
         std::vector<size_t> classLevels = m_pCharacter->ClassLevels(m_pCharacter->MaxLevel());
-        const std::list<EnhancementTree> & allTrees = EnhancementTrees();
-        std::list<EnhancementTree>::const_iterator it = allTrees.begin();
+        const std::vector<EnhancementTree> & allTrees = EnhancementTrees();
+        std::vector<EnhancementTree>::const_iterator it = allTrees.begin();
         while (it != allTrees.end())
         {
             // get all the trees that are compatible with the race/class setup
@@ -248,7 +248,7 @@ std::list<EnhancementTree> CEnhancementsView::DetermineTrees()
             {
                 // we have a tree selected here, is it in the new list of trees available?
                 bool found = false;
-                std::list<EnhancementTree>::iterator tit = trees.begin();
+                std::vector<EnhancementTree>::iterator tit = trees.begin();
                 while (!found && tit != trees.end())
                 {
                     if ((*tit).Name() == treeName)
@@ -278,7 +278,7 @@ std::list<EnhancementTree> CEnhancementsView::DetermineTrees()
 
         // now that we have the tree list, assign them to unused tree selections
         // if there are any left
-        std::list<EnhancementTree>::iterator tit = trees.begin();
+        std::vector<EnhancementTree>::iterator tit = trees.begin();
         while (tit != trees.end())
         {
             if (!selTrees.IsTreePresent((*tit).Name()))
@@ -432,7 +432,7 @@ void CEnhancementsView::PopulateTreeCombo(
     // now add any trees which are not already selected
     int sel = 0;        // assume "No selection"
     const SelectedEnhancementTrees & selTrees = m_pCharacter->SelectedTrees();
-    std::list<EnhancementTree>::iterator tit = m_availableTrees.begin();
+    std::vector<EnhancementTree>::iterator tit = m_availableTrees.begin();
     while (tit != m_availableTrees.end())
     {
         if (!selTrees.IsTreePresent((*tit).Name())
@@ -471,7 +471,7 @@ void CEnhancementsView::UpdateAlignmentChanged(Character * charData, AlignmentTy
     // if alignment has changed, then classes may have changed also
     // we need to update our windows
     // (Same trees may still be available)
-    std::list<EnhancementTree> trees = DetermineTrees();
+    std::vector<EnhancementTree> trees = DetermineTrees();
     if (trees != m_availableTrees)
     {
         // yup, they have changed
@@ -488,7 +488,7 @@ void CEnhancementsView::UpdateClassChanged(
 {
     // if a class has changed so whether we need to update our windows
     // (Same trees may still be available)
-    std::list<EnhancementTree> trees = DetermineTrees();
+    std::vector<EnhancementTree> trees = DetermineTrees();
     if (trees != m_availableTrees)
     {
         // yup, they have changed
@@ -570,7 +570,7 @@ LRESULT CEnhancementsView::OnUpdateTrees(WPARAM wParam, LPARAM lParam)
 void CEnhancementsView::UpdateTrees()
 {
     // only update if there is a change in actual trees
-    std::list<EnhancementTree> trees = DetermineTrees();
+    std::vector<EnhancementTree> trees = DetermineTrees();
     if (trees != m_availableTrees)
     {
         // yup, they have changed
@@ -691,8 +691,8 @@ void CEnhancementsView::AddCustomButtons()
     CDDOCPApp * pDDOApp = dynamic_cast<CDDOCPApp*>(pApp);
     if (pDDOApp != NULL)
     {
-        const std::list<Feat> & universalTreeFeats = pDDOApp->UniversalTreeFeats();
-        std::list<Feat>::const_iterator it = universalTreeFeats.begin();
+        const std::vector<Feat> & universalTreeFeats = pDDOApp->UniversalTreeFeats();
+        std::vector<Feat>::const_iterator it = universalTreeFeats.begin();
         size_t buttonIndex = 0;
         while (it != universalTreeFeats.end())
         {
@@ -727,7 +727,7 @@ void CEnhancementsView::OnUniversalTree(UINT nID)
     }
     m_universalTrees[id].SetSelected(!trained);
     // ensure displayed trees are shown
-    std::list<EnhancementTree> trees = DetermineTrees();
+    std::vector<EnhancementTree> trees = DetermineTrees();
     if (trees != m_availableTrees)
     {
         // yup, they have changed

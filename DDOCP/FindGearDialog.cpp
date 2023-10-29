@@ -148,11 +148,11 @@ void CFindGearDialog::PopulateAvailableItemList()
     std::vector<size_t> classLevels = m_pCharacter->ClassLevels(m_pCharacter->MaxLevel());
     // need to know which feats have already been trained by this point
     // include any feats also trained at the current level
-    std::list<TrainedFeat> currentFeats = m_pCharacter->CurrentFeats(m_pCharacter->MaxLevel());
+    std::vector<TrainedFeat> currentFeats = m_pCharacter->CurrentFeats(m_pCharacter->MaxLevel());
 
-    const std::list<Item> & allItems = Items();
+    const std::vector<Item> & allItems = Items();
     m_availableItems.clear();
-    std::list<Item>::const_iterator it = allItems.begin();
+    std::vector<Item>::const_iterator it = allItems.begin();
     while (it != allItems.end())
     {
         bool canSelect = true;
@@ -383,7 +383,7 @@ void CFindGearDialog::OnItemSelected(NMHDR* pNMHDR, LRESULT* pResult)
             if (sel >= 0 && sel < (int)m_availableItems.size())
             {
                 // must be a different item to the one already selected
-                std::list<Item>::const_iterator it = m_availableItems.begin();
+                std::vector<Item>::const_iterator it = m_availableItems.begin();
                 std::advance(it, sel);
                 if ((*it).Name() != m_item.Name())
                 {
@@ -451,8 +451,8 @@ void CFindGearDialog::OnAugmentSelect(UINT nID)
             // if an augment selected has AddAugment fields, add them to the
             // item also if they do not already exist
             const Augment & augment = FindAugmentByName((LPCTSTR)text);
-            std::list<std::string> augmentsToAdd = augment.AddAugment();
-            std::list<std::string>::const_iterator it = augmentsToAdd.begin();
+            std::vector<std::string> augmentsToAdd = augment.AddAugment();
+            auto it = augmentsToAdd.begin();
             while (it != augmentsToAdd.end())
             {
                 AddAugment(&augments, (*it));
@@ -735,7 +735,7 @@ void CFindGearDialog::OnHoverListItems(NMHDR* pNMHDR, LRESULT* pResult)
             m_availableItemsCtrl.ClientToScreen(&rect);
             CPoint tipTopLeft(rect.left, rect.bottom);
             CPoint tipAlternate(rect.left, rect.top);
-            std::list<Item>::const_iterator it = m_availableItems.begin();
+            std::vector<Item>::const_iterator it = m_availableItems.begin();
             std::advance(it, itemIndex);
             SetTooltipText((*it), tipTopLeft, tipAlternate);
             m_showingTip = true;

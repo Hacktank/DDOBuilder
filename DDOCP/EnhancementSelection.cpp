@@ -60,8 +60,8 @@ void EnhancementSelection::CreateRequirementStrings(
 
 bool EnhancementSelection::VerifyObject(
         std::stringstream * ss,
-        const std::list<EnhancementTree> & trees,
-        const std::list<Feat> & feats) const
+        const std::vector<EnhancementTree> & trees,
+        const std::vector<Feat> & feats) const
 {
     bool ok = true;
     if (!ImageFileExists(IT_enhancement, Icon()))
@@ -70,14 +70,14 @@ bool EnhancementSelection::VerifyObject(
         ok = false;
     }
     // check the effects also
-    std::list<Effect>::const_iterator it = m_Effects.begin();
+    auto it = m_Effects.begin();
     while (it != m_Effects.end())
     {
         ok &= (*it).VerifyObject(ss);
         ++it;
     }
     // verify its DC objects
-    std::list<DC>::const_iterator edcit = m_EffectDC.begin();
+    std::vector<DC>::const_iterator edcit = m_EffectDC.begin();
     while (edcit != m_EffectDC.end())
     {
         ok &= (*edcit).VerifyObject(ss);

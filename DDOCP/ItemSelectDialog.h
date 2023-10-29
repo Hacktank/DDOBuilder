@@ -51,7 +51,7 @@ class CItemSelectDialog : public CDialog
         DECLARE_MESSAGE_MAP()
 
     private:
-        static int CALLBACK SortCompareFunction(LPARAM lParam1, LPARAM lParam2, LPARAM lParamSort);
+        void rebuildDialogItemList(); // this function is run whenever the order of the items needs to be updated
         void PopulateAvailableItemList();
         void EnableControls();
         void PopulateAugmentList(
@@ -60,7 +60,7 @@ class CItemSelectDialog : public CDialog
                 CEdit * edit2,
                 const ItemAugment & augment);
         void PopulateSlotUpgradeList(size_t controlIndex, const SlotUpgrade & upgrade);
-        void PopulateDropList(size_t controlIndex, const std::list<std::string> & types);
+        void PopulateDropList(size_t controlIndex, const std::vector<std::string> & types);
 
         void ShowTip(const Item & item, CRect itemRect);
         void HideTip();
@@ -96,7 +96,7 @@ class CItemSelectDialog : public CDialog
         CComboBox m_comboUpgradeDropList[MAX_Upgrades];
         CButton m_checkExcludeRaidItems;
 
-        std::list<Item> m_availableItems;
+        std::vector<Item> m_availableItems;
         CImageList m_itemImages;
         bool m_bInitialising;
         ArmorType m_armorType;

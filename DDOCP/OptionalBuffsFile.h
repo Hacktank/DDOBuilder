@@ -14,7 +14,7 @@ class OptionalBuffsFile :
         ~OptionalBuffsFile(void);
 
         bool Read();
-        const std::list<OptionalBuff> & OptionalBuffs() const;
+        const std::vector<OptionalBuff> & OptionalBuffs() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -25,7 +25,7 @@ class OptionalBuffsFile :
 
     private:
         std::string m_filename;
-        std::list<OptionalBuff> m_loadedBuffs;
+        std::vector<OptionalBuff> m_loadedBuffs;
         size_t m_loadTotal;
 };
 

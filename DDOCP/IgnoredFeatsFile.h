@@ -13,8 +13,8 @@ class IgnoredFeatsFile :
         ~IgnoredFeatsFile(void);
 
         void Read();
-        const std::list<std::string> & IgnoredFeats();
-        void Save(std::list<std::string> & featList);
+        const std::vector<std::string> & IgnoredFeats();
+        void Save(std::vector<std::string> & featList);
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -24,7 +24,7 @@ class IgnoredFeatsFile :
         void EndElement();
 
         std::string m_filename;
-        std::list<std::string> m_loadedFeats;
+        std::vector<std::string> m_loadedFeats;
         size_t m_loadTotal;
 };
 

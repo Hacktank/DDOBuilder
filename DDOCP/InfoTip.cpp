@@ -486,8 +486,8 @@ void CInfoTip::SetStanceItem(
     {
         m_ranks = "";
         // list the stances which cannot be active if this one is
-        std::list<std::string> incompatibleStances = pItem->IncompatibleStance();
-        std::list<std::string>::const_iterator it = incompatibleStances.begin();
+        std::vector<std::string> incompatibleStances = pItem->IncompatibleStance();
+        auto it = incompatibleStances.begin();
         while (it != incompatibleStances.end())
         {
             CString name;
@@ -518,8 +518,8 @@ void CInfoTip::SetItem(
     GenerateLineBreaks(&m_description);
     // now do the same for any effect descriptions
     m_effectDescriptions.clear();
-    const std::list<std::string> & eds = pItem->EffectDescription();
-    std::list<std::string>::const_iterator it = eds.begin();
+    const std::vector<std::string> & eds = pItem->EffectDescription();
+    auto it = eds.begin();
     while (it != eds.end())
     {
         CString processedDescription = (*it).c_str();
@@ -528,8 +528,8 @@ void CInfoTip::SetItem(
         ++it;
     }
     // add any set bonuses
-    const std::list<std::string> & sets = pItem->SetBonus();
-    std::list<std::string>::const_iterator sit = sets.begin();
+    const std::vector<std::string> & sets = pItem->SetBonus();
+    auto sit = sets.begin();
     while (sit != sets.end())
     {
         const SetBonus & set = FindSetBonus((*sit));
@@ -557,8 +557,8 @@ void CInfoTip::SetItem(
             m_effectDescriptions.push_back(augmentText);
             const Augment & aug = FindAugmentByName(augments[i].SelectedAugment());
             // also include any of the effect descriptions it may have
-            const std::list<std::string> & eds = aug.EffectDescription();
-            std::list<std::string>::const_iterator it = eds.begin();
+            const std::vector<std::string> & eds = aug.EffectDescription();
+            auto it = eds.begin();
             while (it != eds.end())
             {
                 CString processedDescription = (*it).c_str();
@@ -627,8 +627,8 @@ void CInfoTip::SetAugment(
     GenerateLineBreaks(&m_title);
     GenerateLineBreaks(&m_description);
     // also include any of the effect descriptions it may have
-    const std::list<std::string> & eds = pAugment->EffectDescription();
-    std::list<std::string>::const_iterator it = eds.begin();
+    const std::vector<std::string> & eds = pAugment->EffectDescription();
+    auto it = eds.begin();
     while (it != eds.end())
     {
         CString processedDescription = (*it).c_str();
@@ -701,8 +701,8 @@ void CInfoTip::SetLevelItem(
         m_description += text;
         // show what skills (if any) points have been spent on
         // and whether they have been overspent on
-        const std::list<TrainedSkill> & ts = levelData->TrainedSkills();
-        std::list<TrainedSkill>::const_iterator it = ts.begin();
+        const std::vector<TrainedSkill> & ts = levelData->TrainedSkills();
+        std::vector<TrainedSkill>::const_iterator it = ts.begin();
         std::vector<size_t> skillRanks(Skill_Count, 0);
         while (it != ts.end())
         {

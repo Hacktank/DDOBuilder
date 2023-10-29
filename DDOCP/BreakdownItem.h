@@ -82,9 +82,9 @@ class BreakdownItem :
         void RevokeItemEffect(const ActiveEffect & effect);
 
         bool UpdateTreeItemTotals();
-        bool UpdateTreeItemTotals(std::list<ActiveEffect> * list);
-        bool UpdateEffectAmounts(std::list<ActiveEffect> * list, BreakdownType bt);
-        bool UpdateEffectAmounts(std::list<ActiveEffect> * list, ClassType type);
+        bool UpdateTreeItemTotals(std::vector<ActiveEffect> * list);
+        bool UpdateEffectAmounts(std::vector<ActiveEffect> * list, BreakdownType bt);
+        bool UpdateEffectAmounts(std::vector<ActiveEffect> * list, ClassType type);
 
         virtual bool StacksByMultiplication() const { return false;};
 
@@ -94,9 +94,9 @@ class BreakdownItem :
         virtual void AppendItems(CListCtrl * pControl) {};  // base does nothing
 
         Character * m_pCharacter;
-        std::list<ActiveEffect> m_otherEffects;       // these always stack
-        std::list<ActiveEffect> m_effects;       // these always stack
-        std::list<ActiveEffect> m_itemEffects;        // highest of a given type counts
+        std::vector<ActiveEffect> m_otherEffects;       // these always stack
+        std::vector<ActiveEffect> m_effects;       // these always stack
+        std::vector<ActiveEffect> m_itemEffects;        // highest of a given type counts
 
         // CharacterObserver overrides
         virtual void UpdateClassChanged(Character * charData, ClassType classFrom, ClassType classTo, size_t level) override;
@@ -118,25 +118,25 @@ class BreakdownItem :
         void NotifyTotalChanged();
         void SetHTreeItem(HTREEITEM hItem);
 
-        std::list<ActiveEffect> AllActiveEffects() const;
+        std::vector<ActiveEffect> AllActiveEffects() const;
         void AddItems(CListCtrl * pControl);
     private:
-        void AddActiveItems(const std::list<ActiveEffect> & effects, CListCtrl * pControl, bool bShowMultiplier);
-        void AddActivePercentageItems(const std::list<ActiveEffect> & effects, CListCtrl * pControl);
-        void AddDeactiveItems(const std::list<ActiveEffect> & effects, CListCtrl * pControl, bool bShowMultiplier);
-        virtual double SumItems(const std::list<ActiveEffect> & effects, bool bApplyMultiplier) const;
-        void AddEffect(std::list<ActiveEffect> * effectList, const ActiveEffect & effect);
-        void RevokeEffect(std::list<ActiveEffect> * effectList, const ActiveEffect & effect);
+        void AddActiveItems(const std::vector<ActiveEffect> & effects, CListCtrl * pControl, bool bShowMultiplier);
+        void AddActivePercentageItems(const std::vector<ActiveEffect> & effects, CListCtrl * pControl);
+        void AddDeactiveItems(const std::vector<ActiveEffect> & effects, CListCtrl * pControl, bool bShowMultiplier);
+        virtual double SumItems(const std::vector<ActiveEffect> & effects, bool bApplyMultiplier) const;
+        void AddEffect(std::vector<ActiveEffect> * effectList, const ActiveEffect & effect);
+        void RevokeEffect(std::vector<ActiveEffect> * effectList, const ActiveEffect & effect);
         bool GetActiveEffect(Character * pCharacter, const std::string & name, const Effect & effect, ActiveEffect * activeEffect);
         MfcControls::CTreeListCtrl * m_pTreeList;
         HTREEITEM m_hItem;
         BreakdownType m_type;
     protected:
         AbilityType LargestStatBonus();
-        double DoPercentageEffects(const std::list<ActiveEffect> & effects, double total) const;
-        void RemoveInactive(std::list<ActiveEffect> * effects, std::list<ActiveEffect> * inactiveEffects) const;
-        void RemoveNonStacking(std::list<ActiveEffect> * effects, std::list<ActiveEffect> * nonStackingEffects) const;
-        void RemoveTemporary(std::list<ActiveEffect> * effects, std::list<ActiveEffect> * temporaryEffects) const;
+        double DoPercentageEffects(const std::vector<ActiveEffect> & effects, double total) const;
+        void RemoveInactive(std::vector<ActiveEffect> * effects, std::vector<ActiveEffect> * inactiveEffects) const;
+        void RemoveNonStacking(std::vector<ActiveEffect> * effects, std::vector<ActiveEffect> * nonStackingEffects) const;
+        void RemoveTemporary(std::vector<ActiveEffect> * effects, std::vector<ActiveEffect> * temporaryEffects) const;
         struct AbilityStance
         {
             AbilityType ability;

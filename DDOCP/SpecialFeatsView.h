@@ -46,7 +46,7 @@ class CSpecialFeatsView :
     private:
         void CreateFeatWindows(
                 CStatic * groupWindow,
-                const std::list<Feat> & featList,
+                const std::vector<Feat> & featList,
                 std::vector<CFeatSelectionDialog *> * dialogs,
                 TrainableFeatTypes type);
         size_t PositionWindows(

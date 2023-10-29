@@ -65,7 +65,7 @@ void OptionalBuffsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<OptionalBuff> & OptionalBuffsFile::OptionalBuffs() const
+const std::vector<OptionalBuff> & OptionalBuffsFile::OptionalBuffs() const
 {
     return m_loadedBuffs;
 }

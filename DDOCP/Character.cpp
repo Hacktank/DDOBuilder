@@ -10,6 +10,7 @@
 #include "MainFrm.h"
 #include "StancesView.h"
 #include "SpellsControl.h"
+#include "Utilities.h"
 
 #define DL_ELEMENT Character
 
@@ -211,7 +212,7 @@ void Character::EndElement()
     ASSERT(m_Levels.size() == MaxLevel());
 
     // also remove the default "Standard" gear layout which we get by default
-    m_GearSetups.pop_front();
+    m_GearSetups.erase(m_GearSetups.begin());
     m_hasActiveGear = true;
 
     // backwards compatibility for old files without special feats for enhancement
@@ -270,8 +271,8 @@ size_t Character::GetSpecialFeatTrainedCount(
     // return the count of how many times this particular feat has
     // been trained.
     size_t count = 0;
-    const std::list<TrainedFeat> & feats = SpecialFeats().Feats();
-    std::list<TrainedFeat>::const_iterator it = feats.begin();
+    const std::vector<TrainedFeat> & feats = SpecialFeats().Feats();
+    auto it = feats.begin();
     while (it != feats.end())
     {
         if ((*it).FeatName() == featName)
@@ -386,9 +387,9 @@ bool Character::IsFeatTrained(const std::string & featName, bool includeGrantedF
 {
     // return true if the given feat is trained
     bool bTrained = false;
-    std::list<TrainedFeat> currentFeats = CurrentFeats(MaxLevel());
+    std::vector<TrainedFeat> currentFeats = CurrentFeats(MaxLevel());
 
-    std::list<TrainedFeat>::const_iterator it = currentFeats.begin();
+    auto it = currentFeats.begin();
     while (it != currentFeats.end())
     {
         if ((*it).FeatName() == featName)
@@ -400,7 +401,7 @@ bool Character::IsFeatTrained(const std::string & featName, bool includeGrantedF
     }
     if (includeGrantedFeats)
     {
-        std::list<TrainedFeat>::const_iterator it = m_grantedFeats.begin();
+        auto it = m_grantedFeats.begin();
         while (it != m_grantedFeats.end())
         {
             if ((*it).FeatName() == featName)
@@ -422,8 +423,8 @@ TrainedFeat Character::GetTrainedFeat(
     TrainedFeat feat;       // blank if no feat found
 
     const LevelTraining & lt = LevelData(level);
-    const std::list<TrainedFeat> & tfs = lt.TrainedFeats().Feats();
-    std::list<TrainedFeat>::const_iterator it = tfs.begin();
+    const std::vector<TrainedFeat> & tfs = lt.TrainedFeats().Feats();
+    auto it = tfs.begin();
     bool found = false;
     while (!found && it != tfs.end())
     {
@@ -441,7 +442,7 @@ const LevelTraining & Character::LevelData(size_t level) const
 {
     ASSERT(m_Levels.size() == MaxLevel());
     ASSERT(level < MaxLevel());
-    std::list<LevelTraining>::const_iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level);  // point to level of interest
     const LevelTraining & data = (*it);
     return data;
@@ -451,7 +452,7 @@ bool Character::RevokeClass(ClassType type)
 {
     bool hadRevoke = false;
     size_t level = 0;
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     while (it != m_Levels.end())
     {
         if ((*it).HasClass()
@@ -491,7 +492,7 @@ void Character::UpdateSpells()
         for (int spellLevel = 0; spellLevel < (int)spellSlots.size(); ++spellLevel)
         {
             // get the current trained spells at this level
-            std::list<TrainedSpell> trainedSpells = TrainedSpells((ClassType)ci, spellLevel + 1); // 1 based
+            std::vector<TrainedSpell> trainedSpells = TrainedSpells((ClassType)ci, spellLevel + 1); // 1 based
             while (trainedSpells.size() > spellSlots[spellLevel])
             {
                 TrainedSpell ts = trainedSpells.back();
@@ -505,7 +506,7 @@ void Character::UpdateSpells()
             }
             // the spell must also still be in the available list for this class and level
             std::vector<Spell> availableSpells = FilterSpells(this, (ClassType)ci, spellLevel+1);
-            std::list<TrainedSpell>::iterator tsit = trainedSpells.begin();
+            std::vector<TrainedSpell>::iterator tsit = trainedSpells.begin();
             while (tsit != trainedSpells.end())
             {
                 std::string spellName = (*tsit).SpellName();
@@ -526,7 +527,7 @@ void Character::UpdateSpells()
                     ss << "\r\n";
                     showMsg = true;
                     RevokeSpell((ClassType)ci, (*tsit).Level(), spellName);
-                    tsit = trainedSpells.erase(tsit);
+                    tsit = Utilities::vectorQuickErase(trainedSpells,tsit);
                 }
                 else
                 {
@@ -544,7 +545,7 @@ void Character::UpdateSpells()
 void Character::UpdateFeats()
 {
     // we start with any special feats (past lives etc)
-    std::list<TrainedFeat> allFeats = SpecialFeats().Feats();
+    auto allFeats = SpecialFeats().Feats();
     // for each level, determine what automatic feats are trained
     // also, update each level with the trainable feat types
     for (size_t level = 0; level < MaxLevel(); ++level)
@@ -554,23 +555,23 @@ void Character::UpdateFeats()
     KeepGrantedFeatsUpToDate();
 }
 
-void Character::UpdateFeats(size_t level, std::list<TrainedFeat> * allFeats)
+void Character::UpdateFeats(size_t level, std::vector<TrainedFeat> * allFeats)
 {
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level);
-    std::list<TrainedFeat> oldFeats = (*it).AutomaticFeats().Feats();
+    std::vector<TrainedFeat> oldFeats = (*it).AutomaticFeats().Feats();
 
     // add the trained feats for this level as they can affect the available automatic feats
-    const std::list<TrainedFeat> & trainedFeats = (*it).TrainedFeats().Feats();
+    const std::vector<TrainedFeat> & trainedFeats = (*it).TrainedFeats().Feats();
     allFeats->insert(allFeats->end(), trainedFeats.begin(), trainedFeats.end());
 
     FeatsListObject flo(L"AutomaticFeats");
-    std::list<TrainedFeat> automaticFeats = AutomaticFeats(level, *allFeats);
+    std::vector<TrainedFeat> automaticFeats = AutomaticFeats(level, *allFeats);
     // have the automatic feats at this level changed?
     if (automaticFeats != oldFeats)
     {
         // first revoke the feats at this level then apply the new ones
-        std::list<TrainedFeat>::iterator ofit = oldFeats.begin();
+        auto ofit = oldFeats.begin();
         while (ofit != oldFeats.end())
         {
             const Feat & feat = FindFeat((*ofit).FeatName());
@@ -581,7 +582,7 @@ void Character::UpdateFeats(size_t level, std::list<TrainedFeat> * allFeats)
         flo.Set_Feats(automaticFeats);
         allFeats->insert(allFeats->end(), automaticFeats.begin(), automaticFeats.end());
         // now apply the new automatic feats
-        std::list<TrainedFeat>::iterator afit = automaticFeats.begin();
+        auto afit = automaticFeats.begin();
         while (afit != automaticFeats.end())
         {
             const Feat & feat = FindFeat((*afit).FeatName());
@@ -732,7 +733,7 @@ void Character::NotifyEnhancementEffectRevoked(
         {
             if ((*it).first == effect.Unique())
             {
-                m_uniqueSelections.erase(it);
+                it = m_uniqueSelections.erase(it);
                 break;
             }
             ++it;
@@ -757,9 +758,9 @@ void Character::NotifyEnhancementTrained(
         const EnhancementTreeItem * pItem = FindEnhancement(enhancementName);
         if (pItem != NULL)
         {
-            std::list<Stance> stances = pItem->Stances(selection);
+            std::vector<Stance> stances = pItem->Stances(selection);
             // enhancements may give multiple stances
-            std::list<Stance>::const_iterator sit = stances.begin();
+            auto sit = stances.begin();
             while (sit != stances.end())
             {
                 NotifyNewStance((*sit));
@@ -786,9 +787,9 @@ void Character::NotifyEnhancementRevoked(
         const EnhancementTreeItem * pItem = FindEnhancement(enhancementName);
         if (pItem != NULL)
         {
-            std::list<Stance> stances = pItem->Stances(selection);
+            std::vector<Stance> stances = pItem->Stances(selection);
             // enhancements may give multiple stances
-            std::list<Stance>::const_iterator sit = stances.begin();
+            auto sit = stances.begin();
             while (sit != stances.end())
             {
                 NotifyRevokeStance((*sit));
@@ -847,8 +848,8 @@ void Character::NotifyRevokeDC(const DC & dc)
 void Character::NotifyAllLoadedEffects()
 {
     // get a list of all feats and notify for each feat effect
-    std::list<TrainedFeat> feats = CurrentFeats(MaxLevel());
-    std::list<TrainedFeat>::iterator it = feats.begin();
+    std::vector<TrainedFeat> feats = CurrentFeats(MaxLevel());
+    auto it = feats.begin();
     while (it != feats.end())
     {
         // get the list of effects this feat has
@@ -861,7 +862,7 @@ void Character::NotifyAllLoadedEffects()
 void Character::NotifyAllEnhancementEffects()
 {
     // for each tree that has a trained item
-    std::list<EnhancementSpendInTree>::const_iterator it = m_EnhancementTreeSpend.begin();
+    auto it = m_EnhancementTreeSpend.begin();
     while (it != m_EnhancementTreeSpend.end())
     {
         const EnhancementSpendInTree & tree = (*it);
@@ -873,7 +874,7 @@ void Character::NotifyAllEnhancementEffects()
 void Character::NotifyAllReaperEnhancementEffects()
 {
     // for each tree that has a trained item
-    std::list<ReaperSpendInTree>::const_iterator it = m_ReaperTreeSpend.begin();
+    auto it = m_ReaperTreeSpend.begin();
     while (it != m_ReaperTreeSpend.end())
     {
         const ReaperSpendInTree & tree = (*it);
@@ -884,7 +885,7 @@ void Character::NotifyAllReaperEnhancementEffects()
 
 void Character::NotifyAllU51DestinyEffects()
 {
-    std::list<DestinySpendInTree>::const_iterator it = m_DestinyTreeSpend.begin();
+    auto it = m_DestinyTreeSpend.begin();
     while (it != m_DestinyTreeSpend.end())
     {
         const DestinySpendInTree & tree = (*it);
@@ -1176,7 +1177,7 @@ void Character::SetClass1(ClassType type)
                 || LevelData(level).Class() == classFrom
                 || LevelData(level).Class() == Class_Unknown)
         {
-            std::list<LevelTraining>::iterator it = m_Levels.begin();
+            auto it = m_Levels.begin();
             std::advance(it, level);
             (*it).Set_Class(Class1());
             UpdateSkillPoints(level);
@@ -1219,7 +1220,7 @@ void Character::SetClass2(ClassType type)
                 || LevelData(level).Class() == classFrom
                 || LevelData(level).Class() == Class_Unknown)
         {
-            std::list<LevelTraining>::iterator it = m_Levels.begin();
+            auto it = m_Levels.begin();
             std::advance(it, level);
             (*it).Set_Class(Class2());
             UpdateSkillPoints(level);
@@ -1256,7 +1257,7 @@ void Character::SetClass3(ClassType type)
                 || LevelData(level).Class() == classFrom
                 || LevelData(level).Class() == Class_Unknown)
         {
-            std::list<LevelTraining>::iterator it = m_Levels.begin();
+            auto it = m_Levels.begin();
             std::advance(it, level);
             (*it).Set_Class(Class3());
             UpdateSkillPoints(level);
@@ -1281,7 +1282,7 @@ void Character::SetClass(size_t level, ClassType type)
     if (level < MAX_CLASS_LEVELS)    // 0 based
     {
         ASSERT(m_Levels.size() == MaxLevel());
-        std::list<LevelTraining>::iterator it = m_Levels.begin();
+        auto it = m_Levels.begin();
         std::advance(it, level);
         classFrom = (*it).HasClass() ? (*it).Class() : Class_Unknown;
         oldCasterLevelFrom = CasterLevel(this, classFrom);
@@ -1340,7 +1341,7 @@ void Character::SwapClasses(size_t level1, size_t level2)
     ClassType c2 = LevelData(level2).HasClass()
             ? LevelData(level2).Class()
             : Class_Unknown;
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level1);
     (*it).Set_Class(c2);
     UpdateSkillPoints(level1);
@@ -1364,7 +1365,7 @@ void Character::SpendSkillPoint(
         bool suppressUpdate)
 {
     // update the skill point spend for the correct level data
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level);
     (*it).TrainSkill(skill);
     if (!suppressUpdate)
@@ -1379,7 +1380,7 @@ void Character::RevokeSkillPoint(
         SkillType skill,
         bool suppressUpdate)
 {
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level);
     (*it).RevokeSkill(skill);
     if (!suppressUpdate)
@@ -1441,7 +1442,7 @@ void Character::TrainSpecialFeat(
         TrainableFeatTypes type)
 {
     // just add a copy of the feat name to the current list
-    std::list<TrainedFeat> trainedFeats = SpecialFeats().Feats();
+    std::vector<TrainedFeat> trainedFeats = SpecialFeats().Feats();
     TrainedFeat tf;
     tf.Set_FeatName(featName);
     tf.Set_Type(type);
@@ -1461,13 +1462,13 @@ void Character::TrainSpecialFeat(
 
     if (feat.Acquire() == FeatAcquisition_RacialPastLife)
     {
-        std::list<TrainedFeat> allFeats = SpecialFeats().Feats();
+        std::vector<TrainedFeat> allFeats = SpecialFeats().Feats();
         UpdateFeats(0, &allFeats);      // racial completionist state may have changed
     }
 
     if (feat.Acquire() == FeatAcquisition_HeroicPastLife)
     {
-        std::list<TrainedFeat> allFeats = SpecialFeats().Feats();
+        std::vector<TrainedFeat> allFeats = SpecialFeats().Feats();
         UpdateFeats(2, &allFeats);      // completionist state may have changed
     }
 
@@ -1484,15 +1485,15 @@ void Character::RevokeSpecialFeat(
         TrainableFeatTypes type)
 {
     // just remove the first copy of the feat name from the current list
-    std::list<TrainedFeat> trainedFeats = SpecialFeats().Feats();
-    std::list<TrainedFeat>::iterator it = trainedFeats.begin();
+    std::vector<TrainedFeat> trainedFeats = SpecialFeats().Feats();
+    auto it = trainedFeats.begin();
     bool found = false;
     while (!found && it != trainedFeats.end())
     {
         if ((*it).FeatName() == featName)
         {
             // this is the first occurrence, remove it
-            it = trainedFeats.erase(it);
+            it = Utilities::vectorQuickErase(trainedFeats,it);
             found = true;
         }
         else
@@ -1517,12 +1518,12 @@ void Character::RevokeSpecialFeat(
         CountBonusUniversalAP();
         if (feat.Acquire() == FeatAcquisition_RacialPastLife)
         {
-            std::list<TrainedFeat> allFeats = SpecialFeats().Feats();
+            std::vector<TrainedFeat> allFeats = SpecialFeats().Feats();
             UpdateFeats(0, &allFeats);      // racial completionist state may have changed
         }
         if (feat.Acquire() == FeatAcquisition_HeroicPastLife)
         {
-            std::list<TrainedFeat> allFeats = SpecialFeats().Feats();
+            std::vector<TrainedFeat> allFeats = SpecialFeats().Feats();
             UpdateFeats(2, &allFeats);      // completionist state may have changed
             // revoking a special feat in theory can invalidate a feat selection (e.g. completionist)
             VerifyTrainedFeats();
@@ -1620,7 +1621,7 @@ void Character::TrainFeat(
     }
     // ensure re-selection of same feat in same slot does not change anything
     // as this can cause enhancements and feats to be revoked.
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level);
     if (featName != (*it).FeatName(type) // is it the same feat that was previously selected?
             && !(featName == " No Selection" && (*it).FeatName(type) == ""))
@@ -1664,7 +1665,7 @@ void Character::TrainAlternateFeat(
 {
     const Feat & feat = FindFeat(featName);
 
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level);
     (*it).TrainAlternateFeat(featName, type, level);
 }
@@ -1692,25 +1693,25 @@ void Character::NowActive()
     NotifyGearChanged(Inventory_Weapon1);   // updates both in breakdowns
 }
 
-std::list<TrainedFeat> Character::AutomaticFeats(
+std::vector<TrainedFeat> Character::AutomaticFeats(
         size_t level,
-        const std::list<TrainedFeat> & currentFeats) const
+        const std::vector<TrainedFeat> & currentFeats) const
 {
     // determine which feats are automatically gained at this level/class and race
-    std::list<TrainedFeat> feats;
+    std::vector<TrainedFeat> feats;
     // need to know how many and of what classes have been trained up to here
     std::vector<size_t> classLevels = ClassLevels(level);
     const LevelTraining & levelData = LevelData(level);
-    const std::list<Feat> & allFeats = StandardFeats();
+    const std::vector<Feat> & allFeats = StandardFeats();
     level++;    // 1 based for level comparison
 
-    std::list<Feat>::const_iterator it = allFeats.begin();
+    std::vector<Feat>::const_iterator it = allFeats.begin();
     while (it != allFeats.end())
     {
         // check every feats automatic acquisition entries (if any)
-        const std::list<AutomaticAcquisition> & aa = (*it).AutomaticAcquireAt();
+        const std::vector<AutomaticAcquisition> & aa = (*it).AutomaticAcquireAt();
         bool acquire = false;
-        std::list<AutomaticAcquisition>::const_iterator aait = aa.begin();
+        std::vector<AutomaticAcquisition>::const_iterator aait = aa.begin();
         while (!acquire && aait != aa.end())
         {
             // see if we meet the acquire criteria
@@ -1847,8 +1848,8 @@ void Character::ActivateStance(const Stance & stance)
         m_Stances.AddActiveStance(stance.Name());
         NotifyStanceActivated(stance.Name());
         // now revoke any stances that cannot be active at the same time as this stance
-        const std::list<std::string> & incompatibles = stance.IncompatibleStance();
-        std::list<std::string>::const_iterator isit = incompatibles.begin();
+        const std::vector<std::string> & incompatibles = stance.IncompatibleStance();
+        auto isit = incompatibles.begin();
         while (isit != incompatibles.end())
         {
             m_Stances.RevokeStance((*isit));
@@ -1935,7 +1936,7 @@ bool Character::IsClassSkill(
 
     // check the class at each previous trained level to see if its a class skill
     ASSERT(m_Levels.size() == MaxLevel());
-    std::list<LevelTraining>::const_iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     for (size_t li = 0; li <= level; ++li)
     {
         if ((*it).HasClass())
@@ -2215,8 +2216,8 @@ size_t Character::SpentAtLevel(
     size_t spent = 0;
     const LevelTraining & levelData = LevelData(level);
     // count points spent in this skill at this level
-    const std::list<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
-    std::list<TrainedSkill>::const_iterator tsit = trainedSkills.begin();
+    const std::vector<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
+    std::vector<TrainedSkill>::const_iterator tsit = trainedSkills.begin();
     while (tsit != trainedSkills.end())
     {
         if ((*tsit).Skill() == skill)
@@ -2236,7 +2237,7 @@ double Character::SkillAtLevel(
     double skillLevel = 0;  // assume untrained
 
     ASSERT(m_Levels.size() == MaxLevel());
-    std::list<LevelTraining>::const_iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     for (size_t li = 0; li <= level; ++li)
     {
         // full point per spend if its a class skill at this level
@@ -2278,7 +2279,7 @@ std::vector<size_t> Character::ClassLevels(
     // return a vector of the number of class levels trained in each class
     // at the specified level
     std::vector<size_t> classLevels(Class_Count + 3, 0);    // 0 for each class at start
-    std::list<LevelTraining>::const_iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     size_t currentLevel = 0;
     while (it != m_Levels.end() && currentLevel <= level)
     {
@@ -2372,7 +2373,7 @@ std::vector<TrainableFeatTypes> Character::TrainableFeatTypeAtLevel(
     std::vector<size_t> classLevels = ClassLevels(level);
     // now look at what class is being trained and see if any bonus feats
     // apply at this class level
-    std::list<LevelTraining>::const_iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     std::advance(it, level);
     ClassType type = (*it).HasClass() ? (*it).Class() : Class_Unknown;
     switch (type)
@@ -2779,10 +2780,10 @@ std::vector<Feat> Character::TrainableFeats(
     {
         // need to know which feats have already been trained by this point
         // include any feats also trained at the current level
-        std::list<TrainedFeat> currentFeats = CurrentFeats(level);
+        std::vector<TrainedFeat> currentFeats = CurrentFeats(level);
 
-        const std::list<Feat> & allFeats = pApp->StandardFeats();
-        std::list<Feat>::const_iterator it = allFeats.begin();
+        const std::vector<Feat> & allFeats = pApp->StandardFeats();
+        std::vector<Feat>::const_iterator it = allFeats.begin();
         while (it != allFeats.end())
         {
             if (IsFeatTrainable(level, type, (*it), true, false)
@@ -2829,28 +2830,28 @@ size_t Character::BaseAttackBonus(
     return bab;
 }
 
-std::list<TrainedFeat> Character::CurrentFeats(
+std::vector<TrainedFeat> Character::CurrentFeats(
         size_t level) const
 {
     // return a list of all the feats trained at the current level
-    std::list<TrainedFeat> currentFeats;
+    std::vector<TrainedFeat> currentFeats;
 
     // first add any special feats (Past lives etc)
-    const std::list<TrainedFeat> & specialFeats = SpecialFeats().Feats();
+    const std::vector<TrainedFeat> & specialFeats = SpecialFeats().Feats();
     currentFeats.insert(currentFeats.end(), specialFeats.begin(), specialFeats.end());
 
     // now add the automatic and the trained feats at each level up to the level wanted
     size_t currentLevel = 0;
-    std::list<LevelTraining>::const_iterator ldit = m_Levels.begin();
+    auto ldit = m_Levels.begin();
     while (currentLevel <= level && ldit != m_Levels.end())
     {
         const LevelTraining & levelData = (*ldit);
         // add the automatic feats for this level
-        const std::list<TrainedFeat> & autoFeats = levelData.AutomaticFeats().Feats();
+        const std::vector<TrainedFeat> & autoFeats = levelData.AutomaticFeats().Feats();
         currentFeats.insert(currentFeats.end(), autoFeats.begin(), autoFeats.end());
 
         // add the trained feats for this level
-        const std::list<TrainedFeat> & trainedFeats = levelData.TrainedFeats().Feats();
+        const std::vector<TrainedFeat> & trainedFeats = levelData.TrainedFeats().Feats();
         currentFeats.insert(currentFeats.end(), trainedFeats.begin(), trainedFeats.end());
 
         ++currentLevel;
@@ -2863,24 +2864,24 @@ void Character::ApplyFeatEffects(const Feat & feat)
 {
     // if we have just trained a feat that is also a stance
     // add a stance selection button for each
-    const std::list<Stance> & stances = feat.StanceData();
-    std::list<Stance>::const_iterator sit = stances.begin();
+    const std::vector<Stance> & stances = feat.StanceData();
+    auto sit = stances.begin();
     while (sit != stances.end())
     {
         NotifyNewStance((*sit));
         ++sit;
     }
     // if we have any DC objects notify about them
-    const std::list<DC> & dcs = feat.EffectDC();
-    std::list<DC>::const_iterator dcit = dcs.begin();
+    const std::vector<DC> & dcs = feat.EffectDC();
+    std::vector<DC>::const_iterator dcit = dcs.begin();
     while (dcit != dcs.end())
     {
         NotifyNewDC((*dcit));
         ++dcit;
     }
     // get the list of effects this feat has
-    const std::list<Effect> & effects = feat.Effects();
-    std::list<Effect>::const_iterator feit = effects.begin();
+    const std::vector<Effect> & effects = feat.Effects();
+    auto feit = effects.begin();
     while (feit != effects.end())
     {
         NotifyFeatEffect(feat.Name(), (*feit));
@@ -2892,8 +2893,8 @@ void Character::ApplyFeatEffects(const Feat & feat)
 void Character::RevokeFeatEffects(const Feat & feat)
 {
     // get the list of effects this feat has
-    const std::list<Effect> & effects = feat.Effects();
-    std::list<Effect>::const_iterator feit = effects.begin();
+    const std::vector<Effect> & effects = feat.Effects();
+    auto feit = effects.begin();
     while (feit != effects.end())
     {
         NotifyFeatEffectRevoked(feat.Name(), (*feit));
@@ -2901,16 +2902,16 @@ void Character::RevokeFeatEffects(const Feat & feat)
     }
     NotifyFeatRevoked(feat.Name());
     // revoke any stances this feat has
-    const std::list<Stance> & stances = feat.StanceData();
-    std::list<Stance>::const_iterator sit = stances.begin();
+    const std::vector<Stance> & stances = feat.StanceData();
+    auto sit = stances.begin();
     while (sit != stances.end())
     {
         NotifyRevokeStance((*sit));
         ++sit;
     }
     // if we have any DC objects notify about them
-    const std::list<DC> & dcs = feat.EffectDC();
-    std::list<DC>::const_iterator dcit = dcs.begin();
+    const std::vector<DC> & dcs = feat.EffectDC();
+    std::vector<DC>::const_iterator dcit = dcs.begin();
     while (dcit != dcs.end())
     {
         NotifyRevokeDC((*dcit));
@@ -2929,15 +2930,15 @@ bool Character::IsEnhancementTrained(
     return isTrained;
 }
 
-std::list<TrainedEnhancement> Character::CurrentEnhancements() const
+std::vector<TrainedEnhancement> Character::CurrentEnhancements() const
 {
     // return a list of all current enhancements trained
-    std::list<TrainedEnhancement> all;
+    std::vector<TrainedEnhancement> all;
     // iterate the list to see if its present
-    std::list<EnhancementSpendInTree>::const_iterator it = m_EnhancementTreeSpend.begin();
+    auto it = m_EnhancementTreeSpend.begin();
     while (it != m_EnhancementTreeSpend.end())
     {
-        const std::list<TrainedEnhancement> & te = (*it).Enhancements();
+        const std::vector<TrainedEnhancement> & te = (*it).Enhancements();
         all.insert(all.end(), te.begin(), te.end());
         ++it;
     }
@@ -3044,12 +3045,12 @@ const TrainedEnhancement * Character::IsTrained(
             || type == TT_unknown)
     {
         // iterate the list to see if its present
-        std::list<EnhancementSpendInTree>::const_iterator it = m_EnhancementTreeSpend.begin();
+        auto it = m_EnhancementTreeSpend.begin();
         while (pItem == NULL
                 && it != m_EnhancementTreeSpend.end())
         {
-            const std::list<TrainedEnhancement> & te = (*it).Enhancements();
-            std::list<TrainedEnhancement>::const_iterator teit = te.begin();
+            const std::vector<TrainedEnhancement> & te = (*it).Enhancements();
+            std::vector<TrainedEnhancement>::const_iterator teit = te.begin();
             while (pItem == NULL
                     && teit != te.end())
             {
@@ -3073,12 +3074,12 @@ const TrainedEnhancement * Character::IsTrained(
             || (type == TT_unknown && pItem == NULL))
     {
         // iterate the reaper list to see if its present
-        std::list<ReaperSpendInTree>::const_iterator it = m_ReaperTreeSpend.begin();
+        auto it = m_ReaperTreeSpend.begin();
         while (pItem == NULL
                 && it != m_ReaperTreeSpend.end())
         {
-            const std::list<TrainedEnhancement> & te = (*it).Enhancements();
-            std::list<TrainedEnhancement>::const_iterator teit = te.begin();
+            const std::vector<TrainedEnhancement> & te = (*it).Enhancements();
+            std::vector<TrainedEnhancement>::const_iterator teit = te.begin();
             while (pItem == NULL
                     && teit != te.end())
             {
@@ -3102,12 +3103,12 @@ const TrainedEnhancement * Character::IsTrained(
             || (type == TT_unknown && pItem == NULL))
     {
         // iterate the U51 epic destiny list to see if its present
-        std::list<DestinySpendInTree>::const_iterator it = m_DestinyTreeSpend.begin();
+        auto it = m_DestinyTreeSpend.begin();
         while (pItem == NULL
                 && it != m_DestinyTreeSpend.end())
         {
-            const std::list<TrainedEnhancement> & te = (*it).Enhancements();
-            std::list<TrainedEnhancement>::const_iterator teit = te.begin();
+            const std::vector<TrainedEnhancement> & te = (*it).Enhancements();
+            std::vector<TrainedEnhancement>::const_iterator teit = te.begin();
             while (pItem == NULL
                     && teit != te.end())
             {
@@ -3145,7 +3146,7 @@ EnhancementSpendInTree * Character::Enhancement_FindTree(const std::string & tre
 {
     // Find the tree tracking amount spent and enhancements trained
     EnhancementSpendInTree * pItem = NULL;
-    std::list<EnhancementSpendInTree>::iterator it = m_EnhancementTreeSpend.begin();
+    auto it = m_EnhancementTreeSpend.begin();
     while (pItem == NULL
             && it != m_EnhancementTreeSpend.end())
     {
@@ -3294,13 +3295,13 @@ void Character::Enhancement_ResetEnhancementTree(std::string treeName)
             pItem = Enhancement_FindTree(treeName);
         }
         // now remove the tree entry from the list (not present if no spend in tree)
-        std::list<EnhancementSpendInTree>::iterator it = m_EnhancementTreeSpend.begin();
+        auto it = m_EnhancementTreeSpend.begin();
         while (it != m_EnhancementTreeSpend.end())
         {
             if ((*it).TreeName() == treeName)
             {
                 // done once we find it
-                m_EnhancementTreeSpend.erase(it);
+                Utilities::vectorQuickErase(m_EnhancementTreeSpend,it);
                 break;
             }
             ++it;
@@ -3320,9 +3321,9 @@ void Character::Enhancement_SetSelectedTrees(const SelectedEnhancementTrees & tr
 
 const EnhancementTree & Character::FindTree(const std::string & treeName) const
 {
-    const std::list<EnhancementTree> & trees = EnhancementTrees();
+    const std::vector<EnhancementTree> & trees = EnhancementTrees();
     // first find the tree we want
-    std::list<EnhancementTree>::const_iterator tit = trees.begin();
+    std::vector<EnhancementTree>::const_iterator tit = trees.begin();
     while (tit != trees.end())
     {
         if ((*tit).Name() == treeName)
@@ -3341,9 +3342,9 @@ std::string Character::GetEnhancementName(
         const std::string & selection)
 {
     std::string name;
-    const std::list<EnhancementTree> & trees = EnhancementTrees();
+    const std::vector<EnhancementTree> & trees = EnhancementTrees();
     // first find the tree we want
-    std::list<EnhancementTree>::const_iterator tit = trees.begin();
+    std::vector<EnhancementTree>::const_iterator tit = trees.begin();
     while (tit != trees.end())
     {
         if ((*tit).Name() == treeName)
@@ -3366,15 +3367,15 @@ std::string Character::GetEnhancementName(
     return name;
 }
 
-std::list<Effect> Character::GetEnhancementEffects(
+std::vector<Effect> Character::GetEnhancementEffects(
         const std::string & treeName,
         const std::string & enhancementName,
         const std::string & selection)
 {
-    std::list<Effect> effects;
-    const std::list<EnhancementTree> & trees = EnhancementTrees();
+    std::vector<Effect> effects;
+    const std::vector<EnhancementTree> & trees = EnhancementTrees();
     // first find the tree we want
-    std::list<EnhancementTree>::const_iterator tit = trees.begin();
+    std::vector<EnhancementTree>::const_iterator tit = trees.begin();
     while (tit != trees.end())
     {
         if ((*tit).Name() == treeName)
@@ -3397,15 +3398,15 @@ std::list<Effect> Character::GetEnhancementEffects(
     return effects;
 }
 
-std::list<DC> Character::GetEnhancementDCs(
+std::vector<DC> Character::GetEnhancementDCs(
         const std::string & treeName,
         const std::string & enhancementName,
         const std::string & selection)
 {
-    std::list<DC> dcs;
-    const std::list<EnhancementTree> & trees = EnhancementTrees();
+    std::vector<DC> dcs;
+    const std::vector<EnhancementTree> & trees = EnhancementTrees();
     // first find the tree we want
-    std::list<EnhancementTree>::const_iterator tit = trees.begin();
+    std::vector<EnhancementTree>::const_iterator tit = trees.begin();
     while (tit != trees.end())
     {
         if ((*tit).Name() == treeName)
@@ -3445,8 +3446,8 @@ size_t Character::DetermineBuildPoints()
     //   Epic past lives do not add to build points
     //   Iconic past lives indirectly do, as you also get a heroic past life
     size_t numPastLifeFeats = 0;
-    const std::list<TrainedFeat> & feats = SpecialFeats().Feats();
-    std::list<TrainedFeat>::const_iterator it = feats.begin();
+    const std::vector<TrainedFeat> & feats = SpecialFeats().Feats();
+    auto it = feats.begin();
     while (it != feats.end())
     {
         const Feat & feat = FindFeat((*it).FeatName());
@@ -3509,17 +3510,17 @@ void Character::CountBonusRacialAP()
     CDDOCPApp * pDDOApp = dynamic_cast<CDDOCPApp*>(pApp);
     if (pDDOApp != NULL)
     {
-        const std::list<Feat> & racialFeats = pDDOApp->RacialPastLifeFeats();
+        const std::vector<Feat> & racialFeats = pDDOApp->RacialPastLifeFeats();
         size_t APcount = 0;
-        std::list<Feat>::const_iterator fi = racialFeats.begin();
+        std::vector<Feat>::const_iterator fi = racialFeats.begin();
         while (fi != racialFeats.end())
         {
             size_t count = GetSpecialFeatTrainedCount(fi->Name());
             if (count > 0)
             {
                 // look at all the feat effects and see if any affect our AP count
-                const std::list<Effect> & effects = (*fi).Effects();
-                std::list<Effect>::const_iterator ei = effects.begin();
+                const std::vector<Effect> & effects = (*fi).Effects();
+                auto ei = effects.begin();
                 while (ei != effects.end())
                 {
                     if (ei->Type() == Effect_APBonus)
@@ -3539,7 +3540,7 @@ void Character::CountBonusRacialAP()
             }
             fi++;
         }
-        const std::list<Feat> & specialFeats = pDDOApp->SpecialFeats();
+        const std::vector<Feat> & specialFeats = pDDOApp->SpecialFeats();
         fi = specialFeats.begin();
         while (fi != specialFeats.end())
         {
@@ -3547,8 +3548,8 @@ void Character::CountBonusRacialAP()
             if (count > 0)
             {
                 // look at all the feat effects and see if any affect our AP count
-                const std::list<Effect> & effects = (*fi).Effects();
-                std::list<Effect>::const_iterator ei = effects.begin();
+                const std::vector<Effect> & effects = (*fi).Effects();
+                auto ei = effects.begin();
                 while (ei != effects.end())
                 {
                     if (ei->Type() == Effect_APBonus)
@@ -3586,16 +3587,16 @@ void Character::CountBonusUniversalAP()
     {
         size_t UAPcount = 0;
         size_t DAPcount = 0;
-        const std::list<Feat> & specialFeats = pDDOApp->SpecialFeats();
-        std::list<Feat>::const_iterator fi = specialFeats.begin();
+        const std::vector<Feat> & specialFeats = pDDOApp->SpecialFeats();
+        std::vector<Feat>::const_iterator fi = specialFeats.begin();
         while (fi != specialFeats.end())
         {
             size_t count = GetSpecialFeatTrainedCount(fi->Name());
             if (count > 0)
             {
                 // look at all the feat effects and see if any affect our AP count
-                const std::list<Effect> & effects = (*fi).Effects();
-                std::list<Effect>::const_iterator ei = effects.begin();
+                const std::vector<Effect> & effects = (*fi).Effects();
+                auto ei = effects.begin();
                 while (ei != effects.end())
                 {
                     if (ei->Type() == Effect_UAPBonus)
@@ -3656,7 +3657,7 @@ void Character::JustLoaded()
     CString message;
 
     {
-        std::list<EnhancementSpendInTree>::iterator etsit = m_EnhancementTreeSpend.begin();
+        auto etsit = m_EnhancementTreeSpend.begin();
         while (etsit != m_EnhancementTreeSpend.end())
         {
             const EnhancementTree & tree = GetEnhancementTree((*etsit).TreeName());
@@ -3668,7 +3669,7 @@ void Character::JustLoaded()
                         (*etsit).TreeName().c_str());
                 message += text;
                 displayMessage = true;
-                etsit = m_EnhancementTreeSpend.erase(etsit);
+                etsit = Utilities::vectorQuickErase(m_EnhancementTreeSpend,etsit);
             }
             else
             {
@@ -3683,15 +3684,15 @@ void Character::JustLoaded()
                             (*etsit).TreeName().c_str());
                     message += text;
                     displayMessage = true;
-                    etsit = m_EnhancementTreeSpend.erase(etsit);
+                    etsit = Utilities::vectorQuickErase(m_EnhancementTreeSpend,etsit);
                 }
                 else
                 {
                     // the tree is up to date, sum how many APs were spent in it
                     bool bBadEnhancement = false;
                     size_t apsSpent = 0;
-                    std::list<TrainedEnhancement> te = (*etsit).Enhancements();
-                    std::list<TrainedEnhancement>::iterator teit = te.begin();
+                    std::vector<TrainedEnhancement> te = (*etsit).Enhancements();
+                    std::vector<TrainedEnhancement>::iterator teit = te.begin();
                     while (teit != te.end())
                     {
                         const EnhancementTreeItem * pTreeItem = FindEnhancement((*teit).EnhancementName());
@@ -3745,7 +3746,7 @@ void Character::JustLoaded()
                                 (*etsit).TreeName().c_str());
                         message += text;
                         displayMessage = true;
-                        etsit = m_EnhancementTreeSpend.erase(etsit);
+                        etsit = Utilities::vectorQuickErase(m_EnhancementTreeSpend,etsit);
                     }
                 }
             }
@@ -3753,7 +3754,7 @@ void Character::JustLoaded()
     }
 
     {
-        std::list<ReaperSpendInTree>::iterator rtsit = m_ReaperTreeSpend.begin();
+        auto rtsit = m_ReaperTreeSpend.begin();
         while (rtsit != m_ReaperTreeSpend.end())
         {
             const EnhancementTree & tree = GetEnhancementTree((*rtsit).TreeName());
@@ -3768,15 +3769,15 @@ void Character::JustLoaded()
                         (*rtsit).TreeName().c_str());
                 message += text;
                 displayMessage = true;
-                rtsit = m_ReaperTreeSpend.erase(rtsit);
+                rtsit = Utilities::vectorQuickErase(m_ReaperTreeSpend,rtsit);
             }
             else
             {
                 // the tree is up to date, sum how many APs were spent in it
                 bool bBadEnhancement = false;
                 size_t apsSpent = 0;
-                std::list<TrainedEnhancement> te = (*rtsit).Enhancements();
-                std::list<TrainedEnhancement>::iterator teit = te.begin();
+                std::vector<TrainedEnhancement> te = (*rtsit).Enhancements();
+                std::vector<TrainedEnhancement>::iterator teit = te.begin();
                 while (teit != te.end())
                 {
                     const EnhancementTreeItem * pTreeItem = FindEnhancement((*teit).EnhancementName());
@@ -3814,14 +3815,14 @@ void Character::JustLoaded()
                             (*rtsit).TreeName().c_str());
                     message += text;
                     displayMessage = true;
-                    rtsit = m_ReaperTreeSpend.erase(rtsit);
+                    rtsit = Utilities::vectorQuickErase(m_ReaperTreeSpend,rtsit);
                 }
             }
         }
     }
 
     {
-        std::list<DestinySpendInTree>::iterator dsit = m_DestinyTreeSpend.begin();
+        auto dsit = m_DestinyTreeSpend.begin();
         while (dsit != m_DestinyTreeSpend.end())
         {
             const EnhancementTree & tree = GetEnhancementTree((*dsit).TreeName());
@@ -3833,7 +3834,7 @@ void Character::JustLoaded()
                         (*dsit).TreeName().c_str());
                 message += text;
                 displayMessage = true;
-                dsit = m_DestinyTreeSpend.erase(dsit);
+                dsit = Utilities::vectorQuickErase(m_DestinyTreeSpend,dsit);
             }
             else
             {
@@ -3848,15 +3849,15 @@ void Character::JustLoaded()
                             (*dsit).TreeName().c_str());
                     message += text;
                     displayMessage = true;
-                    dsit = m_DestinyTreeSpend.erase(dsit);
+                    dsit = Utilities::vectorQuickErase(m_DestinyTreeSpend,dsit);
                 }
                 else
                 {
                     // the tree is up to date, sum how many APs were spent in it
                     bool bBadEnhancement = false;
                     size_t apsSpent = 0;
-                    std::list<TrainedEnhancement> te = (*dsit).Enhancements();
-                    std::list<TrainedEnhancement>::iterator teit = te.begin();
+                    std::vector<TrainedEnhancement> te = (*dsit).Enhancements();
+                    std::vector<TrainedEnhancement>::iterator teit = te.begin();
                     while (teit != te.end())
                     {
                         const EnhancementTreeItem * pTreeItem = FindEnhancement((*teit).EnhancementName());
@@ -3895,7 +3896,7 @@ void Character::JustLoaded()
                                 (*dsit).TreeName().c_str());
                         message += text;
                         displayMessage = true;
-                        dsit = m_DestinyTreeSpend.erase(dsit);
+                        dsit = Utilities::vectorQuickErase(m_DestinyTreeSpend,dsit);
                     }
                 }
             }
@@ -3903,7 +3904,7 @@ void Character::JustLoaded()
     }
 
     // racial completionist state may have changed
-    std::list<TrainedFeat> allFeats = SpecialFeats().Feats();
+    std::vector<TrainedFeat> allFeats = SpecialFeats().Feats();
     for (size_t level = 0; level < MaxLevel(); ++level)
     {
         // automatic feats are no longer saved. regenerate them all
@@ -3937,7 +3938,7 @@ void Character::VerifyTrainedFeats()
     // keep a message that will inform the user about changes made
     bool displayMessage = false;
     CString message("The following feats were revoked as requirements no longer met:\n\n");
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     size_t level = 0;
     bool bOldState = m_bShowEpicOnly;
     m_bShowEpicOnly = false;    // stop heroic feats in epic slots being revoked
@@ -3951,8 +3952,8 @@ void Character::VerifyTrainedFeats()
     {
         bool redoLevel = false;     // true if have to check feats at this level again
         FeatsListObject featList = (*it).TrainedFeats();
-        const std::list<TrainedFeat> & feats = featList.Feats();
-        std::list<TrainedFeat>::const_iterator fit = feats.begin();
+        const std::vector<TrainedFeat> & feats = featList.Feats();
+        auto fit = feats.begin();
         while (!redoLevel && fit != feats.end())
         {
             // is this feat trainable at this level?
@@ -3977,51 +3978,40 @@ void Character::VerifyTrainedFeats()
     }
     // if we have any revoked feats, try and re-train them in matching empty
     // feat slots which qualify to hold those feats
-    std::list<TrainedFeat> feats = revokedFeats.Feats();
-    if (feats.size() > 0)
-    {
-        std::list<LevelTraining>::iterator it = m_Levels.begin();
-        size_t level = 0;
-        while (it != m_Levels.end())
-        {
+    const auto& revokedFeatsList = revokedFeats.Feats();
+    std::vector<TrainedFeat> unAssignableRevokedFeats;
+    for (auto& revokedFeatListEntry : revokedFeatsList) {
+        bool reassigned = false;
+
+        for (int levelIndex = 0; levelIndex < m_Levels.size(); levelIndex++) {
             // check each revoked feat to see if its trainable at this level in
             // an empty feat slot. If it is, train it and remove from the list
-            std::list<TrainedFeat>::const_iterator fit = feats.begin();
-            while (fit != feats.end())
-            {
-                // is this feat trainable at this level?
-                const Feat & feat = FindFeat((*fit).FeatName());
-                if (IsFeatTrainable(level, (*fit).Type(), feat, true, false))
-                {
-                    // slot must be empty
-                    TrainedFeat tf = GetTrainedFeat(
-                            level,
-                            (*fit).Type());
-                    // name is blank if no feat currently trained
-                    if (tf.FeatName() == "")
-                    {
-                        // it is, train it
-                        (*it).TrainFeat((*fit).FeatName(), (*fit).Type(), level, false);
-                        fit = feats.erase(fit); // remove and go to next
-                    }
-                    else
-                    {
-                        ++fit;  // check the next
-                    }
-                }
-                else
-                {
-                    ++fit;      // check the next
+            const Feat& revokedFeat = FindFeat(revokedFeatListEntry.FeatName());
+
+            // is this feat trainable at this level?
+            if (IsFeatTrainable(levelIndex, revokedFeatListEntry.Type(), revokedFeat, true, false)) {
+                // slot must be empty
+                TrainedFeat tf = GetTrainedFeat(level, revokedFeatListEntry.Type());
+
+                // name is blank if no feat currently trained
+                if (tf.FeatName() == "") {
+                    // it is, train it
+                    m_Levels[levelIndex].TrainFeat(revokedFeatListEntry.FeatName(), revokedFeatListEntry.Type(), level, false);
+                    reassigned = true;
+                    break;
                 }
             }
-            ++it;
-            ++level;
+        }
+
+        if (!reassigned) {
+            unAssignableRevokedFeats.push_back(revokedFeatListEntry);
         }
     }
+
     // now generate the revoked message with those feats that could not be re-trained
     // in slots elsewhere
-    std::list<TrainedFeat>::const_iterator fit = feats.begin();
-    while (fit != feats.end())
+    auto fit = unAssignableRevokedFeats.begin();
+    while (fit != unAssignableRevokedFeats.end())
     {
         const Feat & feat = FindFeat((*fit).FeatName());
         RevokeFeatEffects(feat);
@@ -4056,7 +4046,7 @@ bool Character::IsFeatTrainable(
     std::vector<size_t> classLevels = ClassLevels(level);
     // need to know which feats have already been trained by this point
     // include any feats also trained at the current level
-    std::list<TrainedFeat> currentFeats = CurrentFeats(level);
+    std::vector<TrainedFeat> currentFeats = CurrentFeats(level);
 
     // must be a trainable feat first
     bool canTrain = (feat.Acquire() == FeatAcquisition_Train);
@@ -4130,7 +4120,7 @@ bool Character::HasGrantedFeats() const
     return (m_grantedFeats.size() > 0);
 }
 
-const std::list<TrainedFeat> & Character::GrantedFeats() const
+const std::vector<TrainedFeat> & Character::GrantedFeats() const
 {
     return m_grantedFeats;
 }
@@ -4142,12 +4132,12 @@ void Character::ApplyEnhancementEffects(
         size_t ranks)
 {
     std::string displayName = GetEnhancementName(treeName, enhancementName, selection);
-    std::list<Effect> effects = GetEnhancementEffects(treeName, enhancementName, selection);
-    std::list<DC> dcs = GetEnhancementDCs(treeName, enhancementName, selection);
+    std::vector<Effect> effects = GetEnhancementEffects(treeName, enhancementName, selection);
+    std::vector<DC> dcs = GetEnhancementDCs(treeName, enhancementName, selection);
     for (size_t rank = 0; rank < ranks; ++rank)
     {
         {
-            std::list<Effect>::const_iterator eit = effects.begin();
+            auto eit = effects.begin();
             while (eit != effects.end())
             {
                 NotifyEnhancementEffect(displayName, (*eit), rank + 1);
@@ -4155,7 +4145,7 @@ void Character::ApplyEnhancementEffects(
             }
         }
         {
-            std::list<DC>::const_iterator dcit = dcs.begin();
+            std::vector<DC>::const_iterator dcit = dcs.begin();
             while (dcit != dcs.end())
             {
                 NotifyNewDC(*dcit);
@@ -4172,17 +4162,17 @@ void Character::RevokeEnhancementEffects(
         size_t ranks)
 {
     std::string displayName = GetEnhancementName(treeName, enhancementName, selection);
-    std::list<Effect> effects = GetEnhancementEffects(treeName, enhancementName, selection);
-    std::list<DC> dcs = GetEnhancementDCs(treeName, enhancementName, selection);
+    std::vector<Effect> effects = GetEnhancementEffects(treeName, enhancementName, selection);
+    std::vector<DC> dcs = GetEnhancementDCs(treeName, enhancementName, selection);
     for (size_t rank = 0; rank < ranks; ++rank)
     {
-        std::list<Effect>::const_iterator eit = effects.begin();
+        auto eit = effects.begin();
         while (eit != effects.end())
         {
             NotifyEnhancementEffectRevoked(displayName, (*eit), rank + 1);
             ++eit;
         }
-        std::list<DC>::const_iterator dcit = dcs.begin();
+        std::vector<DC>::const_iterator dcit = dcs.begin();
         while (dcit != dcs.end())
         {
             NotifyRevokeDC(*dcit);
@@ -4191,12 +4181,12 @@ void Character::RevokeEnhancementEffects(
     }
 }
 
-std::list<TrainedSpell> Character::TrainedSpells(
+std::vector<TrainedSpell> Character::TrainedSpells(
         ClassType classType,
         size_t level) const
 {
     // return the list of trained spells for this class at this level
-    std::list<TrainedSpell> spells;
+    std::vector<TrainedSpell> spells;
     std::vector<TrainedSpell>::const_iterator it = m_TrainedSpells.begin();
     while (it != m_TrainedSpells.end())
     {
@@ -4210,11 +4200,11 @@ std::list<TrainedSpell> Character::TrainedSpells(
     return spells;
 }
 
-std::list<TrainedSpell> Character::FixedSpells(
+std::vector<TrainedSpell> Character::FixedSpells(
         ClassType classType,
         size_t level) const
 {
-    std::list<TrainedSpell> spells;
+    std::vector<TrainedSpell> spells;
     // this list is maintained dynamically by the SpellsControl object for this class
     // we need to go to that window to get the list of fixed spells
     const CSpellsControl * pSC = GetMainFrame()->GetSpellsControl(classType);
@@ -4259,7 +4249,7 @@ void Character::RevokeSpell(
     {
         if ((*it) == spell)
         {
-            m_TrainedSpells.erase(it);
+            Utilities::vectorQuickErase(m_TrainedSpells,it);
             found = true;
         }
         else
@@ -4364,13 +4354,13 @@ void Character::Reaper_ResetEnhancementTree(std::string treeName)
             pItem = Reaper_FindTree(treeName);
         }
         // now remove the tree entry from the list (not present if no spend in tree)
-        std::list<ReaperSpendInTree>::iterator it = m_ReaperTreeSpend.begin();
+        auto it = m_ReaperTreeSpend.begin();
         while (it != m_ReaperTreeSpend.end())
         {
             if ((*it).TreeName() == treeName)
             {
                 // done once we find it
-                m_ReaperTreeSpend.erase(it);
+                Utilities::vectorQuickErase(m_ReaperTreeSpend,it);
                 break;
             }
             ++it;
@@ -4385,7 +4375,7 @@ ReaperSpendInTree * Character::Reaper_FindTree(const std::string & treeName)
 {
     // Find the tree tracking amount spent and enhancements trained
     ReaperSpendInTree * pItem = NULL;
-    std::list<ReaperSpendInTree>::iterator it = m_ReaperTreeSpend.begin();
+    auto it = m_ReaperTreeSpend.begin();
     while (pItem == NULL
             && it != m_ReaperTreeSpend.end())
     {
@@ -4401,10 +4391,10 @@ ReaperSpendInTree * Character::Reaper_FindTree(const std::string & treeName)
 
 void Character::ApplyAllEffects(
         const std::string & treename,
-        const std::list<TrainedEnhancement> & enhancements)
+        const std::vector<TrainedEnhancement> & enhancements)
 {
     // for each item trained, apply its effects
-    std::list<TrainedEnhancement>::const_iterator eit = enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator eit = enhancements.begin();
     while (eit != enhancements.end())
     {
         const EnhancementTreeItem * pTreeItem = FindEnhancement((*eit).EnhancementName());
@@ -4414,8 +4404,8 @@ void Character::ApplyAllEffects(
                 (*eit).HasSelection() ? (*eit).Selection() : "",
                 (*eit).Ranks());
         // enhancements may give multiple stances
-        std::list<Stance> stances = pTreeItem->Stances((*eit).HasSelection() ? (*eit).Selection() : "");
-        std::list<Stance>::const_iterator sit = stances.begin();
+        std::vector<Stance> stances = pTreeItem->Stances((*eit).HasSelection() ? (*eit).Selection() : "");
+        auto sit = stances.begin();
         while (sit != stances.end())
         {
             NotifyNewStance((*sit));
@@ -4427,10 +4417,10 @@ void Character::ApplyAllEffects(
 
 void Character::RevokeAllEffects(
         const std::string & treename,
-        const std::list<TrainedEnhancement> & enhancements)
+        const std::vector<TrainedEnhancement> & enhancements)
 {
     // for each item trained, evoke its effects
-    std::list<TrainedEnhancement>::const_iterator eit = enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator eit = enhancements.begin();
     while (eit != enhancements.end())
     {
         const EnhancementTreeItem * pTreeItem = FindEnhancement((*eit).EnhancementName());
@@ -4440,8 +4430,8 @@ void Character::RevokeAllEffects(
                 (*eit).HasSelection() ? (*eit).Selection() : "",
                 (*eit).Ranks());
         // enhancements may give multiple stances
-        std::list<Stance> stances = pTreeItem->Stances((*eit).HasSelection() ? (*eit).Selection() : "");
-        std::list<Stance>::const_iterator sit = stances.begin();
+        std::vector<Stance> stances = pTreeItem->Stances((*eit).HasSelection() ? (*eit).Selection() : "");
+        auto sit = stances.begin();
         while (sit != stances.end())
         {
             NotifyRevokeStance((*sit));
@@ -4490,12 +4480,12 @@ void Character::DeleteGearSet(const std::string & name)
 {
     RevokeGearEffects();        // always for active gear (one being deleted)
     // find the gear set and delete it
-    std::list<EquippedGear>::const_iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::const_iterator it = m_GearSetups.begin();
     while (it != m_GearSetups.end())
     {
         if ((*it).Name() == name)
         {
-            m_GearSetups.erase(it);
+            it = m_GearSetups.erase(it);
             break;  // were done
         }
         ++it;
@@ -4518,7 +4508,7 @@ void Character::DeleteGearSet(const std::string & name)
 
 bool Character::DoesGearSetExist(const std::string & name) const
 {
-    std::list<EquippedGear>::const_iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::const_iterator it = m_GearSetups.begin();
     bool found = false;
     while (!found && it != m_GearSetups.end())
     {
@@ -4534,7 +4524,7 @@ bool Character::DoesGearSetExist(const std::string & name) const
 EquippedGear Character::GetGearSet(const std::string & name) const
 {
     EquippedGear gear;
-    std::list<EquippedGear>::const_iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::const_iterator it = m_GearSetups.begin();
     bool found = false;
     while (!found && it != m_GearSetups.end())
     {
@@ -4571,7 +4561,7 @@ void Character::SetNumFiligrees(size_t count)
     // first revoke all gear effects as the gear is about to change
     RevokeGearEffects();        // always for active gear
     // update the gear
-    std::list<EquippedGear>::iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::iterator it = m_GearSetups.begin();
     bool found = false;
     while (!found && it != m_GearSetups.end())
     {
@@ -4592,7 +4582,7 @@ void Character::UpdateActiveGearSet(const EquippedGear & newGear)
     // first revoke all gear effects as the gear is about to change
     RevokeGearEffects();        // always for active gear
     // update the gear
-    std::list<EquippedGear>::iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::iterator it = m_GearSetups.begin();
     bool found = false;
     while (!found && it != m_GearSetups.end())
     {
@@ -4619,7 +4609,7 @@ void Character::SetGear(
         RevokeGearEffects();        // always for active gear
     }
     // update the gear entry
-    std::list<EquippedGear>::iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::iterator it = m_GearSetups.begin();
     bool found = false;
     while (!found && it != m_GearSetups.end())
     {
@@ -4665,7 +4655,7 @@ void Character::ClearGearInSlot(const std::string & name, InventorySlotType slot
         RevokeGearEffects();        // always for active gear
     }
     // update the gear entry
-    std::list<EquippedGear>::iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::iterator it = m_GearSetups.begin();
     bool found = false;
     while (!found && it != m_GearSetups.end())
     {
@@ -4717,15 +4707,15 @@ void Character::RevokeGearEffects()
                 }
                 ++it;
             }
-            const std::list<DC> & dcs = item.EffectDC();
-            std::list<DC>::const_iterator dcit = dcs.begin();
+            const std::vector<DC> & dcs = item.EffectDC();
+            std::vector<DC>::const_iterator dcit = dcs.begin();
             while (dcit != dcs.end())
             {
                 NotifyRevokeDC(*dcit);
                 ++dcit;
             }
-            const std::list<Stance> & stances = item.Stances();
-            std::list<Stance>::const_iterator sit = stances.begin();
+            const std::vector<Stance> & stances = item.Stances();
+            auto sit = stances.begin();
             while (sit != stances.end())
             {
                 NotifyRevokeStance((*sit));
@@ -4749,8 +4739,8 @@ void Character::RevokeGearEffects()
                     // now revoke the augments effects
                     std::string name;
                     name = ss.str();
-                    std::list<Effect> effects = augment.Effects();
-                    std::list<Effect>::iterator it = effects.begin();
+                    std::vector<Effect> effects = augment.Effects();
+                    std::vector<Effect>::iterator it = effects.begin();
                     size_t effectIndex = 0;
                     while (it != effects.end())
                     {
@@ -4786,16 +4776,16 @@ void Character::RevokeGearEffects()
                         ++effectIndex;
                     }
                     // clear any augment stances
-                    const std::list<Stance> & stances = augment.StanceData();
-                    std::list<Stance>::const_iterator sit = stances.begin();
+                    const std::vector<Stance> & stances = augment.StanceData();
+                    auto sit = stances.begin();
                     while (sit != stances.end())
                     {
                         NotifyRevokeStance((*sit));
                         ++sit;
                     }
                     // revoke any augment set bonuses
-                    const std::list<std::string> & setBonuses = augment.SetBonus();
-                    std::list<std::string>::const_iterator sbit = setBonuses.begin();
+                    const std::vector<std::string> & setBonuses = augment.SetBonus();
+                    auto sbit = setBonuses.begin();
                     while (sbit != setBonuses.end())
                     {
                         RevokeSetBonus((*sbit), name);
@@ -4806,8 +4796,8 @@ void Character::RevokeGearEffects()
             if (!bSuppressSetBonuses)
             {
                 // revoke any item set bonuses
-                const std::list<std::string> & setBonuses = item.SetBonus();
-                std::list<std::string>::const_iterator sbit = setBonuses.begin();
+                const std::vector<std::string> & setBonuses = item.SetBonus();
+                auto sbit = setBonuses.begin();
                 while (sbit != setBonuses.end())
                 {
                     RevokeSetBonus((*sbit), item.Name());
@@ -4861,8 +4851,8 @@ void Character::RevokeFiligree(
         // now revoke the augments effects
         std::string name;
         name = ss.str();
-        std::list<Effect> effects = augment.Effects();
-        std::list<Effect>::iterator it = effects.begin();
+        std::vector<Effect> effects = augment.Effects();
+        std::vector<Effect>::iterator it = effects.begin();
         while (it != effects.end())
         {
             NotifyItemEffectRevoked(name, (*it));
@@ -4874,8 +4864,8 @@ void Character::RevokeFiligree(
         {
             if (gear.SentientIntelligence().IsRareArtifactFiligree(si))
             {
-                std::list<Effect> effects = augment.Rares().Effects();
-                std::list<Effect>::iterator it = effects.begin();
+                std::vector<Effect> effects = augment.Rares().Effects();
+                std::vector<Effect>::iterator it = effects.begin();
                 while (it != effects.end())
                 {
                     NotifyItemEffectRevoked(name, (*it));
@@ -4887,8 +4877,8 @@ void Character::RevokeFiligree(
         {
             if (gear.SentientIntelligence().IsRareFiligree(si))
             {
-                std::list<Effect> effects = augment.Rares().Effects();
-                std::list<Effect>::iterator it = effects.begin();
+                std::vector<Effect> effects = augment.Rares().Effects();
+                std::vector<Effect>::iterator it = effects.begin();
                 while (it != effects.end())
                 {
                     NotifyItemEffectRevoked(name, (*it));
@@ -4897,16 +4887,16 @@ void Character::RevokeFiligree(
             }
         }
         // revoke any filigree stances
-        const std::list<Stance> & stances = augment.StanceData();
-        std::list<Stance>::const_iterator sit = stances.begin();
+        const std::vector<Stance> & stances = augment.StanceData();
+        auto sit = stances.begin();
         while (sit != stances.end())
         {
             NotifyRevokeStance((*sit));
             ++sit;
         }
         // revoke any filigree set bonuses
-        const std::list<std::string> & setBonuses = augment.SetBonus();
-        std::list<std::string>::const_iterator sbit = setBonuses.begin();
+        const std::vector<std::string> & setBonuses = augment.SetBonus();
+        auto sbit = setBonuses.begin();
         while (sbit != setBonuses.end())
         {
             RevokeSetBonus((*sbit), name);
@@ -4953,15 +4943,15 @@ void Character::ApplyGearEffects()
                 }
                 ++it;
             }
-            const std::list<DC> & dcs = item.EffectDC();
-            std::list<DC>::const_iterator dcit = dcs.begin();
+            const std::vector<DC> & dcs = item.EffectDC();
+            std::vector<DC>::const_iterator dcit = dcs.begin();
             while (dcit != dcs.end())
             {
                 NotifyNewDC(*dcit);
                 ++dcit;
             }
-            const std::list<Stance> & stances = item.Stances();
-            std::list<Stance>::const_iterator sit = stances.begin();
+            const std::vector<Stance> & stances = item.Stances();
+            auto sit = stances.begin();
             while (sit != stances.end())
             {
                 NotifyNewStance((*sit));
@@ -4985,8 +4975,8 @@ void Character::ApplyGearEffects()
                     // now notify the augments effects
                     std::string name;
                     name = ss.str();
-                    std::list<Effect> effects = augment.Effects();
-                    std::list<Effect>::iterator it = effects.begin();
+                    std::vector<Effect> effects = augment.Effects();
+                    std::vector<Effect>::iterator it = effects.begin();
                     size_t effectIndex = 0;
                     while (it != effects.end())
                     {
@@ -5022,16 +5012,16 @@ void Character::ApplyGearEffects()
                         ++effectIndex;
                     }
                     // apply any augment stances
-                    const std::list<Stance> & stances = augment.StanceData();
-                    std::list<Stance>::const_iterator sit = stances.begin();
+                    const std::vector<Stance> & stances = augment.StanceData();
+                    auto sit = stances.begin();
                     while (sit != stances.end())
                     {
                         NotifyNewStance((*sit));
                         ++sit;
                     }
                     // apply any augment set bonuses
-                    const std::list<std::string> & setBonuses = augment.SetBonus();
-                    std::list<std::string>::const_iterator sbit = setBonuses.begin();
+                    const std::vector<std::string> & setBonuses = augment.SetBonus();
+                    auto sbit = setBonuses.begin();
                     while (sbit != setBonuses.end())
                     {
                         ApplySetBonus((*sbit), name);
@@ -5042,8 +5032,8 @@ void Character::ApplyGearEffects()
             // apply any item set bonuses
             if (!bSuppressSetBonuses)
             {
-                const std::list<std::string> & setBonuses = item.SetBonus();
-                std::list<std::string>::const_iterator sbit = setBonuses.begin();
+                const std::vector<std::string> & setBonuses = item.SetBonus();
+                auto sbit = setBonuses.begin();
                 while (sbit != setBonuses.end())
                 {
                     ApplySetBonus((*sbit), item.Name());
@@ -5105,8 +5095,8 @@ void Character::ApplyFiligree(
         // now revoke the augments effects
         std::string name;
         name = ss.str();
-        std::list<Effect> effects = augment.Effects();
-        std::list<Effect>::iterator it = effects.begin();
+        std::vector<Effect> effects = augment.Effects();
+        std::vector<Effect>::iterator it = effects.begin();
         while (it != effects.end())
         {
             NotifyItemEffect(name, (*it));
@@ -5118,8 +5108,8 @@ void Character::ApplyFiligree(
         {
             if (gear.SentientIntelligence().IsRareArtifactFiligree(si))
             {
-                std::list<Effect> effects = augment.Rares().Effects();
-                std::list<Effect>::iterator it = effects.begin();
+                std::vector<Effect> effects = augment.Rares().Effects();
+                std::vector<Effect>::iterator it = effects.begin();
                 while (it != effects.end())
                 {
                     NotifyItemEffect(name, (*it));
@@ -5131,8 +5121,8 @@ void Character::ApplyFiligree(
         {
             if (gear.SentientIntelligence().IsRareFiligree(si))
             {
-                std::list<Effect> effects = augment.Rares().Effects();
-                std::list<Effect>::iterator it = effects.begin();
+                std::vector<Effect> effects = augment.Rares().Effects();
+                std::vector<Effect>::iterator it = effects.begin();
                 while (it != effects.end())
                 {
                     NotifyItemEffect(name, (*it));
@@ -5141,16 +5131,16 @@ void Character::ApplyFiligree(
             }
         }
         // apply any filigree stances
-        const std::list<Stance> & stances = augment.StanceData();
-        std::list<Stance>::const_iterator sit = stances.begin();
+        const std::vector<Stance> & stances = augment.StanceData();
+        auto sit = stances.begin();
         while (sit != stances.end())
         {
             NotifyNewStance((*sit));
             ++sit;
         }
         // apply any filigree set bonuses
-        const std::list<std::string> & setBonuses = augment.SetBonus();
-        std::list<std::string>::const_iterator sbit = setBonuses.begin();
+        const std::vector<std::string> & setBonuses = augment.SetBonus();
+        auto sbit = setBonuses.begin();
         while (sbit != setBonuses.end())
         {
             ApplySetBonus((*sbit), name);
@@ -5826,8 +5816,8 @@ void Character::ApplyGuildBuffs()
             bool revoke = (m_previousGuildLevel > GuildLevel());
             size_t minLevel = min(m_previousGuildLevel, GuildLevel());
             size_t maxLevel = max(m_previousGuildLevel, GuildLevel());
-            std::list<GuildBuff> guildBuffs = GuildBuffs(); // all known guild buffs
-            std::list<GuildBuff>::iterator it = guildBuffs.begin();
+            std::vector<GuildBuff> guildBuffs = GuildBuffs(); // all known guild buffs
+            std::vector<GuildBuff>::iterator it = guildBuffs.begin();
             while (it != guildBuffs.end())
             {
                 // remove the buff if it is not in the required level range of change
@@ -5835,7 +5825,7 @@ void Character::ApplyGuildBuffs()
                         || (*it).Level() > maxLevel)
                 {
                     // this buff is not in the range of those changed, exclude it
-                    it = guildBuffs.erase(it);
+                    it = Utilities::vectorQuickErase(guildBuffs,it);
                 }
                 else
                 {
@@ -5847,8 +5837,8 @@ void Character::ApplyGuildBuffs()
             it = guildBuffs.begin();
             while (it != guildBuffs.end())
             {
-                const std::list<Effect> & effects = (*it).Effects();
-                std::list<Effect>::const_iterator eit = effects.begin();
+                const std::vector<Effect> & effects = (*it).Effects();
+                auto eit = effects.begin();
                 while (eit != effects.end())
                 {
                     if (revoke)
@@ -5871,8 +5861,8 @@ void Character::ApplyGuildBuffs()
         // guild buffs are no longer applied all, existing buffs need to be revoked
         size_t minLevel = 0;
         size_t maxLevel = GuildLevel();
-        std::list<GuildBuff> guildBuffs = GuildBuffs(); // all known guild buffs
-        std::list<GuildBuff>::iterator it = guildBuffs.begin();
+        std::vector<GuildBuff> guildBuffs = GuildBuffs(); // all known guild buffs
+        std::vector<GuildBuff>::iterator it = guildBuffs.begin();
         while (it != guildBuffs.end())
         {
             // remove the buff if it is not in the required level range of revoke
@@ -5880,7 +5870,7 @@ void Character::ApplyGuildBuffs()
                     || (*it).Level() > maxLevel)
             {
                 // this buff is not in the range of those changed, exclude it
-                it = guildBuffs.erase(it);
+                it = Utilities::vectorQuickErase(guildBuffs,it);
             }
             else
             {
@@ -5892,8 +5882,8 @@ void Character::ApplyGuildBuffs()
         it = guildBuffs.begin();
         while (it != guildBuffs.end())
         {
-            const std::list<Effect> & effects = (*it).Effects();
-            std::list<Effect>::const_iterator eit = effects.begin();
+            const std::vector<Effect> & effects = (*it).Effects();
+            auto eit = effects.begin();
             while (eit != effects.end())
             {
                 NotifyItemEffectRevoked((*it).Name(), (*eit));
@@ -6050,16 +6040,16 @@ void Character::ApplySpellEffects(const std::string & spellName, size_t castingL
     // spells use the same interface for effects as items
     Spell spell = FindSpellByName(spellName);
     // apply any spell stances also
-    std::list<Stance> stances = spell.StanceData();
-    std::list<Stance>::const_iterator sit = stances.begin();
+    std::vector<Stance> stances = spell.StanceData();
+    auto sit = stances.begin();
     while (sit != stances.end())
     {
         NotifyNewStance((*sit));
         ++sit;
     }
     // if we have any DC objects notify about them
-    const std::list<DC> & dcs = spell.EffectDC();
-    std::list<DC>::const_iterator dcit = dcs.begin();
+    const std::vector<DC> & dcs = spell.EffectDC();
+    std::vector<DC>::const_iterator dcit = dcs.begin();
     while (dcit != dcs.end())
     {
         NotifyNewDC((*dcit));
@@ -6081,16 +6071,16 @@ void Character::RevokeSpellEffects(const std::string & spellName, size_t casting
     // spells use the same interface for effects as items
     Spell spell = FindSpellByName(spellName);
     // apply any spell stances also
-    std::list<Stance> stances = spell.StanceData();
-    std::list<Stance>::const_iterator sit = stances.begin();
+    std::vector<Stance> stances = spell.StanceData();
+    auto sit = stances.begin();
     while (sit != stances.end())
     {
         NotifyRevokeStance((*sit));
         ++sit;
     }
     // if we have any DC objects notify about them
-    const std::list<DC> & dcs = spell.EffectDC();
-    std::list<DC>::const_iterator dcit = dcs.begin();
+    const std::vector<DC> & dcs = spell.EffectDC();
+    std::vector<DC>::const_iterator dcit = dcs.begin();
     while (dcit != dcs.end())
     {
         NotifyRevokeDC((*dcit));
@@ -6201,7 +6191,7 @@ void Character::UpdateItemEffectRevoked(
 void Character::AddGrantedFeat(const std::string & featName)
 {
     bool alreadyInList = false;
-    std::list<TrainedFeat>::iterator it = m_grantedFeats.begin();
+    auto it = m_grantedFeats.begin();
     while (!alreadyInList && it != m_grantedFeats.end())
     {
         if ((*it).FeatName() == featName)
@@ -6249,8 +6239,8 @@ void Character::RevokeGrantedFeat(const std::string & featName)
 {
     // remove the granted feat from the list
     ASSERT(m_grantedFeats.size() == m_grantedNotifyState.size());
-    std::list<TrainedFeat>::iterator it = m_grantedFeats.begin();
-    std::list<bool>::iterator bit = m_grantedNotifyState.begin();
+    auto it = m_grantedFeats.begin();
+    std::vector<bool>::iterator bit = m_grantedNotifyState.begin();
     bool changed = false;
     while (it != m_grantedFeats.end())
     {
@@ -6260,8 +6250,8 @@ void Character::RevokeGrantedFeat(const std::string & featName)
             {
                 bool notified = (*bit);
                 // remove this copy of the feat (it may be present multiple times)
-                it = m_grantedFeats.erase(it);
-                bit = m_grantedNotifyState.erase(bit);
+                it = Utilities::vectorQuickErase(m_grantedFeats,it);
+                bit = Utilities::vectorQuickErase(m_grantedNotifyState,bit);
                 if (notified)
                 {
                     const Feat & feat = FindFeat(featName);
@@ -6288,8 +6278,8 @@ void Character::RevokeGrantedFeat(const std::string & featName)
 void Character::KeepGrantedFeatsUpToDate()
 {
     ASSERT(m_grantedFeats.size() == m_grantedNotifyState.size());
-    std::list<TrainedFeat>::iterator it = m_grantedFeats.begin();
-    std::list<bool>::iterator bit = m_grantedNotifyState.begin();
+    auto it = m_grantedFeats.begin();
+    std::vector<bool>::iterator bit = m_grantedNotifyState.begin();
     while (it != m_grantedFeats.end())
     {
         if (!IsFeatTrained((*it).FeatName()))
@@ -6323,7 +6313,7 @@ void Character::UpdateSkillPoints()
 {
     // update the skill points for all levels
     ASSERT(m_Levels.size() == MaxLevel());
-    std::list<LevelTraining>::iterator it = m_Levels.begin();
+    auto it = m_Levels.begin();
     for (size_t level = 0; level < MAX_CLASS_LEVELS; ++level)
     {
         size_t available = SkillPoints(
@@ -6343,7 +6333,7 @@ void Character::UpdateSkillPoints(size_t level)
     if (level < MAX_CLASS_LEVELS)
     {
         // only have skill points for heroic levels
-        std::list<LevelTraining>::iterator it = m_Levels.begin();
+        auto it = m_Levels.begin();
         std::advance(it, level);
         size_t available = SkillPoints(
                 (*it).HasClass() ? (*it).Class() : Class_Unknown,
@@ -6364,7 +6354,7 @@ void Character::VerifyGear()
     std::vector<size_t> classLevels = ClassLevels(MaxLevel());
     // need to know which feats have already been trained by this point
     // include any feats also trained at the current level
-    std::list<TrainedFeat> currentFeats = CurrentFeats(MaxLevel());
+    std::vector<TrainedFeat> currentFeats = CurrentFeats(MaxLevel());
     // check every item
     for (size_t i = Inventory_Unknown + 1; i < Inventory_Count; ++i)
     {
@@ -6518,7 +6508,7 @@ void Character::UpdateGreensteelStances()
 void Character::UpdateGearToLatestVersions()
 {
     // needs to be done for all gear sets and all items
-    std::list<EquippedGear>::iterator it = m_GearSetups.begin();
+    std::vector<EquippedGear>::iterator it = m_GearSetups.begin();
     while (it != m_GearSetups.end())
     {
         // update all the items
@@ -6568,7 +6558,7 @@ Item Character::GetLatestVersionOfItem(const Item & original)
 }
 
 // self and party buffs
-const std::list<std::string> Character::EnabledSelfAndPartyBuffs() const
+const std::vector<std::string> Character::EnabledSelfAndPartyBuffs() const
 {
     return SelfAndPartyBuffs();
 }
@@ -6576,7 +6566,7 @@ const std::list<std::string> Character::EnabledSelfAndPartyBuffs() const
 void Character::EnableSelfAndPartyBuff(const std::string & name)
 {
     // add it to the list of enabled buffs
-    m_SelfAndPartyBuffs.push_front(name);
+    m_SelfAndPartyBuffs.insert(m_SelfAndPartyBuffs.begin(), name);
     // find the buff and notify its effects
     OptionalBuff buff = FindOptionalBuff(name);
     // get the list of effects this OptionalBuff has
@@ -6594,14 +6584,14 @@ void Character::DisableSelfAndPartyBuff(const std::string & name)
 {
     // remove it from the list of enabled buffs
     bool found = false;
-    std::list<std::string>::iterator it = m_SelfAndPartyBuffs.begin();
+    std::vector<std::string>::iterator it = m_SelfAndPartyBuffs.begin();
     while (!found && it != m_SelfAndPartyBuffs.end())
     {
         if ((*it) == name)
         {
             // this is the one to remove
             found = true;
-            it = m_SelfAndPartyBuffs.erase(it);
+            it = Utilities::vectorQuickErase(m_SelfAndPartyBuffs,it);
         }
         else
         {
@@ -6625,7 +6615,7 @@ void Character::NotifyAllSelfAndPartyBuffs()
 {
     // character has just become active. Notify about all the self buff
     // effects it has selected
-    std::list<std::string>::iterator it = m_SelfAndPartyBuffs.begin();
+    std::vector<std::string>::iterator it = m_SelfAndPartyBuffs.begin();
     while (it != m_SelfAndPartyBuffs.end())
     {
         OptionalBuff buff = FindOptionalBuff((*it));
@@ -6930,13 +6920,13 @@ void Character::U51Destiny_ResetEnhancementTree(std::string treeName)
             pItem = U51Destiny_FindTree(treeName);
         }
         // now remove the tree entry from the list (not present if no spend in tree)
-        std::list<DestinySpendInTree>::iterator it = m_DestinyTreeSpend.begin();
+        auto it = m_DestinyTreeSpend.begin();
         while (it != m_DestinyTreeSpend.end())
         {
             if ((*it).TreeName() == treeName)
             {
                 // done once we find it
-                m_DestinyTreeSpend.erase(it);
+                Utilities::vectorQuickErase(m_DestinyTreeSpend,it);
                 break;
             }
             ++it;
@@ -6953,7 +6943,7 @@ DestinySpendInTree * Character::U51Destiny_FindTree(const std::string & treeName
 {
     // Find the tree tracking amount spent and enhancements trained
     DestinySpendInTree * pItem = NULL;
-    std::list<DestinySpendInTree>::iterator it = m_DestinyTreeSpend.begin();
+    auto it = m_DestinyTreeSpend.begin();
     while (pItem == NULL
             && it != m_DestinyTreeSpend.end())
     {
@@ -7028,7 +7018,7 @@ const SpendInTree* Character::FindSpendInTree(const std::string& treeName) const
 {
     const SpendInTree* pTree = NULL;
 
-    std::list<EnhancementSpendInTree>::const_iterator eit = m_EnhancementTreeSpend.begin();
+    auto eit = m_EnhancementTreeSpend.begin();
     while (pTree == NULL
         && eit != m_EnhancementTreeSpend.end())
     {
@@ -7041,7 +7031,7 @@ const SpendInTree* Character::FindSpendInTree(const std::string& treeName) const
     }
     if (pTree == NULL)
     {
-        std::list<ReaperSpendInTree>::const_iterator rit = m_ReaperTreeSpend.begin();
+        auto rit = m_ReaperTreeSpend.begin();
         while (pTree == NULL
             && rit != m_ReaperTreeSpend.end())
         {
@@ -7055,7 +7045,7 @@ const SpendInTree* Character::FindSpendInTree(const std::string& treeName) const
     }
     if (pTree == NULL)
     {
-        std::list<DestinySpendInTree>::const_iterator dit = m_DestinyTreeSpend.begin();
+        auto dit = m_DestinyTreeSpend.begin();
         while (pTree == NULL
             && dit != m_DestinyTreeSpend.end())
         {
@@ -7074,7 +7064,7 @@ SpendInTree* Character::FindSpendInTree(const std::string& treeName)
 {
     SpendInTree* pTree = NULL;
 
-    std::list<EnhancementSpendInTree>::iterator eit = m_EnhancementTreeSpend.begin();
+    auto eit = m_EnhancementTreeSpend.begin();
     while (pTree == NULL
         && eit != m_EnhancementTreeSpend.end())
     {
@@ -7087,7 +7077,7 @@ SpendInTree* Character::FindSpendInTree(const std::string& treeName)
     }
     if (pTree == NULL)
     {
-        std::list<ReaperSpendInTree>::iterator rit = m_ReaperTreeSpend.begin();
+        auto rit = m_ReaperTreeSpend.begin();
         while (pTree == NULL
             && rit != m_ReaperTreeSpend.end())
         {
@@ -7101,7 +7091,7 @@ SpendInTree* Character::FindSpendInTree(const std::string& treeName)
     }
     if (pTree == NULL)
     {
-        std::list<DestinySpendInTree>::iterator dit = m_DestinyTreeSpend.begin();
+        auto dit = m_DestinyTreeSpend.begin();
         while (pTree == NULL
             && dit != m_DestinyTreeSpend.end())
         {
@@ -7150,7 +7140,7 @@ void Character::RevokeSpellListAddition(const Effect& effect)
             bool erase = m_additionalSpells[i].RemoveReference();
             if (erase)
             {
-                m_additionalSpells.erase(m_additionalSpells.begin() + i);
+                Utilities::vectorQuickErase(m_additionalSpells,m_additionalSpells.begin() + i);
                 --i;        // keep index right
                 bUpdate = true;
             }

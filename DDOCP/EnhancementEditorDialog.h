@@ -51,11 +51,11 @@ class CEnhancementEditorDialog : public CDialog
     private:
         void PopulateComboList();
         void UpdateTree();
-        std::list<EnhancementTreeItem>::iterator FindItem(std::list<EnhancementTreeItem> & items, size_t x, size_t y);
+        std::vector<EnhancementTreeItem>::iterator FindItem(std::vector<EnhancementTreeItem> & items, size_t x, size_t y);
         void SetupSelections();
         void PopulateSelection();
 
-        std::list<EnhancementTree> m_loadedTrees;
+        std::vector<EnhancementTree> m_loadedTrees;
         Character * m_pCharacter;
 
         CEdit m_editInternalName;

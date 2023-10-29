@@ -47,9 +47,9 @@ class Spell :
                 DL_OPTIONAL_ENUM(_, SpellSchoolType, School, SpellSchool_Unknown, spellSchoolTypeMap) \
                 DL_OPTIONAL_STRING(_, SPCost) \
                 DL_OPTIONAL_ENUM(_, EnergyType, Energy, Energy_Unknown, energyTypeMap) \
-                DL_OBJECT_LIST(_, Stance, StanceData) \
+                DL_OBJECT_VECTOR(_, Stance, StanceData) \
                 DL_OBJECT_VECTOR(_, Effect, Effects) \
-                DL_OBJECT_LIST(_, DC, EffectDC) \
+                DL_OBJECT_VECTOR(_, DC, EffectDC) \
                 DL_FLAG(_, Accelerate) \
                 DL_FLAG(_, Embolden) \
                 DL_FLAG(_, Empower) \

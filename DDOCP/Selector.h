@@ -17,9 +17,9 @@ class Selector :
         void RenderIcon(const std::string & selection, CDC * pDC, const CRect & itemRect) const;
         std::string Selector::DisplayName(const std::string & selection) const;
 
-        std::list<Effect> Effects(const std::string & selection) const;
-        std::list<DC> EffectDCs(const std::string & selection) const;
-        std::list<Stance> Stances(const std::string & selection) const;
+        std::vector<Effect> Effects(const std::string & selection) const;
+        std::vector<DC> EffectDCs(const std::string & selection) const;
+        std::vector<Stance> Stances(const std::string & selection) const;
 
         size_t MinSpent(const std::string& selection, size_t defaultMinSpent) const;
         bool CostVaries(const std::string& selection) const;
@@ -31,8 +31,8 @@ class Selector :
 
         bool VerifyObject(
                 std::stringstream * ss,
-                const std::list<EnhancementTree> & trees,
-                const std::list<Feat> & feats) const;
+                const std::vector<EnhancementTree> & trees,
+                const std::vector<Feat> & feats) const;
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
                 const XmlLib::SaxString & name,
@@ -41,8 +41,8 @@ class Selector :
         virtual void EndElement();
 
         #define Selector_PROPERTIES(_) \
-                DL_STRING_LIST(_, Exclude) \
-                DL_OBJECT_LIST(_, EnhancementSelection, Selections)
+                DL_STRING_VECTOR(_, Exclude) \
+                DL_OBJECT_VECTOR(_, EnhancementSelection, Selections)
 
         DL_DECLARE_ACCESS(Selector_PROPERTIES)
         DL_DECLARE_VARIABLES(Selector_PROPERTIES)

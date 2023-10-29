@@ -94,7 +94,7 @@ class CDestinyTreeDialog :
         CSize m_bitmapSize;
         CBitmap m_cachedDisplay;
         CImage m_imageBackground;
-        std::list<DestinyHitBox> m_hitBoxes;
+        std::vector<DestinyHitBox> m_hitBoxes;
         bool m_bCreateHitBoxes;
         CInfoTip m_tooltip;
         bool m_showingTip;

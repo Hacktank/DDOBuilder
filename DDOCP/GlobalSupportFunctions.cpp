@@ -245,91 +245,91 @@ BOOL OnEraseBackground(
     return TRUE;
 }
 
-const std::list<Feat> & AllFeats()
+const std::vector<Feat> & AllFeats()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->AllFeats();
 }
 
-const std::list<Feat> & StandardFeats()
+const std::vector<Feat> & StandardFeats()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->StandardFeats();
 }
 
-const std::list<Feat> & HeroicPastLifeFeats()
+const std::vector<Feat> & HeroicPastLifeFeats()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->HeroicPastLifeFeats();
 }
 
-const std::list<Feat> & RacialPastLifeFeats()
+const std::vector<Feat> & RacialPastLifeFeats()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->RacialPastLifeFeats();
 }
 
-const std::list<Feat> & IconicPastLifeFeats()
+const std::vector<Feat> & IconicPastLifeFeats()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->IconicPastLifeFeats();
 }
 
-const std::list<Feat> & EpicPastLifeFeats(const std::string & sphere)
+const std::vector<Feat> & EpicPastLifeFeats(const std::string & sphere)
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->EpicPastLifeFeats(sphere);
 }
 
-const std::list<Feat> & SpecialFeats()
+const std::vector<Feat> & SpecialFeats()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->SpecialFeats();
 }
 
-const std::list<Feat> & FavorFeats()
+const std::vector<Feat> & FavorFeats()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->FavorFeats();
 }
 
-const std::list<EnhancementTree> & EnhancementTrees()
+const std::vector<EnhancementTree> & EnhancementTrees()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->EnhancementTrees();
 }
 
-const std::list<Spell> & Spells()
+const std::vector<Spell> & Spells()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->Spells();
 }
 
-const std::list<Item> & Items()
+const std::vector<Item> & Items()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->Items();
 }
 
-const std::list<Augment> & Augments()
+const std::vector<Augment> & Augments()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->Augments();
 }
 
-const std::list<GuildBuff> & GuildBuffs()
+const std::vector<GuildBuff> & GuildBuffs()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->GuildBuffs();
 }
 
-const std::list<OptionalBuff> & OptionalBuffs()
+const std::vector<OptionalBuff> & OptionalBuffs()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->OptionalBuffs();
 }
 
-const std::list<SetBonus> & SetBonuses()
+const std::vector<SetBonus> & SetBonuses()
 {
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     return pApp->SetBonuses();
@@ -348,9 +348,9 @@ std::vector<Spell> FilterSpells(const Character * pChar, ClassType ct, int level
     // note that negative spell levels can be given to get the list of
     // automatically assigned spells at that level (e.g. -1 = all 1st level
     // auto assigned spells)
-    const std::list<Spell> & spells = Spells();
+    const auto & spells = Spells();
     std::vector<Spell> availableSpells;
-    std::list<Spell>::const_iterator si = spells.begin();
+    auto si = spells.begin();
     while (si != spells.end())
     {
         bool isClassLevelSpell = false;
@@ -497,8 +497,8 @@ std::vector<Spell> FilterSpells(const Character * pChar, ClassType ct, int level
 Spell FindSpellByName(const std::string & name)
 {
     Spell spell;
-    const std::list<Spell> & spells = Spells();
-    std::list<Spell>::const_iterator si = spells.begin();
+    const auto& spells = Spells();
+    auto si = spells.begin();
     while (si != spells.end())
     {
         if ((*si).Name() == name)
@@ -520,8 +520,8 @@ Spell FindSpellByName(const std::string & name)
 const EnhancementTree & GetEnhancementTree(const std::string & treeName)
 {
     static EnhancementTree emptyTree;
-    const std::list<EnhancementTree> & allTrees = EnhancementTrees();
-    std::list<EnhancementTree>::const_iterator it = allTrees.begin();
+    const auto & allTrees = EnhancementTrees();
+    auto it = allTrees.begin();
     while (it != allTrees.end())
     {
         // find the requested tree
@@ -540,9 +540,9 @@ const EnhancementTreeItem * FindEnhancement(
         std::string * treeName) // can be NULL
 {
     const EnhancementTreeItem * item = NULL;
-    const std::list<EnhancementTree> & trees = EnhancementTrees();
+    const auto & trees = EnhancementTrees();
     bool found = false;
-    std::list<EnhancementTree>::const_iterator tit = trees.begin();
+    auto tit = trees.begin();
     while (!found && tit != trees.end())
     {
         item = (*tit).FindEnhancementItem(internalName);
@@ -680,8 +680,8 @@ std::vector<TrainableFeatTypes> RaceSpecificFeatTypes(RaceType type)
 const Augment & FindAugmentByName(const std::string & name)
 {
     static Augment badAugment;
-    const std::list<Augment> & augments = Augments();
-    std::list<Augment>::const_iterator it = augments.begin();
+    const auto & augments = Augments();
+    auto it = augments.begin();
     while (it != augments.end())
     {
         if ((*it).Name() == name)
@@ -715,8 +715,8 @@ std::vector<const Augment*> CompatibleAugments(const std::string & name)
 const SetBonus& FindSetBonus(const std::string& name)
 {
     static SetBonus badSetBonus;
-    const std::list<SetBonus> & sets = SetBonuses();
-    std::list<SetBonus>::const_iterator it = sets.begin();
+    const auto & sets = SetBonuses();
+    auto it = sets.begin();
     while (it != sets.end())
     {
         if ((*it).Name() == name)
@@ -1547,13 +1547,13 @@ bool IsInGroup(TrainableFeatTypes type, const FeatGroup & group)
 }
 
 size_t TrainedCount(
-        const std::list<TrainedFeat> & currentFeats,
+        const std::vector<TrainedFeat> & currentFeats,
         const std::string & featName)
 {
     // look through the list of all feats trained and count how many times the
     // given entry appears in the list
     size_t count = 0;
-    std::list<TrainedFeat>::const_iterator it = currentFeats.begin();
+    auto it = currentFeats.begin();
     while (it != currentFeats.end())
     {
         if ((*it).FeatName() == featName)
@@ -1572,8 +1572,8 @@ const Feat & FindFeat(const std::string & featName)
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     if (pApp != NULL)
     {
-        const std::list<Feat> & allFeats = pApp->AllFeats();
-        std::list<Feat>::const_iterator it = allFeats.begin();
+        const auto & allFeats = pApp->AllFeats();
+        auto it = allFeats.begin();
         while (it != allFeats.end())
         {
             if ((*it).Name() == featName)
@@ -1588,13 +1588,13 @@ const Feat & FindFeat(const std::string & featName)
 }
 
 const TrainedFeat * FindFeatInList(
-        const std::list<TrainedFeat> & featList,
+        const std::vector<TrainedFeat> & featList,
         const std::string & featName)
 {
     // looks through a list of feats and returns a pointer to the required feat
     // if its found, NULL otherwise
     const TrainedFeat * feat = NULL;
-    std::list<TrainedFeat>::const_iterator it = featList.begin();
+    auto it = featList.begin();
     while (feat == NULL && it != featList.end())
     {
         if ((*it).FeatName() == featName)
@@ -2782,8 +2782,8 @@ BreakdownItem * FindBreakdown(BreakdownType type)
 const Item & FindItem(const std::string & itemName)
 {
     static Item badItem;
-    const std::list<Item> & items = Items();
-    std::list<Item>::const_iterator it = items.begin();
+    const auto & items = Items();
+    auto it = items.begin();
     while (it != items.end())
     {
         if ((*it).Name() == itemName)
@@ -3310,8 +3310,8 @@ OptionalBuff FindOptionalBuff(const std::string & name)
 {
     bool found = false;
     OptionalBuff buff;
-    const std::list<OptionalBuff> & buffs = OptionalBuffs();
-    std::list<OptionalBuff>::const_iterator it = buffs.begin();
+    const auto & buffs = OptionalBuffs();
+    auto it = buffs.begin();
     while (!found && it != buffs.end())
     {
         if ((*it).Name() == name)
@@ -3348,7 +3348,7 @@ void FormatExportData(std::string * exportData)
                     && ((ci > 0 && line[ci-1] == ' ')
                             || (ci < length - 1 && line[ci+1] == ' ')))
             {
-                line[ci] = '·';
+                line[ci] = 'ï¿½';
             }
         }
         lines[li] = line;
@@ -3638,7 +3638,7 @@ void AddToIgnoreList(const std::string & name)
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     if (pApp != NULL)
     {
-        std::list<std::string> ignoredItems = pApp->IgnoreList();
+        auto ignoredItems = pApp->IgnoreList();
         ignoredItems.push_back(name);
         IgnoredFeatsFile file("");
         file.Save(ignoredItems);
@@ -3651,8 +3651,8 @@ void RemoveFromIgnoreList(const std::string & name)
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     if (pApp != NULL)
     {
-        std::list<std::string> ignoredItems = pApp->IgnoreList();
-        std::list<std::string>::iterator it = ignoredItems.begin();
+        std::vector<std::string> ignoredItems = pApp->IgnoreList();
+        std::vector<std::string>::iterator it = ignoredItems.begin();
         while (it != ignoredItems.end())
         {
             if ((*it) == name)
@@ -3676,8 +3676,8 @@ bool IsInIgnoreList(const std::string & name)
     CDDOCPApp * pApp = dynamic_cast<CDDOCPApp*>(AfxGetApp());
     if (pApp != NULL)
     {
-        std::list<std::string> ignoredItems = pApp->IgnoreList();
-        std::list<std::string>::iterator it = ignoredItems.begin();
+        std::vector<std::string> ignoredItems = pApp->IgnoreList();
+        std::vector<std::string>::iterator it = ignoredItems.begin();
         while (!found && it != ignoredItems.end())
         {
             found = ((*it) == name);

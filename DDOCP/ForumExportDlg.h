@@ -103,7 +103,7 @@ class CForumExportDlg : public CDialogEx
                 std::stringstream & forumExport,
                 const std::string & heading,
                 TrainableFeatTypes type,
-                const std::list<TrainedFeat> & feats) const;
+                const std::vector<TrainedFeat> & feats) const;
         void AddAbilityValues(std::stringstream & forumExport, AbilityType ability);
         void AddBreakdown(
                 std::stringstream & forumExport,
@@ -133,7 +133,7 @@ class CForumExportDlg : public CDialogEx
                 BreakdownType btCrit,
                 BreakdownType btMult);
         void AddSpells(std::stringstream & forumExport);
-        void AddSpellList(std::stringstream & forumExport, ClassType ct, const std::list<TrainedSpell> & spellList, size_t spellLevel, size_t maxSpellLevel) const;
+        void AddSpellList(std::stringstream & forumExport, ClassType ct, const std::vector<TrainedSpell> & spellList, size_t spellLevel, size_t maxSpellLevel) const;
         void AddSLAs(std::stringstream & forumExport);
         void AddWeaponDamage(std::stringstream & forumExport);
         void AddTacticalDCs(std::stringstream & forumExport);

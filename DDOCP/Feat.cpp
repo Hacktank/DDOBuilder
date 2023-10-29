@@ -86,8 +86,8 @@ void Feat::AddImage(CImageList * pIL) const
 }
 
 void Feat::VerifyObject(
-        const std::list<EnhancementTree> & allTrees,
-        const std::list<Feat> & allfeats) const
+        const std::vector<EnhancementTree> & allTrees,
+        const std::vector<Feat> & allfeats) const
 {
     bool ok = true;
     std::stringstream ss;
@@ -98,28 +98,28 @@ void Feat::VerifyObject(
         ok &= m_Group.VerifyObject(&ss);
     }
     ok &= m_RequirementsToTrain.VerifyObject(&ss, allTrees, allfeats);
-    std::list<AutomaticAcquisition>::const_iterator it = m_AutomaticAcquireAt.begin();
+    auto it = m_AutomaticAcquireAt.begin();
     while (it != m_AutomaticAcquireAt.end())
     {
         ok &= (*it).VerifyObject(&ss);
         ++it;
     }
     // check the effects also
-    std::list<Effect>::const_iterator eit = m_Effects.begin();
+    auto eit = m_Effects.begin();
     while (eit != m_Effects.end())
     {
         ok &= (*eit).VerifyObject(&ss);
         ++eit;
     }
     // verify its DC objects
-    std::list<DC>::const_iterator edcit = m_EffectDC.begin();
+    auto edcit = m_EffectDC.begin();
     while (edcit != m_EffectDC.end())
     {
         ok &= (*edcit).VerifyObject(&ss);
         ++edcit;
     }
     // verify stance objects
-    std::list<Stance>::const_iterator sit = m_StanceData.begin();
+    auto sit = m_StanceData.begin();
     while (sit != m_StanceData.end())
     {
         ok &= (*sit).VerifyObject(&ss);

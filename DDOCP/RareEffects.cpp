@@ -50,7 +50,7 @@ void RareEffects::Write(XmlLib::SaxWriter * writer) const
 bool RareEffects::VerifyObject(std::stringstream * ss) const
 {
     bool ok = true;
-    std::list<Effect>::const_iterator it = m_Effects.begin();
+    auto it = m_Effects.begin();
     while (it != m_Effects.end())
     {
         ok &= (*it).VerifyObject(ss);

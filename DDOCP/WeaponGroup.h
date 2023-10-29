@@ -20,5 +20,5 @@ class WeaponGroup
 
     private:
         std::string m_groupName;
-        std::list<WeaponType> m_weaponsInGroup;
+        std::vector<WeaponType> m_weaponsInGroup;
 };

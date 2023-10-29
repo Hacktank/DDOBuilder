@@ -14,7 +14,7 @@ class EnhancementsFile :
         ~EnhancementsFile(void);
 
         void Read();
-        const std::list<EnhancementTree> & EnhancementTrees() const;
+        const std::vector<EnhancementTree> & EnhancementTrees() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -25,7 +25,7 @@ class EnhancementsFile :
         void Save();
 
         std::string m_filename;
-        std::list<EnhancementTree> m_loadedTrees;
+        std::vector<EnhancementTree> m_loadedTrees;
         size_t m_loadTotal;
 
         friend class CEnhancementEditorDialog;

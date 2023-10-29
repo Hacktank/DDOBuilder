@@ -50,7 +50,7 @@ void ActiveStances::Write(XmlLib::SaxWriter * writer) const
 bool ActiveStances::IsStanceActive(const std::string & name) const
 {
     bool isActive = false;
-    std::list<std::string>::const_iterator it = m_Stances.begin();
+    auto it = m_Stances.begin();
     while (it != m_Stances.end())
     {
         if ((*it) == name)
@@ -75,7 +75,7 @@ void ActiveStances::AddActiveStance(const std::string & name)
 void ActiveStances::RevokeStance(const std::string & name)
 {
     // remove stance type name if present from the list
-    std::list<std::string>::iterator it = m_Stances.begin();
+    std::vector<std::string>::iterator it = m_Stances.begin();
     while (it != m_Stances.end())
     {
         if ((*it) == name)

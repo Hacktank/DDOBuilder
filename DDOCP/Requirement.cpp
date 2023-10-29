@@ -53,7 +53,7 @@ void Requirement::Write(XmlLib::SaxWriter * writer) const
 
 bool Requirement::VerifyObject(
         std::stringstream * ss,
-        const std::list<::Feat> & allFeats) const // compiler fails without additional :: for some reason
+        const std::vector<::Feat> & allFeats) const // compiler fails without additional :: for some reason
 {
     bool ok = true;
     if (HasFeat())
@@ -71,7 +71,7 @@ bool Requirement::Met(
         const Character & charData, 
         const std::vector<size_t> & classLevels,
         size_t totalLevel,  // this is 0 based
-        const std::list<TrainedFeat> & currentFeats,
+        const std::vector<TrainedFeat> & currentFeats,
         bool includeTomes) const
 {
     bool met = true;
@@ -151,7 +151,7 @@ bool Requirement::Met(
         {
             // this can override if the feat is trained at the current level
             // find it in the trained feat list and check its level against the current
-            std::list<TrainedFeat>::const_iterator tfit = currentFeats.begin();
+            auto tfit = currentFeats.begin();
             while (tfit != currentFeats.end())
             {
                 if ((*tfit).FeatName() == Feat())
@@ -284,7 +284,7 @@ bool Requirement::CanTrainEnhancement(
     if (HasFeat())
     {
         // must have this feat previously trained at the current level to train
-        std::list<TrainedFeat> feats = charData.CurrentFeats(charData.MaxLevel());
+        std::vector<TrainedFeat> feats = charData.CurrentFeats(charData.MaxLevel());
         size_t count = TrainedCount(feats, Feat());
         size_t numNeeded = 1;
         if (HasAmount())
@@ -354,7 +354,7 @@ bool Requirement::IsAllowed(
     if (HasFeat())
     {
         // must have this feat previously trained at the current level to train
-        std::list<TrainedFeat> feats = charData.CurrentFeats(charData.MaxLevel());
+        std::vector<TrainedFeat> feats = charData.CurrentFeats(charData.MaxLevel());
         size_t count = TrainedCount(feats, Feat());
         size_t numNeeded = 1;
         if (HasAmount())
@@ -403,7 +403,7 @@ bool Requirement::CanTrainTree(
     if (HasFeat())
     {
         // must have this feat previously trained to access this tree
-        std::list<TrainedFeat> feats = charData.CurrentFeats(charData.MaxLevel());
+        std::vector<TrainedFeat> feats = charData.CurrentFeats(charData.MaxLevel());
         size_t count = TrainedCount(feats, Feat());
         size_t numNeeded = 1;
         if (HasAmount())
@@ -536,7 +536,7 @@ void Requirement::CreateRequirementStrings(
             description.Format("Requires: %s", Feat().c_str());
         }
         requirements->push_back(description);
-        std::list<TrainedFeat> currentFeats = charData.CurrentFeats(level);
+        std::vector<TrainedFeat> currentFeats = charData.CurrentFeats(level);
         met->push_back(TrainedCount(currentFeats, Feat()) > 0);
     }
     if (HasAbility())

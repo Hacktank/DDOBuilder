@@ -15,6 +15,7 @@ class CDCButton :
 {
     public:
         CDCButton(Character * charData, const DC & dc);
+        virtual ~CDCButton();
 
         const DC & GetDCItem() const;
 

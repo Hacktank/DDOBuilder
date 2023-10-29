@@ -146,8 +146,8 @@ void CEnhancementEditorDialog::UpdateTree()
 
 void CEnhancementEditorDialog::PopulateComboList()
 {
-    std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-    std::list<EnhancementTreeItem>::iterator it = items.begin();
+    std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+    std::vector<EnhancementTreeItem>::iterator it = items.begin();
     int sel = m_comboList.GetCurSel();
     m_comboList.ResetContent();
     while (it != items.end())
@@ -174,8 +174,8 @@ void CEnhancementEditorDialog::OnClickedButtonDelete()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         items.erase(it);
         m_loadedTrees.front().Set_Items(items);
@@ -189,8 +189,8 @@ void CEnhancementEditorDialog::OnClickedCheckArrowleft()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         int checked = m_buttonArrowLeft.GetCheck();
         if (checked)
@@ -202,7 +202,7 @@ void CEnhancementEditorDialog::OnClickedCheckArrowleft()
             {
                 // add a requirement to this item
                 Requirements requirements = (*it).RequirementsToTrain();
-                std::list<Requirement> reqs = requirements.Requires();
+                std::vector<Requirement> reqs = requirements.Requires();
                 Requirement r;
                 r.Set_Enhancement(name);
                 reqs.push_back(r);
@@ -224,8 +224,8 @@ void CEnhancementEditorDialog::OnClickedCheckArrowright()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         int checked = m_buttonArrowRight.GetCheck();
         if (checked)
@@ -237,7 +237,7 @@ void CEnhancementEditorDialog::OnClickedCheckArrowright()
             {
                 // add a requirement to this item
                 Requirements requirements = (*it).RequirementsToTrain();
-                std::list<Requirement> reqs = requirements.Requires();
+                std::vector<Requirement> reqs = requirements.Requires();
                 Requirement r;
                 r.Set_Enhancement(name);
                 reqs.push_back(r);
@@ -259,8 +259,8 @@ void CEnhancementEditorDialog::OnClickedCheckArrowup()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         int checked = m_buttonArrowUp.GetCheck();
         if (checked)
@@ -272,7 +272,7 @@ void CEnhancementEditorDialog::OnClickedCheckArrowup()
             {
                 // add a requirement to this item
                 Requirements requirements = (*it).RequirementsToTrain();
-                std::list<Requirement> reqs = requirements.Requires();
+                std::vector<Requirement> reqs = requirements.Requires();
                 Requirement r;
                 r.Set_Enhancement(name);
                 reqs.push_back(r);
@@ -294,8 +294,8 @@ void CEnhancementEditorDialog::OnClickedCheckLongarrowup()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         int checked = m_buttonLongArrowUp.GetCheck();
         if (checked)
@@ -307,7 +307,7 @@ void CEnhancementEditorDialog::OnClickedCheckLongarrowup()
             {
                 // add a requirement to this item
                 Requirements requirements = (*it).RequirementsToTrain();
-                std::list<Requirement> reqs = requirements.Requires();
+                std::vector<Requirement> reqs = requirements.Requires();
                 Requirement r;
                 r.Set_Enhancement(name);
                 reqs.push_back(r);
@@ -329,8 +329,8 @@ void CEnhancementEditorDialog::OnClickedCheckExtraLongarrowup()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         int checked = m_buttonExtraLongArrowUp.GetCheck();
         if (checked)
@@ -342,7 +342,7 @@ void CEnhancementEditorDialog::OnClickedCheckExtraLongarrowup()
             {
                 // add a requirement to this item
                 Requirements requirements = (*it).RequirementsToTrain();
-                std::list<Requirement> reqs = requirements.Requires();
+                std::vector<Requirement> reqs = requirements.Requires();
                 Requirement r;
                 r.Set_Enhancement(name);
                 reqs.push_back(r);
@@ -364,8 +364,8 @@ void CEnhancementEditorDialog::OnKillFocusEditTitle()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         CString text;
         m_editTitle.GetWindowText(text);
@@ -383,8 +383,8 @@ void CEnhancementEditorDialog::OnKillFocusEditInternalName()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         CString text;
         m_editInternalName.GetWindowText(text);
@@ -403,8 +403,8 @@ void CEnhancementEditorDialog::OnKillFocusEditDescription()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         CString text;
         m_editDescription.GetWindowText(text);
@@ -422,8 +422,8 @@ void CEnhancementEditorDialog::OnKillFocusEditCost()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         CString text;
         m_editCost.GetWindowText(text);
@@ -442,8 +442,8 @@ void CEnhancementEditorDialog::OnKillFocusEditRanks()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         CString text;
         m_editRanks.GetWindowText(text);
@@ -461,8 +461,8 @@ void CEnhancementEditorDialog::OnKillFocusEditMinSpent()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         CString text;
         m_editMinSpent.GetWindowText(text);
@@ -491,8 +491,8 @@ void CEnhancementEditorDialog::OnSelendokEnhancement()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         m_editInternalName.SetWindowText((*it).InternalName().c_str());
         m_editTitle.SetWindowText((*it).Name().c_str());
@@ -525,8 +525,8 @@ void CEnhancementEditorDialog::SetupSelections()
     if (sel >= 0)
     {
         m_comboNumSelections.EnableWindow(TRUE);
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         if ((*it).HasSelections())
         {
@@ -577,8 +577,8 @@ void CEnhancementEditorDialog::OnClickedCheckClickie()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         int checked = m_buttonClickie.GetCheck();
         if (checked)
@@ -599,8 +599,8 @@ void CEnhancementEditorDialog::OnKillfocusEditIcon()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         CString text;
         m_editIcon.GetWindowText(text);
@@ -613,12 +613,12 @@ void CEnhancementEditorDialog::OnKillfocusEditIcon()
     }
 }
 
-std::list<EnhancementTreeItem>::iterator CEnhancementEditorDialog::FindItem(
-        std::list<EnhancementTreeItem> & items,
+std::vector<EnhancementTreeItem>::iterator CEnhancementEditorDialog::FindItem(
+        std::vector<EnhancementTreeItem> & items,
         size_t x,
         size_t y)
 {
-    std::list<EnhancementTreeItem>::iterator it = items.begin();
+    std::vector<EnhancementTreeItem>::iterator it = items.begin();
     bool found = false;
     while (!found && it != items.end())
     {
@@ -640,12 +640,12 @@ void CEnhancementEditorDialog::OnClickedButtonAddFeatRequirement()
     {
         CString name;
         m_editFeatName.GetWindowText(name);
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         // add a requirement to this item
         Requirements requirements = (*it).RequirementsToTrain();
-        std::list<Requirement> reqs = requirements.Requires();
+        std::vector<Requirement> reqs = requirements.Requires();
         Requirement r;
         r.Set_Feat((LPCSTR)name);
         reqs.push_back(r);
@@ -661,16 +661,16 @@ void CEnhancementEditorDialog::PopulateSelection()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         ASSERT((*it).HasSelections());
 
         size_t index = m_comboSelection.GetCurSel();
         if (index >= 0)
         {
-            std::list<EnhancementSelection> selections = (*it).Selections().Selections();
-            std::list<EnhancementSelection>::iterator sit = selections.begin();
+            std::vector<EnhancementSelection> selections = (*it).Selections().Selections();
+            std::vector<EnhancementSelection>::iterator sit = selections.begin();
             std::advance(sit, index);
             m_editSelectionTitle.SetWindowText((*sit).Name().c_str());
             m_editSelectionDescription.SetWindowText((*sit).Description().c_str());
@@ -689,14 +689,14 @@ void CEnhancementEditorDialog::OnSelendokComboNumSelections()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
 
         size_t count = m_comboNumSelections.GetCurSel();
         if (count > 0)
         {
-            std::list<EnhancementSelection> selections;
+            std::vector<EnhancementSelection> selections;
             if ((*it).HasSelections())
             {
                 // number has changed, get current and resize
@@ -727,8 +727,8 @@ void CEnhancementEditorDialog::OnKillfocusEditSelectionTitle()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         ASSERT((*it).HasSelections());
 
@@ -738,8 +738,8 @@ void CEnhancementEditorDialog::OnKillfocusEditSelectionTitle()
         {
             CString text;
             m_editSelectionTitle.GetWindowText(text);
-            std::list<EnhancementSelection> selections = (*it).Selections().Selections();
-            std::list<EnhancementSelection>::iterator sit = selections.begin();
+            std::vector<EnhancementSelection> selections = (*it).Selections().Selections();
+            std::vector<EnhancementSelection>::iterator sit = selections.begin();
             std::advance(sit, index);
             if ((*sit).Name() != (LPCSTR)text)
             {
@@ -763,8 +763,8 @@ void CEnhancementEditorDialog::OnKillfocusEditSelectionDescription()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         ASSERT((*it).HasSelections());
 
@@ -774,8 +774,8 @@ void CEnhancementEditorDialog::OnKillfocusEditSelectionDescription()
         {
             CString text;
             m_editSelectionDescription.GetWindowText(text);
-            std::list<EnhancementSelection> selections = (*it).Selections().Selections();
-            std::list<EnhancementSelection>::iterator sit = selections.begin();
+            std::vector<EnhancementSelection> selections = (*it).Selections().Selections();
+            std::vector<EnhancementSelection>::iterator sit = selections.begin();
             std::advance(sit, index);
             if ((*sit).Description() != (LPCSTR)text)
             {
@@ -799,8 +799,8 @@ void CEnhancementEditorDialog::OnKillfocusEditIcon2()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         ASSERT((*it).HasSelections());
 
@@ -810,8 +810,8 @@ void CEnhancementEditorDialog::OnKillfocusEditIcon2()
         {
             CString text;
             m_editSelectionIcon.GetWindowText(text);
-            std::list<EnhancementSelection> selections = (*it).Selections().Selections();
-            std::list<EnhancementSelection>::iterator sit = selections.begin();
+            std::vector<EnhancementSelection> selections = (*it).Selections().Selections();
+            std::vector<EnhancementSelection>::iterator sit = selections.begin();
             std::advance(sit, index);
             if ((*sit).Icon() != (LPCSTR)text)
             {
@@ -835,8 +835,8 @@ void CEnhancementEditorDialog::OnKillfocusEditCost2()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         ASSERT((*it).HasSelections());
 
@@ -846,8 +846,8 @@ void CEnhancementEditorDialog::OnKillfocusEditCost2()
         {
             CString text;
             m_editSelectionCost.GetWindowText(text);
-            std::list<EnhancementSelection> selections = (*it).Selections().Selections();
-            std::list<EnhancementSelection>::iterator sit = selections.begin();
+            std::vector<EnhancementSelection> selections = (*it).Selections().Selections();
+            std::vector<EnhancementSelection>::iterator sit = selections.begin();
             std::advance(sit, index);
             if ((*sit).Cost(0) != atoi(text))
             {
@@ -872,8 +872,8 @@ void CEnhancementEditorDialog::OnClickedButtonAddFeatRequirementSelection()
     int sel = m_comboList.GetCurSel();
     if (sel >= 0)
     {
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         ASSERT((*it).HasSelections());
 
@@ -882,8 +882,8 @@ void CEnhancementEditorDialog::OnClickedButtonAddFeatRequirementSelection()
         {
             CString text;
             m_editFeatSelection.GetWindowText(text);
-            std::list<EnhancementSelection> selections = (*it).Selections().Selections();
-            std::list<EnhancementSelection>::iterator sit = selections.begin();
+            std::vector<EnhancementSelection> selections = (*it).Selections().Selections();
+            std::vector<EnhancementSelection>::iterator sit = selections.begin();
             std::advance(sit, index);
             // add a requirement to this item
             Requirements requirements;
@@ -891,7 +891,7 @@ void CEnhancementEditorDialog::OnClickedButtonAddFeatRequirementSelection()
             {
                 requirements = (*sit).RequirementsToTrain();
             }
-            std::list<Requirement> reqs = requirements.Requires();
+            std::vector<Requirement> reqs = requirements.Requires();
             Requirement r;
             r.Set_Feat((LPCTSTR)text);
             reqs.push_back(r);
@@ -915,12 +915,12 @@ void CEnhancementEditorDialog::OnClickedButtonAddClassrequirement()
         m_editClass.GetWindowText(name);
         CString text;
         m_editClassLevel.GetWindowText(text);
-        std::list<EnhancementTreeItem> items = m_loadedTrees.front().Items();
-        std::list<EnhancementTreeItem>::iterator it = items.begin();
+        std::vector<EnhancementTreeItem> items = m_loadedTrees.front().Items();
+        std::vector<EnhancementTreeItem>::iterator it = items.begin();
         std::advance(it, sel);  // get correct item
         // add a requirement to this item
         Requirements requirements = (*it).RequirementsToTrain();
-        std::list<Requirement> reqs = requirements.Requires();
+        std::vector<Requirement> reqs = requirements.Requires();
         Requirement r;
         r.Set_Class(TextToEnumEntry((LPCTSTR)name, classTypeMap));
         r.Set_Level(atoi(text));

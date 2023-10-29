@@ -64,7 +64,7 @@ void SpellsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<Spell> & SpellsFile::Spells() const
+const std::vector<Spell> & SpellsFile::Spells() const
 {
     return m_loadedSpells;
 }

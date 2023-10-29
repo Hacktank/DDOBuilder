@@ -33,18 +33,18 @@ class Augment :
                 DL_STRING(_, Description) \
                 DL_SIMPLE(_, size_t, MinLevel, 0) \
                 DL_OPTIONAL_STRING(_, Icon) \
-                DL_STRING_LIST(_, Type) \
-                DL_STRING_LIST(_, AddAugment) \
+                DL_STRING_VECTOR(_, Type) \
+                DL_STRING_VECTOR(_, AddAugment) \
                 DL_OPTIONAL_STRING(_, GrantAugment) \
                 DL_OPTIONAL_STRING(_, GrantConditionalAugment) \
                 DL_OPTIONAL_ENUM(_, WeaponClassType, WeaponClass, WeaponClass_Unknown, weaponClassTypeMap) \
                 DL_FLAG(_, DualValues) \
                 DL_FLAG(_, EnterValue) \
-                DL_STRING_LIST(_, SetBonus) \
+                DL_STRING_VECTOR(_, SetBonus) \
                 DL_FLAG(_, SuppressSetBonus) \
-                DL_OBJECT_LIST(_, Stance, StanceData) \
-                DL_STRING_LIST(_, EffectDescription) \
-                DL_OBJECT_LIST(_, Effect, Effects) \
+                DL_OBJECT_VECTOR(_, Stance, StanceData) \
+                DL_STRING_VECTOR(_, EffectDescription) \
+                DL_OBJECT_VECTOR(_, Effect, Effects) \
                 DL_OPTIONAL_OBJECT(_, RareEffects, Rares)
 
         DL_DECLARE_ACCESS(Augment_PROPERTIES)

@@ -60,18 +60,10 @@ void Augment::Write(XmlLib::SaxWriter * writer) const
 bool Augment::IsCompatibleWithSlot(const std::string & augmentType) const
 {
     // has to be in any of the augment types list to be a match
-    bool compatible = false;
-    std::list<std::string>::const_iterator it = m_Type.begin();
-    while (it != m_Type.end())
-    {
-        if ((*it) == augmentType)
-        {
-            compatible = true;
-            break;  // no need to check the rest
-        }
-        ++it;
+    for (const auto& type : m_Type) {
+        if (type == augmentType) return true;
     }
-    return compatible;
+    return false;
 }
 
 void Augment::AddImage(CImageList * pIL) const
@@ -126,7 +118,7 @@ void Augment::VerifyObject() const
         }
     }
     // check the spell effects also
-    std::list<Effect>::const_iterator it = m_Effects.begin();
+    auto it = m_Effects.begin();
     while (it != m_Effects.end())
     {
         ok &= (*it).VerifyObject(&ss);
@@ -138,12 +130,12 @@ void Augment::VerifyObject() const
     }
 
     // check any set bonuses exist
-    const std::list<::SetBonus> & loadedSets = SetBonuses();
-    std::list<std::string>::const_iterator sbit = m_SetBonus.begin();
+    const std::vector<::SetBonus> & loadedSets = SetBonuses();
+    auto sbit = m_SetBonus.begin();
     while (sbit != m_SetBonus.end())
     {
         bool bFound = false;
-        std::list<::SetBonus>::const_iterator sit = loadedSets.begin();
+        std::vector<::SetBonus>::const_iterator sit = loadedSets.begin();
         while (!bFound && sit != loadedSets.end())
         {
             bFound = ((*sit).Name() == (*sbit));

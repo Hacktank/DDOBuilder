@@ -64,7 +64,7 @@ void AugmentsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<Augment> & AugmentsFile::Augments() const
+const std::vector<Augment> & AugmentsFile::Augments() const
 {
     return m_loadedAugments;
 }

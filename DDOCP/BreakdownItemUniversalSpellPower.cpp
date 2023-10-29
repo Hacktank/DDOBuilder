@@ -64,8 +64,8 @@ void BreakdownItemUniversalSpellPower::CreateOtherEffects()
         {
             // find any "Implement" bonus we have and double it
             double implementBonus = 0;
-            std::list<ActiveEffect> allActiveEffects = AllActiveEffects();
-            std::list<ActiveEffect>::iterator it = allActiveEffects.begin();
+            const auto allActiveEffects = AllActiveEffects();
+            auto it = allActiveEffects.begin();
             while (it != allActiveEffects.end())
             {
                 if (it->Bonus() == Bonus_implement)

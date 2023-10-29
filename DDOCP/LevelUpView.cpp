@@ -788,7 +788,7 @@ void CLevelUpView::PopulateSkills()
                     m_level);
             text.Format("%.1f", maxSkill);
             text.Replace(".0", "");
-            text.Replace(".5", "½");
+            text.Replace(".5", "ï¿½");
             m_listSkills.SetItemText(ii, SLC_Max, text);
 
             size_t spentOnSkill = m_pCharacter->SpentAtLevel(
@@ -809,10 +809,10 @@ void CLevelUpView::PopulateSkills()
                 {
                     text.Format("%d", fullRanks);
                 }
-                // its a cross class skill, show in multiples of ½
+                // its a cross class skill, show in multiples of ï¿½
                 if (spentOnSkill % 2 != 0)
                 {
-                    text += "½";
+                    text += "ï¿½";
                 }
             }
             // how many skill points have been spent on this skill at this level so far?
@@ -829,7 +829,7 @@ void CLevelUpView::PopulateSkills()
             {
                 text.Format("%.1f", skillValue);
                 text.Replace(".0", "");
-                text.Replace(".5", "½");
+                text.Replace(".5", "ï¿½");
             }
             else
             {
@@ -840,7 +840,7 @@ void CLevelUpView::PopulateSkills()
                 {
                     text.Format("N/A (%.1f)", skillValue);
                     text.Replace(".0", "");
-                    text.Replace(".5", "½");
+                    text.Replace(".5", "ï¿½");
                 }
                 else
                 {
@@ -1223,8 +1223,8 @@ int CLevelUpView::SortCompareFunction(
     case SLC_Total:
         {
             // numeric sorts
-            index1Text.Replace("½", ".5");
-            index2Text.Replace("½", ".5");
+            index1Text.Replace("ï¿½", ".5");
+            index2Text.Replace("ï¿½", ".5");
             double val1 = atof(index1Text);
             double val2 = atof(index2Text);
             if (val1 == val2)
@@ -1395,8 +1395,8 @@ bool CLevelUpView::CanRevokeSkill(SkillType skill) const
     bool canSell = false;
     // can be revoked if it has a previous spend at this level
     const LevelTraining & levelData = m_pCharacter->LevelData(m_level);
-    const std::list<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
-    std::list<TrainedSkill>::const_iterator it = trainedSkills.begin();
+    const std::vector<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
+    std::vector<TrainedSkill>::const_iterator it = trainedSkills.begin();
     while (it != trainedSkills.end())
     {
         if ((*it).Skill() == skill)
@@ -1577,12 +1577,12 @@ void CLevelUpView::PopulateAutomaticFeats()
     {
         // get the list of automatic feats gained at this level
         const LevelTraining & levelData = m_pCharacter->LevelData(m_level);
-        std::list<TrainedFeat> automaticFeats = levelData.AutomaticFeats().Feats();
+        std::vector<TrainedFeat> automaticFeats = levelData.AutomaticFeats().Feats();
         m_imagesAutomaticFeats.DeleteImageList();
         m_imagesAutomaticFeats.Create(32, 32, ILC_COLOR32, 0, automaticFeats.size());
 
         // build an image list with all the feat icons
-        std::list<TrainedFeat>::const_iterator it = automaticFeats.begin();
+        auto it = automaticFeats.begin();
         while (it != automaticFeats.end())
         {
             // we only have the feat name, find the main feat and use it to get the icon
@@ -1621,13 +1621,13 @@ void CLevelUpView::PopulateGrantedFeats()
     if (m_pDocument != NULL)
     {
         // get the list of granted feats
-        std::list<TrainedFeat> grantedFeats = m_pCharacter->GrantedFeats();
-        grantedFeats.sort();
+        std::vector<TrainedFeat> grantedFeats = m_pCharacter->GrantedFeats();
+        std::sort(grantedFeats.begin(), grantedFeats.end());
         m_imagesGrantedFeats.DeleteImageList();
         m_imagesGrantedFeats.Create(32, 32, ILC_COLOR32, 0, grantedFeats.size());
 
         // build an image list with all the feat icons
-        std::list<TrainedFeat>::const_iterator it = grantedFeats.begin();
+        auto it = grantedFeats.begin();
         while (it != grantedFeats.end())
         {
             // we only have the feat name, find the main feat and use it to get the icon

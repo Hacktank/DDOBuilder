@@ -265,8 +265,8 @@ void CDestinyTreeDialog::OnPaint()
 
         m_bCreateHitBoxes = (m_hitBoxes.size() == 0);
         // now add all the tree enhancements and their states
-        const std::list<EnhancementTreeItem> & items = m_tree.Items();
-        std::list<EnhancementTreeItem>::const_iterator it = items.begin();
+        const std::vector<EnhancementTreeItem> & items = m_tree.Items();
+        std::vector<EnhancementTreeItem>::const_iterator it = items.begin();
         while (it != items.end())
         {
             RenderTreeItem((*it), &memoryDc);
@@ -666,7 +666,7 @@ const EnhancementTreeItem * CDestinyTreeDialog::FindByPoint(CRect * pRect) const
     ScreenToClient(&point);
     // identify the item under the cursor
     const EnhancementTreeItem * item = NULL;
-    std::list<DestinyHitBox>::const_iterator it = m_hitBoxes.begin();
+    std::vector<DestinyHitBox>::const_iterator it = m_hitBoxes.begin();
     while (item == NULL && it != m_hitBoxes.end())
     {
         if ((*it).IsInRect(point))
@@ -765,9 +765,9 @@ void CDestinyTreeDialog::SetTooltipText(
         {
             selection = te->Selection();
             const Selector & selector = item.Selections();
-            const std::list<EnhancementSelection> & selections = selector.Selections();
+            const std::vector<EnhancementSelection> & selections = selector.Selections();
             // find the selected item
-            std::list<EnhancementSelection>::const_iterator it = selections.begin();
+            std::vector<EnhancementSelection>::const_iterator it = selections.begin();
             while (it != selections.end())
             {
                 if ((*it).Name() == te->Selection())
@@ -822,15 +822,15 @@ void CDestinyTreeDialog::UpdateFeatRevoked(
     // reverse order they were trained until all trained tree
     // enhancements are valid
     bool bTreeHasInvalidItems = false;
-    const std::list<EnhancementTreeItem> & items = m_tree.Items();
+    const std::vector<EnhancementTreeItem> & items = m_tree.Items();
     do 
     {
         bTreeHasInvalidItems = false;
         EpicDestinySpendInTree * esit = m_pCharacter->EpicDestiny_FindTree(m_tree.Name());
         if (esit != NULL)
         {
-            std::list<TrainedEnhancement> enhancements = esit->Enhancements();
-            std::list<TrainedEnhancement>::const_iterator it = enhancements.begin();
+            std::vector<TrainedEnhancement> enhancements = esit->Enhancements();
+            std::vector<TrainedEnhancement>::const_iterator it = enhancements.begin();
             while (!bTreeHasInvalidItems && it != enhancements.end())
             {
                 const EnhancementTreeItem * pItem = FindEnhancement((*it).EnhancementName());

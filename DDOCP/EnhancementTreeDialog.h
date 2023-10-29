@@ -105,7 +105,7 @@ class CEnhancementTreeDialog :
         CSize m_bitmapSize;
         CBitmap m_cachedDisplay;
         CImage m_imageBackground;
-        std::list<EnhancementHitBox> m_hitBoxes;
+        std::vector<EnhancementHitBox> m_hitBoxes;
         bool m_bCreateHitBoxes;
         CInfoTip m_tooltip;
         bool m_showingTip;

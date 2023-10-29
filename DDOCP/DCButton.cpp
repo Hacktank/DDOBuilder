@@ -41,6 +41,10 @@ CDCButton::CDCButton(Character * charData, const DC & dc) :
     charData->AttachObserver(this);
 }
 
+CDCButton::~CDCButton() {
+    m_pCharacter->DetachObserver(this);
+}
+
 BOOL CDCButton::OnEraseBkgnd(CDC* pDC)
 {
     return 0;

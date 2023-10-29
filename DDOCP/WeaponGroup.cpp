@@ -22,7 +22,7 @@ bool WeaponGroup::HasWeapon(WeaponType wt) const
 {
     // return true if this weapon type is in the list
     bool bPresent = false;
-    std::list<WeaponType>::const_iterator it = m_weaponsInGroup.begin();
+    std::vector<WeaponType>::const_iterator it = m_weaponsInGroup.begin();
     while (!bPresent && it != m_weaponsInGroup.end())
     {
         bPresent = ((*it) == wt);
@@ -39,7 +39,7 @@ void WeaponGroup::AddWeapon(WeaponType wt)
 void WeaponGroup::RemoveWeapon(WeaponType wt)
 {
     // remove the first occurrence from the list if found
-    std::list<WeaponType>::iterator it = m_weaponsInGroup.begin();
+    std::vector<WeaponType>::iterator it = m_weaponsInGroup.begin();
     while (it != m_weaponsInGroup.end())
     {
         if ((*it) == wt)

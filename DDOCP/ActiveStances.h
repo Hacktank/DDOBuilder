@@ -23,7 +23,7 @@ class ActiveStances :
         virtual void EndElement();
 
         #define ActiveStances_PROPERTIES(_) \
-                DL_STRING_LIST(_, Stances)
+                DL_STRING_VECTOR(_, Stances)
 
         DL_DECLARE_ACCESS(ActiveStances_PROPERTIES)
         DL_DECLARE_VARIABLES(ActiveStances_PROPERTIES)

@@ -64,12 +64,12 @@ void IgnoredFeatsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<std::string> & IgnoredFeatsFile::IgnoredFeats()
+const std::vector<std::string> & IgnoredFeatsFile::IgnoredFeats()
 {
     return m_loadedFeats;
 }
 
-void IgnoredFeatsFile::Save(std::list<std::string> & featList)
+void IgnoredFeatsFile::Save(std::vector<std::string> & featList)
 {
     // load all the global data required by the program
     // all data files are in the same directory as the executable
@@ -90,7 +90,7 @@ void IgnoredFeatsFile::Save(std::list<std::string> & featList)
         XmlLib::SaxWriter writer;
         writer.Open(filename);
         writer.StartDocument(f_saxElementName);
-        std::list<std::string>::const_iterator it = featList.begin();
+        auto it = featList.begin();
         while (it != featList.end())
         {
             writer.WriteSimpleElement(L"Feat", (*it));

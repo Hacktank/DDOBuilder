@@ -35,7 +35,7 @@ class FeatsListObject :
         virtual void EndElement();
 
         #define FeatsListObject_PROPERTIES(_) \
-                DL_OBJECT_LIST(_, TrainedFeat, Feats)
+                DL_OBJECT_VECTOR(_, TrainedFeat, Feats)
 
         DL_DECLARE_ACCESS(FeatsListObject_PROPERTIES)
         DL_DECLARE_VARIABLES(FeatsListObject_PROPERTIES)

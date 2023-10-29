@@ -155,11 +155,11 @@ class Character :
         void SetAbilityLevelUp(size_t level, AbilityType ability);
         void TrainFeat(const std::string & featName, TrainableFeatTypes type, size_t level, bool autoTrained = false, bool suppressVerify = false);
         void TrainAlternateFeat(const std::string & featName, TrainableFeatTypes type, size_t level);
-        std::list<TrainedFeat> AutomaticFeats(
+        std::vector<TrainedFeat> AutomaticFeats(
                 size_t level,
-                const std::list<TrainedFeat> & currentFeats) const;
+                const std::vector<TrainedFeat> & currentFeats) const;
         std::vector<TrainableFeatTypes> TrainableFeatTypeAtLevel(size_t level) const;
-        std::list<TrainedFeat> CurrentFeats(size_t level) const;
+        std::vector<TrainedFeat> CurrentFeats(size_t level) const;
         std::vector<Feat> TrainableFeats(
                 TrainableFeatTypes type,
                 size_t level,
@@ -171,7 +171,7 @@ class Character :
                 bool includeTomes,
                 bool alreadyTrained = false) const;
         bool HasGrantedFeats() const;
-        const std::list<TrainedFeat> & GrantedFeats() const;
+        const std::vector<TrainedFeat> & GrantedFeats() const;
         bool ShowUnavailable() const;
         bool ShowEpicOnly() const;
         void ToggleShowEpicOnly();
@@ -183,13 +183,13 @@ class Character :
         bool IsInIgnoreList(const std::string & name) const;
 
         // spells
-        std::list<TrainedSpell> TrainedSpells(ClassType classType, size_t level) const;
+        std::vector<TrainedSpell> TrainedSpells(ClassType classType, size_t level) const;
         void TrainSpell(ClassType classType, size_t level, const std::string & spellName);
         void RevokeSpell(ClassType classType, size_t level, const std::string & spellName);
         bool IsSpellTrained(const std::string & spellName) const;
         void ApplySpellEffects(const std::string & spellName, size_t castingLevel);
         void RevokeSpellEffects(const std::string & spellName, size_t castingLevel);
-        std::list<TrainedSpell> FixedSpells(ClassType classType, size_t level) const;
+        std::vector<TrainedSpell> FixedSpells(ClassType classType, size_t level) const;
         void AddSpellListAddition(const Effect& effect);
         void RevokeSpellListAddition(const Effect& effect);
         bool IsSpellInSpellListAdditionList(ClassType ct, size_t spellLevel, const std::string& spellName) const;
@@ -218,7 +218,7 @@ class Character :
                 const std::string & enhancementName,
                 const std::string & selection,
                 TreeType type) const;
-        std::list<TrainedEnhancement> CurrentEnhancements() const;
+        std::vector<TrainedEnhancement> CurrentEnhancements() const;
         void Enhancement_TrainEnhancement(
                 const std::string & treeName,
                 const std::string & enhancementName,
@@ -286,7 +286,7 @@ class Character :
         std::string GetBuildDescription() const;
 
         // self and party buffs
-        const std::list<std::string> EnabledSelfAndPartyBuffs() const;
+        const std::vector<std::string> EnabledSelfAndPartyBuffs() const;
         void EnableSelfAndPartyBuff(const std::string & name);
         void DisableSelfAndPartyBuff(const std::string & name);
         void NotifyAllSelfAndPartyBuffs();
@@ -380,15 +380,15 @@ class Character :
                 DL_OBJECT(_, SelectedDestinyTrees, DestinyTrees) \
                 DL_OPTIONAL_STRING(_, Tier5Tree) \
                 DL_OPTIONAL_STRING(_, U51Destiny_Tier5Tree) \
-                DL_OBJECT_LIST(_, LevelTraining, Levels) \
+                DL_OBJECT_VECTOR(_, LevelTraining, Levels) \
                 DL_OBJECT_VECTOR(_, TrainedSpell, TrainedSpells) \
-                DL_OBJECT_LIST(_, EnhancementSpendInTree, EnhancementTreeSpend) \
-                DL_OBJECT_LIST(_, ReaperSpendInTree, ReaperTreeSpend) \
-                DL_OBJECT_LIST(_, DestinySpendInTree, DestinyTreeSpend) \
+                DL_OBJECT_VECTOR(_, EnhancementSpendInTree, EnhancementTreeSpend) \
+                DL_OBJECT_VECTOR(_, ReaperSpendInTree, ReaperTreeSpend) \
+                DL_OBJECT_VECTOR(_, DestinySpendInTree, DestinyTreeSpend) \
                 DL_SIMPLE(_, size_t, FatePoints, 0) \
                 DL_STRING(_, ActiveGear) \
-                DL_OBJECT_LIST(_, EquippedGear, GearSetups) \
-                DL_STRING_LIST(_, SelfAndPartyBuffs) \
+                DL_OBJECT_VECTOR(_, EquippedGear, GearSetups) \
+                DL_STRING_VECTOR(_, SelfAndPartyBuffs) \
                 DL_STRING(_, Notes) \
                 DL_FLAG(_, LamanniaMode)
 
@@ -397,7 +397,7 @@ class Character :
     private:
         void UpdateSpells();
         void UpdateFeats();
-        void UpdateFeats(size_t level, std::list<TrainedFeat> * allFeats);
+        void UpdateFeats(size_t level, std::vector<TrainedFeat> * allFeats);
         void ApplyFeatEffects(const Feat & feat);
         void RevokeFeatEffects(const Feat & feat);
         void AutoTrainSingleSelectionFeats();
@@ -420,20 +420,20 @@ class Character :
                 const std::string & treeName,
                 const std::string & enhancementName,
                 const std::string & selection);
-        std::list<Effect> GetEnhancementEffects(
+        std::vector<Effect> GetEnhancementEffects(
                 const std::string & treeName,
                 const std::string & enhancementName,
                 const std::string & selection);
-        std::list<DC> GetEnhancementDCs(
+        std::vector<DC> GetEnhancementDCs(
                 const std::string & treeName,
                 const std::string & enhancementName,
                 const std::string & selection);
         void ApplyAllEffects(
                 const std::string & treename,
-                const std::list<TrainedEnhancement> & enhancements);
+                const std::vector<TrainedEnhancement> & enhancements);
         void RevokeAllEffects(
                 const std::string & treename,
-                const std::list<TrainedEnhancement> & enhancements);
+                const std::vector<TrainedEnhancement> & enhancements);
         void CountBonusRacialAP();
         void CountBonusUniversalAP();
         void RevokeGearEffects();
@@ -480,10 +480,10 @@ class Character :
         // we track the granted feats from all sources on the character
         // but this information is not saved. Note that granted feats cannot
         // be used as a requirement met for a feat you want to train.
-        std::list<TrainedFeat> m_grantedFeats;
-        std::list<bool> m_grantedNotifyState;
+        std::vector<TrainedFeat> m_grantedFeats;
+        std::vector<bool> m_grantedNotifyState;
         std::vector<SpellListAddition> m_additionalSpells;
-        std::list<std::pair<std::string, std::string> > m_uniqueSelections;
+        std::vector<std::pair<std::string, std::string> > m_uniqueSelections;
 
         bool m_bShowEpicOnly;
         bool m_bShowUnavailableFeats;

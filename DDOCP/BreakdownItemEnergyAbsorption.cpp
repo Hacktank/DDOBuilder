@@ -60,9 +60,9 @@ double BreakdownItemEnergyAbsorption::Total() const
     total *= SumItems(m_otherEffects, false) / 100.0;
     total *= SumItems(m_effects, false) / 100.0;
 
-    std::list<ActiveEffect> itemEffects = m_itemEffects;
-    std::list<ActiveEffect> inactiveEffects;
-    std::list<ActiveEffect> nonStackingEffects;
+    std::vector<ActiveEffect> itemEffects = m_itemEffects;
+    std::vector<ActiveEffect> inactiveEffects;
+    std::vector<ActiveEffect> nonStackingEffects;
     RemoveInactive(&itemEffects, &inactiveEffects);
     RemoveNonStacking(&itemEffects, &nonStackingEffects);
     total *= SumItems(itemEffects, true) / 100.0;
@@ -86,11 +86,11 @@ double BreakdownItemEnergyAbsorption::Total() const
 }
 
 double BreakdownItemEnergyAbsorption::SumItems(
-        const std::list<ActiveEffect> & effects,
+        const std::vector<ActiveEffect> & effects,
         bool bApplyMultiplier) const
 {
     double total = 100.0;
-    std::list<ActiveEffect>::const_iterator it = effects.begin();
+    auto it = effects.begin();
     while (it != effects.end())
     {
         // only count the active items in the total

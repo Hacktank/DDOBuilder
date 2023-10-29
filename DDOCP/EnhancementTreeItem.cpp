@@ -62,8 +62,8 @@ void EnhancementTreeItem::CreateRequirementStrings(
 
 bool EnhancementTreeItem::VerifyObject(
         std::stringstream * ss,
-        const std::list<EnhancementTree> & trees,
-        const std::list<Feat> & feats) const
+        const std::vector<EnhancementTree> & trees,
+        const std::vector<Feat> & feats) const
 {
     bool ok = true;
     std::stringstream lss;
@@ -79,7 +79,7 @@ bool EnhancementTreeItem::VerifyObject(
         ok &= m_Selections.VerifyObject(&lss, trees, feats);
     }
     // check the effects also
-    std::list<Effect>::const_iterator it = m_Effects.begin();
+    auto it = m_Effects.begin();
     while (it != m_Effects.end())
     {
         ok &= (*it).VerifyObject(&lss);
@@ -141,8 +141,8 @@ bool EnhancementTreeItem::MeetRequirements(
     if (met && selection != "")
     {
         // check if we can train this selection
-        std::list<EnhancementSelection> selections = m_Selections.Selections();
-        std::list<EnhancementSelection>::const_iterator it = selections.begin();
+        std::vector<EnhancementSelection> selections = m_Selections.Selections();
+        std::vector<EnhancementSelection>::const_iterator it = selections.begin();
         while (it != selections.end())
         {
             if ((*it).Name() == selection)
@@ -239,8 +239,8 @@ bool EnhancementTreeItem::IsAllowed(
     if (met && selection != "")
     {
         // check if we can train this selection
-        std::list<EnhancementSelection> selections = m_Selections.Selections();
-        std::list<EnhancementSelection>::const_iterator it = selections.begin();
+        std::vector<EnhancementSelection> selections = m_Selections.Selections();
+        std::vector<EnhancementSelection>::const_iterator it = selections.begin();
         while (it != selections.end())
         {
             if ((*it).Name() == selection)
@@ -406,11 +406,11 @@ std::string EnhancementTreeItem::ActiveIcon(
     return icon;
 }
 
-std::list<Effect> EnhancementTreeItem::ActiveEffects(
+std::vector<Effect> EnhancementTreeItem::ActiveEffects(
         const std::string & selection) const
 {
     // an enhancement may have specific sub-selection effects
-    std::list<Effect> effects;
+    std::vector<Effect> effects;
     if (HasSelections())
     {
         // we need to look up the effects for a selection
@@ -422,10 +422,10 @@ std::list<Effect> EnhancementTreeItem::ActiveEffects(
     return effects;
 }
 
-std::list<DC> EnhancementTreeItem::ActiveDCs(const std::string & selection) const
+std::vector<DC> EnhancementTreeItem::ActiveDCs(const std::string & selection) const
 {
     // an enhancement may have specific sub-selection DCs
-    std::list<DC> dcs;
+    std::vector<DC> dcs;
     if (HasSelections())
     {
         // we need to look up the DCs for a selection
@@ -437,10 +437,10 @@ std::list<DC> EnhancementTreeItem::ActiveDCs(const std::string & selection) cons
     return dcs;
 }
 
-std::list<Stance> EnhancementTreeItem::Stances(const std::string & selection) const
+std::vector<Stance> EnhancementTreeItem::Stances(const std::string & selection) const
 {
     // an enhancement may have specific sub-selection stances
-    std::list<Stance> stances;
+    std::vector<Stance> stances;
     if (HasSelections())
     {
         // we need to look up the effects for a selection

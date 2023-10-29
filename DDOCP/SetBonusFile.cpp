@@ -64,7 +64,7 @@ void SetBonusFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<SetBonus> & SetBonusFile::Sets() const
+const std::vector<SetBonus> & SetBonusFile::Sets() const
 {
     return m_loadedSetBonuses;
 }

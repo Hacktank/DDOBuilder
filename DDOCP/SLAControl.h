@@ -79,7 +79,7 @@ class CSLAControl :
         void SetCharacter(Character * pCharacter);
         void AddSLA(const std::string & slaName, size_t stacks);
         void RevokeSLA(const std::string & slaName);
-        const std::list<SLA> & SLAs() const;
+        const std::vector<SLA> & SLAs() const;
 
     protected:
         //{{AFX_VIRTUAL(CSLAControl)
@@ -104,13 +104,13 @@ class CSLAControl :
         Character * m_pCharacter;
         CSize m_bitmapSize;
         CBitmap m_cachedDisplay;
-        std::list<SLAHitBox> m_hitBoxes;
+        std::vector<SLAHitBox> m_hitBoxes;
         bool m_bCreateHitBoxes;
         CSpellTip m_tooltip;
         bool m_showingTip;
         bool m_tipCreated;
         const SLAHitBox * m_pTooltipItem;
-        std::list<SLA> m_SLAs;
+        std::vector<SLA> m_SLAs;
 };
 
 //{{AFX_INSERT_LOCATION}}

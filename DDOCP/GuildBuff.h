@@ -24,7 +24,7 @@ class GuildBuff :
                 DL_STRING(_, Name) \
                 DL_STRING(_, Description) \
                 DL_SIMPLE(_, size_t, Level, 0) \
-                DL_OBJECT_LIST(_, Effect, Effects)
+                DL_OBJECT_VECTOR(_, Effect, Effects)
 
         DL_DECLARE_ACCESS(GuildBuff_PROPERTIES)
         DL_DECLARE_VARIABLES(GuildBuff_PROPERTIES)

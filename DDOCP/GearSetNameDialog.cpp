@@ -47,9 +47,9 @@ void CGearSetNameDialog::OnOK()
     // check that the name entered is unique and does not already exist
     CString name;
     m_editGearName.GetWindowText(name);
-    const std::list<EquippedGear> & setups = m_pCharacter->GearSetups();
+    const std::vector<EquippedGear> & setups = m_pCharacter->GearSetups();
     bool unique = true;
-    std::list<EquippedGear>::const_iterator it = setups.begin();
+    std::vector<EquippedGear>::const_iterator it = setups.begin();
     while (unique && it != setups.end())
     {
         unique = ((*it).Name() != (LPCSTR)name);

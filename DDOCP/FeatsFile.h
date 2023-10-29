@@ -14,7 +14,7 @@ class FeatsFile :
         ~FeatsFile(void);
 
         void Read();
-        const std::list<Feat> & Feats() const;
+        const std::vector<Feat> & Feats() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -24,7 +24,7 @@ class FeatsFile :
         void EndElement();
 
         std::string m_filename;
-        std::list<Feat> m_loadedFeats;
+        std::vector<Feat> m_loadedFeats;
         size_t m_loadTotal;
 };
 

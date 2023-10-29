@@ -14,7 +14,7 @@ class GuildBuffsFile :
         ~GuildBuffsFile(void);
 
         bool Read();
-        const std::list<GuildBuff> & GuildBuffs() const;
+        const std::vector<GuildBuff> & GuildBuffs() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -25,7 +25,7 @@ class GuildBuffsFile :
 
     private:
         std::string m_filename;
-        std::list<GuildBuff> m_loadedGuildBuffs;
+        std::vector<GuildBuff> m_loadedGuildBuffs;
         size_t m_loadTotal;
 };
 

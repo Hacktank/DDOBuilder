@@ -6,6 +6,7 @@
 #include <algorithm>
 #include "GlobalSupportFunctions.h"
 #include "EnhancementTreeItem.h"
+#include <algorithm>
 
 #define DL_ELEMENT SpendInTree
 
@@ -58,7 +59,7 @@ void SpendInTree::EndElement()
     // also make sure every loaded TrainedEnhancement has the correct
     // cached cost values for the enhancements it references
     m_pointsSpent = 0;
-    std::list<TrainedEnhancement>::iterator teit = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::iterator teit = m_Enhancements.begin();
     while (teit != m_Enhancements.end())
     {
         const EnhancementTreeItem* pTreeItem = FindEnhancement((*teit).EnhancementName());
@@ -81,7 +82,8 @@ void SpendInTree::EndElement()
         }
         teit++;
     }
-    m_Enhancements.sort();
+    
+    std::sort(m_Enhancements.begin(), m_Enhancements.end());
 }
 
 void SpendInTree::Write(XmlLib::SaxWriter * writer) const
@@ -104,7 +106,7 @@ size_t SpendInTree::TrainedRanks(
         std::string* pSelection) const
 {
     size_t ranks = 0;
-    std::list<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
     while (ranks == 0 && it != m_Enhancements.end())
     {
         if ((*it).EnhancementName() == enhancementName)
@@ -130,7 +132,7 @@ bool SpendInTree::CanRevokeAtTier(size_t minSpent, size_t cost) const
     size_t spentBelow = 0;
     size_t spentSame = 0;
     size_t spentAbove = 0;
-    std::list<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
     while (it != m_Enhancements.end())
     {
         if ((*it).RequiredAps() < minSpent)
@@ -170,7 +172,7 @@ bool SpendInTree::EnoughPointsSpentAtLowerTiers(size_t minSpent, size_t cost) co
 {
     // need to evaluate all items at lower tiers
     size_t spentBelow = 0;
-    std::list<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
     while (it != m_Enhancements.end())
     {
         if ((*it).RequiredAps() < minSpent)
@@ -193,7 +195,7 @@ bool SpendInTree::HasTrainedDependants(
     // if we find one which has a requirement on the "enhancementName" item
     // it must have lower trained ranks than "enhancementName" to allow the
     // revoke to go ahead.
-    std::list<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
     while (it != m_Enhancements.end())
     {
         if ((*it).EnhancementName() != enhancementName) // don't check ourselves
@@ -220,7 +222,7 @@ size_t SpendInTree::TrainEnhancement(
     // increment the ranks of this enhancement if already present
     TrainedEnhancement * item = NULL;
     // iterate the list to see if its present
-    std::list<TrainedEnhancement>::iterator it = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::iterator it = m_Enhancements.begin();
     while (item == NULL && it != m_Enhancements.end())
     {
         if ((*it).EnhancementName() == enhancementName)
@@ -253,7 +255,7 @@ size_t SpendInTree::TrainEnhancement(
         m_pointsSpent += buyCost;
     }
     *ranks = item->Ranks();
-    m_Enhancements.sort();
+    std::sort(m_Enhancements.begin(), m_Enhancements.end());
     return buyCost;
 }
 
@@ -266,7 +268,7 @@ int SpendInTree::RevokeEnhancement(
 
     // find the item in the list
     TrainedEnhancement * item = NULL;
-    std::list<TrainedEnhancement>::iterator it = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::iterator it = m_Enhancements.begin();
     while (item == NULL && it != m_Enhancements.end())
     {
         if ((*it).EnhancementName() == revokedEnhancement)
@@ -304,7 +306,7 @@ bool SpendInTree::HasTier5() const
 {
     // return true if any of the trained enhancements are tier 5
     bool hasTier5 = false;
-    std::list<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = m_Enhancements.begin();
     while (it != m_Enhancements.end())
     {
         if ((*it).HasIsTier5())

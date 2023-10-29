@@ -47,7 +47,7 @@ class LevelTraining :
                 DL_SIMPLE(_, size_t, SkillPointsAvailable, 0) \
                 DL_SIMPLE(_, size_t, SkillPointsSpent, 0) \
                 DL_OBJECT(_, FeatsListObject, TrainedFeats) \
-                DL_OBJECT_LIST(_, TrainedSkill, TrainedSkills)
+                DL_OBJECT_VECTOR(_, TrainedSkill, TrainedSkills)
 
         DL_DECLARE_ACCESS(LevelTraining_PROPERTIES)
         DL_DECLARE_VARIABLES(LevelTraining_PROPERTIES)

@@ -41,14 +41,14 @@ class EnhancementTreeItem :
                 size_t spentInTree,
                 TreeType type) const;
         bool CanRevoke(const SpendInTree* pTreeSpend) const;
-        std::list<Effect> ActiveEffects(const std::string & selection) const;
-        std::list<DC> ActiveDCs(const std::string & selection) const;
+        std::vector<Effect> ActiveEffects(const std::string & selection) const;
+        std::vector<DC> ActiveDCs(const std::string & selection) const;
         void CreateRequirementStrings(
                 const Character & charData,
                 std::vector<CString> * requirements,
                 std::vector<bool> * met,
                 size_t level) const;
-        std::list<Stance> Stances(const std::string & selection) const;
+        std::vector<Stance> Stances(const std::string & selection) const;
         bool CostVaries(const std::string& selection) const;
         size_t Cost(const std::string & selection, size_t rank) const;
         const std::vector<size_t>& ItemCosts(const std::string& selection) const;
@@ -59,8 +59,8 @@ class EnhancementTreeItem :
 
         bool VerifyObject(
                 std::stringstream * ss,
-                const std::list<EnhancementTree> & trees,
-                const std::list<Feat> & feats) const;
+                const std::vector<EnhancementTree> & trees,
+                const std::vector<Feat> & feats) const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -86,10 +86,10 @@ class EnhancementTreeItem :
                 DL_FLAG(_, LongArrowUp) \
                 DL_FLAG(_, ExtraLongArrowUp) \
                 DL_FLAG(_, Tier5) \
-                DL_OBJECT_LIST(_, Stance, Stances) \
+                DL_OBJECT_VECTOR(_, Stance, Stances) \
                 DL_OBJECT(_, Requirements, RequirementsToTrain) \
                 DL_OPTIONAL_OBJECT(_, Selector, Selections) \
-                DL_OBJECT_LIST(_, Effect, Effects) \
+                DL_OBJECT_VECTOR(_, Effect, Effects) \
                 DL_OBJECT_VECTOR(_, DC, EffectDC)
 
         DL_DECLARE_ACCESS(EnhancementTreeItem_PROPERTIES)

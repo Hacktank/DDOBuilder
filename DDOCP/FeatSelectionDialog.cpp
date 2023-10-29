@@ -238,6 +238,9 @@ void CFeatSelectionDialog::SetTooltipText(
         CPoint tipTopLeft,
         CPoint tipAlternate)
 {
+    if (m_pCharacter == NULL) {
+        return;
+    }
     m_tooltip.SetOrigin(tipTopLeft, tipAlternate, false);
     m_tooltip.SetFeatItem(*m_pCharacter, &m_feat, false, m_pCharacter->MaxLevel(), false);
     m_tooltip.Show();

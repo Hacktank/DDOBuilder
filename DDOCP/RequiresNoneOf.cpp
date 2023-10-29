@@ -52,12 +52,12 @@ bool RequiresNoneOf::Met(
         const Character & charData, 
         const std::vector<size_t> & classLevels,
         size_t totalLevel,
-        const std::list<TrainedFeat> & currentFeats,
+        const std::vector<TrainedFeat> & currentFeats,
         bool includeTomes) const
 {
     // one or more of the requirements must not be met
     bool canTrain = false;
-    std::list<Requirement>::const_iterator it = m_Requirements.begin();
+    std::vector<Requirement>::const_iterator it = m_Requirements.begin();
     while (it != m_Requirements.end())
     {
         canTrain |= (*it).Met(
@@ -76,7 +76,7 @@ bool RequiresNoneOf::CanTrainEnhancement(
         size_t trainedRanks) const
 {
     bool canTrain = false;
-    std::list<Requirement>::const_iterator it = m_Requirements.begin();
+    std::vector<Requirement>::const_iterator it = m_Requirements.begin();
     while (it != m_Requirements.end())
     {
         canTrain |= (*it).CanTrainEnhancement(
@@ -92,7 +92,7 @@ bool RequiresNoneOf::CanTrainTree(
 {
     // one or more of the requirements must not be met
     bool canTrain = false;
-    std::list<Requirement>::const_iterator it = m_Requirements.begin();
+    std::vector<Requirement>::const_iterator it = m_Requirements.begin();
     while (it != m_Requirements.end())
     {
         canTrain |= (*it).CanTrainTree(charData);
@@ -107,7 +107,7 @@ void RequiresNoneOf::CreateRequirementStrings(
         std::vector<bool> * met,
         size_t level) const
 {
-    std::list<Requirement>::const_iterator it = m_Requirements.begin();
+    std::vector<Requirement>::const_iterator it = m_Requirements.begin();
     std::vector<CString> localRequirements;
     std::vector<bool> localMet;
     while (it != m_Requirements.end())
@@ -188,11 +188,11 @@ void RequiresNoneOf::CreateRequirementStrings(
 
 bool RequiresNoneOf::VerifyObject(
         std::stringstream * ss,
-        const std::list<Feat> & allFeats) const
+        const std::vector<Feat> & allFeats) const
 {
     bool ok = true;
     // check all the individual requirements
-    std::list<Requirement>::const_iterator it = m_Requirements.begin();
+    std::vector<Requirement>::const_iterator it = m_Requirements.begin();
     while (it != m_Requirements.end())
     {
         ok &= (*it).VerifyObject(ss, allFeats);

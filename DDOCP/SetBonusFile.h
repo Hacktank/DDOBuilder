@@ -14,7 +14,7 @@ class SetBonusFile :
         ~SetBonusFile(void);
 
         void Read();
-        const std::list<SetBonus> & Sets() const;
+        const std::vector<SetBonus> & Sets() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -24,7 +24,7 @@ class SetBonusFile :
         void EndElement();
 
         std::string m_filename;
-        std::list<SetBonus> m_loadedSetBonuses;
+        std::vector<SetBonus> m_loadedSetBonuses;
         size_t m_loadTotal;
 };
 

@@ -30,8 +30,8 @@ class EnhancementSelection :
 
         bool VerifyObject(
                 std::stringstream * ss,
-                const std::list<EnhancementTree> & trees,
-                const std::list<Feat> & feats) const;
+                const std::vector<EnhancementTree> & trees,
+                const std::vector<Feat> & feats) const;
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
                 const XmlLib::SaxString & name,
@@ -47,9 +47,9 @@ class EnhancementSelection :
                 DL_FLAG(_, Clickie) \
                 DL_OPTIONAL_SIMPLE(_, size_t, MinSpent, 0) \
                 DL_OPTIONAL_OBJECT(_, Requirements, RequirementsToTrain) \
-                DL_OBJECT_LIST(_, Stance, Stances) \
-                DL_OBJECT_LIST(_, Effect, Effects) \
-                DL_OBJECT_LIST(_, DC, EffectDC)
+                DL_OBJECT_VECTOR(_, Stance, Stances) \
+                DL_OBJECT_VECTOR(_, Effect, Effects) \
+                DL_OBJECT_VECTOR(_, DC, EffectDC)
 
         DL_DECLARE_ACCESS(EnhancementSelection_PROPERTIES)
         DL_DECLARE_VARIABLES(EnhancementSelection_PROPERTIES)

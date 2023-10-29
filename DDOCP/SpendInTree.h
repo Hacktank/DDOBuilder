@@ -45,7 +45,7 @@ class SpendInTree :
         #define SpendInTree_PROPERTIES(_) \
                 DL_STRING(_, TreeName) \
                 DL_SIMPLE(_, size_t, TreeVersion, 0) \
-                DL_OBJECT_LIST(_, TrainedEnhancement, Enhancements)
+                DL_OBJECT_VECTOR(_, TrainedEnhancement, Enhancements)
 
         DL_DECLARE_ACCESS(SpendInTree_PROPERTIES)
         DL_DECLARE_VARIABLES(SpendInTree_PROPERTIES)

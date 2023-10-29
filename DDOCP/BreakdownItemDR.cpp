@@ -27,7 +27,7 @@ CString BreakdownItemDR::Value() const
     CString value;
     // just append all the items together, each should be an effect
     // which as a dice item
-    std::list<ActiveEffect>::const_iterator it = m_otherEffects.begin();
+    auto it = m_otherEffects.begin();
     while (it != m_otherEffects.end())
     {
         AddEffectToString(&value, (*it));

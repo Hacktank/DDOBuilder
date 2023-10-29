@@ -23,7 +23,7 @@ class RareEffects :
         virtual void EndElement();
 
         #define RareEffects_PROPERTIES(_) \
-                DL_OBJECT_LIST(_, Effect, Effects)
+                DL_OBJECT_VECTOR(_, Effect, Effects)
 
         DL_DECLARE_ACCESS(RareEffects_PROPERTIES)
         DL_DECLARE_VARIABLES(RareEffects_PROPERTIES)

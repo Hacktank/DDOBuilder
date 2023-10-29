@@ -84,7 +84,7 @@ void ItemsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<Item> & ItemsFile::Items() const
+const std::vector<Item> & ItemsFile::Items() const
 {
     return m_loadedItems;
 }

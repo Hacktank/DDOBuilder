@@ -51,7 +51,7 @@ class CEnhancementsView :
         void UpdateEnhancementEffectRevoked(Character * charData, const std::string & enhancementName, const EffectTier & effect) override;
         void UpdateEnhancementTreeOrderChanged(Character * charData) override;
     private:
-        std::list<EnhancementTree> DetermineTrees();
+        std::vector<EnhancementTree> DetermineTrees();
         void CreateEnhancementWindows();
         void DestroyEnhancementWindows();
         void UpdateEnhancementWindows();
@@ -69,7 +69,7 @@ class CEnhancementsView :
         };
         CDocument * m_pDocument;
         Character * m_pCharacter;
-        std::list<EnhancementTree> m_availableTrees;
+        std::vector<EnhancementTree> m_availableTrees;
         CComboBox m_comboTreeSelect[MST_Number-1];  // 1st tree type is always fixed
         CIconButton m_universalTrees[8];
         std::vector<CEnhancementTreeDialog *> m_treeViews;

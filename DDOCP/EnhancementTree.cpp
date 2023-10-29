@@ -48,7 +48,7 @@ void EnhancementTree::EndElement()
             || m_Name == "Vistani")
     {
         // iterate the loaded trained elements and update if required
-        std::list<EnhancementTreeItem>::iterator it = m_Items.begin();
+        std::vector<EnhancementTreeItem>::iterator it = m_Items.begin();
         while (it != m_Items.end())
         {
             if ((*it).InternalName() == "WSCore1")
@@ -90,7 +90,7 @@ void EnhancementTree::EndElement()
             ++it;
         }
     }
-    std::list<EnhancementTreeItem>::iterator it = m_Items.begin();
+    std::vector<EnhancementTreeItem>::iterator it = m_Items.begin();
     while (it != m_Items.end())
     {
         // make sure enhancement options know what type of tree their from
@@ -140,8 +140,8 @@ bool EnhancementTree::MeetRequirements(const Character & charData) const
 
 void EnhancementTree::VerifyObject(
         std::map<std::string, int> * names,
-        const std::list<EnhancementTree> & trees,
-        const std::list<Feat> & feats) const
+        const std::vector<EnhancementTree> & trees,
+        const std::vector<Feat> & feats) const
 {
     bool ok = true;
     std::stringstream ss;
@@ -152,7 +152,7 @@ void EnhancementTree::VerifyObject(
         ok = false;
     }
     // check this enhancement tree out for any inconsistencies
-    std::list<EnhancementTreeItem>::const_iterator it = m_Items.begin();
+    std::vector<EnhancementTreeItem>::const_iterator it = m_Items.begin();
     while (it != m_Items.end())
     {
         ok &= (*it).VerifyObject(&ss, trees, feats);
@@ -178,7 +178,7 @@ const EnhancementTreeItem * EnhancementTree::FindEnhancementItem(
         const std::string & enhancementName) const
 {
     const EnhancementTreeItem * pItem = NULL;
-    std::list<EnhancementTreeItem>::const_iterator it = m_Items.begin();
+    std::vector<EnhancementTreeItem>::const_iterator it = m_Items.begin();
     while (it != m_Items.end())
     {
         if ((*it).InternalName() == enhancementName)

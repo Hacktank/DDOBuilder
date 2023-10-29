@@ -52,17 +52,17 @@ CString BreakdownItemDice::SumDice() const
 {
     // get a list of all the active effects first
     // build a list of all the current active effects
-    std::list<ActiveEffect> allActiveEffects = AllActiveEffects();
+    const auto allActiveEffects = AllActiveEffects();
     // now we have the list look for and sum all dice effects which can be combined
-    std::list<Dice> dice;
-    std::list<ActiveEffect>::iterator it = allActiveEffects.begin();
+    std::vector<Dice> dice;
+    auto it = allActiveEffects.begin();
     while (it != allActiveEffects.end())
     {
         // is this dice setup already present in the list?
         if ((*it).Type() == ET_dice)
         {
             bool found = false;
-            std::list<Dice>::iterator dit = dice.begin();
+            std::vector<Dice>::iterator dit = dice.begin();
             while (!found && dit != dice.end())
             {
                 Dice newDice = (*it).GetDice();
@@ -88,7 +88,7 @@ CString BreakdownItemDice::SumDice() const
     std::string text;
     // now show all the dice descriptions
     bool first = true;
-    std::list<Dice>::iterator dit = dice.begin();
+    std::vector<Dice>::iterator dit = dice.begin();
     while (dit != dice.end())
     {
         if (!first)

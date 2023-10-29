@@ -89,7 +89,7 @@ void LevelTraining::RevokeSkill(SkillType skill)
 {
     ASSERT(m_SkillPointsSpent > 0);
     bool found = false;
-    std::list<TrainedSkill>::iterator it = m_TrainedSkills.begin();
+    std::vector<TrainedSkill>::iterator it = m_TrainedSkills.begin();
     while (it != m_TrainedSkills.end())
     {
         if ((*it).Skill() == skill)

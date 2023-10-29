@@ -52,7 +52,7 @@ std::string Selector::SelectedIcon(const std::string & selectionName) const
 {
     // iterate the selections and return the icon of the one that matches
     std::string icon = "NoImage";
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selectionName)
@@ -71,7 +71,7 @@ void Selector::RenderIcon(
         const CRect & itemRect) const
 {
     // iterate the selections and get correct item to render its image
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -85,11 +85,11 @@ void Selector::RenderIcon(
 
 bool Selector::VerifyObject(
         std::stringstream * ss,
-        const std::list<EnhancementTree> & trees,
-        const std::list<Feat> & feats) const
+        const std::vector<EnhancementTree> & trees,
+        const std::vector<Feat> & feats) const
 {
     bool ok = true;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         ok &= (*it).VerifyObject(ss, trees, feats);
@@ -101,7 +101,7 @@ bool Selector::VerifyObject(
 std::string Selector::DisplayName(const std::string & selection) const
 {
     std::string name;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -114,10 +114,10 @@ std::string Selector::DisplayName(const std::string & selection) const
     return name;
 }
 
-std::list<Effect> Selector::Effects(const std::string & selection) const
+std::vector<Effect> Selector::Effects(const std::string & selection) const
 {
-    std::list<Effect> effects;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<Effect> effects;
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -130,10 +130,10 @@ std::list<Effect> Selector::Effects(const std::string & selection) const
     return effects;
 }
 
-std::list<DC> Selector::EffectDCs(const std::string & selection) const
+std::vector<DC> Selector::EffectDCs(const std::string & selection) const
 {
-    std::list<DC> dcs;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<DC> dcs;
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -146,10 +146,10 @@ std::list<DC> Selector::EffectDCs(const std::string & selection) const
     return dcs;
 }
 
-std::list<Stance> Selector::Stances(const std::string & selection) const
+std::vector<Stance> Selector::Stances(const std::string & selection) const
 {
-    std::list<Stance> stances;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<Stance> stances;
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -167,7 +167,7 @@ size_t Selector::MinSpent(
         size_t defaultMinSpent) const
 {
     size_t min = defaultMinSpent;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -186,7 +186,7 @@ size_t Selector::MinSpent(
 bool Selector::CostVaries(const std::string& selection) const
 {
     bool varies = false;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -202,7 +202,7 @@ bool Selector::CostVaries(const std::string& selection) const
 size_t Selector::Cost(const std::string& selection, size_t rank) const
 {
     size_t cost = 0;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -218,7 +218,7 @@ size_t Selector::Cost(const std::string& selection, size_t rank) const
 const std::vector<size_t>& Selector::ItemCosts(const std::string& selection) const
 {
     static std::vector<size_t> defaultCost(1, 1);
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -233,7 +233,7 @@ const std::vector<size_t>& Selector::ItemCosts(const std::string& selection) con
 bool Selector::IsSelectionClickie(const std::string & selection) const
 {
     bool isClickie = false;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == selection)
@@ -252,7 +252,7 @@ bool Selector::RequiresEnhancement(
         const std::string& subSelection) const
 {
     bool bRequiresIt = false;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         if ((*it).Name() == subSelection)
@@ -273,7 +273,7 @@ bool Selector::HasTrainableOption(
         size_t spentInTree) const
 {
     bool bHasTrainableOption = false;
-    std::list<EnhancementSelection>::const_iterator it = m_Selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = m_Selections.begin();
     while (it != m_Selections.end())
     {
         bool optionTrainable = false;

@@ -22,8 +22,8 @@ class EnhancementTree :
         bool operator==(const EnhancementTree & other) const;
         void VerifyObject(
                 std::map<std::string, int> * names,
-                const std::list<EnhancementTree> & trees,
-                const std::list<Feat> & feats) const;
+                const std::vector<EnhancementTree> & trees,
+                const std::vector<Feat> & feats) const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -42,7 +42,7 @@ class EnhancementTree :
                 DL_FLAG(_, IsUniversalTree) \
                 DL_STRING(_, Icon) \
                 DL_STRING(_, Background) \
-                DL_OBJECT_LIST(_, EnhancementTreeItem, Items)
+                DL_OBJECT_VECTOR(_, EnhancementTreeItem, Items)
 
         DL_DECLARE_ACCESS(EnhancementTree_PROPERTIES)
         DL_DECLARE_VARIABLES(EnhancementTree_PROPERTIES)

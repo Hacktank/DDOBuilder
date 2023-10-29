@@ -6,6 +6,7 @@
 
 #include "CriticalSection.h"
 #include <list>
+#include <vector>
 #include <sstream>
 
 class ObserverBase;
@@ -37,7 +38,7 @@ class ObserverBase
         void AttachAll(const ObserverBase & copy); // attach to a list from another observer
         void DetachAll();
 
-        typedef std::list<SubjectBase *> SubjectList;
+        typedef std::vector<SubjectBase *> SubjectList;
         SubjectList m_subjects;
 
         CriticalSection m_critsec;
@@ -63,7 +64,7 @@ class SubjectBase
         SubjectBase & operator=(const SubjectBase & copy);
 
         // allow the template Subject to iterate through the observers
-        typedef std::list<ObserverBase *> ObserverList;
+        typedef std::vector<ObserverBase *> ObserverList;
         ObserverList::const_iterator ObserversBegin() const;
         ObserverList::const_iterator ObserversEnd() const;
 
@@ -77,11 +78,11 @@ class SubjectBase
         void EndNotification() const;
 
         CriticalSection m_critsec;
+        mutable ObserverList m_observers;
 
     private:
         void DetachAll();
 
-        mutable ObserverList m_observers;
         mutable long m_notificationLevel;
 
     friend class ObserverBase;
@@ -122,16 +123,11 @@ class Subject :
         {
             CriticalSectionLock lock(&m_critsec);
             BeginNotification();
-            for (ObserverList::const_iterator it = ObserversBegin(); it != ObserversEnd(); it++)
-            {
-                if (*it != NULL)
-                {
-                    T * p = dynamic_cast<T*>(*it);
-                    if (p != NULL)
-                    {
-                        (p->*f)(a);
-                    }
-                }
+            for (size_t i = 0; i < m_observers.size(); i++) {
+                if (m_observers[i] == NULL) continue;
+                T* p = dynamic_cast<T*>(m_observers[i]);
+                if (p == NULL) continue;
+                (p->*f)(a);
             }
             EndNotification();
         }
@@ -141,16 +137,11 @@ class Subject :
         {
             CriticalSectionLock lock(&m_critsec);
             BeginNotification();
-            for (ObserverList::const_iterator it = ObserversBegin(); it != ObserversEnd(); it++)
-            {
-                if (*it != NULL)
-                {
-                    T * p = dynamic_cast<T*>(*it);
-                    if (p != NULL)
-                    {
-                        (p->*f)(a, d);
-                    }
-                }
+            for (size_t i = 0; i < m_observers.size(); i++) {
+                if (m_observers[i] == NULL) continue;
+                T* p = dynamic_cast<T*>(m_observers[i]);
+                if (p == NULL) continue;
+                (p->*f)(a, d);
             }
             EndNotification();
         }
@@ -160,16 +151,11 @@ class Subject :
         {
             CriticalSectionLock lock(&m_critsec);
             BeginNotification();
-            for (ObserverList::const_iterator it = ObserversBegin(); it != ObserversEnd(); it++)
-            {
-                if (*it != NULL)
-                {
-                    T * p = dynamic_cast<T*>(*it);
-                    if (p != NULL)
-                    {
-                        (p->*f)(a, d1, d2);
-                    }
-                }
+            for (size_t i = 0; i < m_observers.size(); i++) {
+                if (m_observers[i] == NULL) continue;
+                T* p = dynamic_cast<T*>(m_observers[i]);
+                if (p == NULL) continue;
+                (p->*f)(a, d1, d2);
             }
             EndNotification();
         }
@@ -179,16 +165,11 @@ class Subject :
         {
             CriticalSectionLock lock(&m_critsec);
             BeginNotification();
-            for (ObserverList::const_iterator it = ObserversBegin(); it != ObserversEnd(); it++)
-            {
-                if (*it != NULL)
-                {
-                    T * p = dynamic_cast<T*>(*it);
-                    if (p != NULL)
-                    {
-                        (p->*f)(a, d1, d2, d3);
-                    }
-                }
+            for (size_t i = 0; i < m_observers.size(); i++) {
+                if (m_observers[i] == NULL) continue;
+                T* p = dynamic_cast<T*>(m_observers[i]);
+                if (p == NULL) continue;
+                (p->*f)(a, d1, d2, d3);
             }
             EndNotification();
         }

@@ -85,7 +85,7 @@ bool BreakdownItemWeaponEffects::AffectsUs(const Effect & effect) const
 }
 
 void BreakdownItemWeaponEffects::AddToAffectedWeapons(
-        std::vector<std::list<Effect> > * list,
+        std::vector<std::vector<Effect> > * list,
         const Effect & effect)
 {
     // see which sub-weapons (if any) this effect applies to
@@ -102,7 +102,7 @@ void BreakdownItemWeaponEffects::AddToAffectedWeapons(
 }
 
 void BreakdownItemWeaponEffects::AddToAffectedWeapons(
-        std::vector<std::list<EffectTier> > * list,
+        std::vector<std::vector<EffectTier> > * list,
         const EffectTier & effect)
 {
     // see which sub-weapons (if any) this effect applies to
@@ -122,7 +122,7 @@ void BreakdownItemWeaponEffects::AddToAffectedWeapons(
 }
 
 void BreakdownItemWeaponEffects::RemoveFromAffectedWeapons(
-        std::vector<std::list<Effect> > * list,
+        std::vector<std::vector<Effect> > * list,
         const Effect & effect)
 {
     // see which sub-weapons (if any) this effect applies to
@@ -134,7 +134,7 @@ void BreakdownItemWeaponEffects::RemoveFromAffectedWeapons(
         // find in the list and remove
         if (affectsWeapon)
         {
-            std::list<Effect>::iterator it = (*list)[i].begin();
+            std::vector<Effect>::iterator it = (*list)[i].begin();
             while (it != (*list)[i].end())
             {
                 if ((*it) == effect)
@@ -150,7 +150,7 @@ void BreakdownItemWeaponEffects::RemoveFromAffectedWeapons(
 }
 
 void BreakdownItemWeaponEffects::RemoveFromAffectedWeapons(
-        std::vector<std::list<EffectTier> > * list,
+        std::vector<std::vector<EffectTier> > * list,
         const EffectTier & effect)
 {
     // see which sub-weapons (if any) this effect applies to
@@ -165,7 +165,7 @@ void BreakdownItemWeaponEffects::RemoveFromAffectedWeapons(
             // these effects are always single tier
             EffectTier copy = effect;
             copy.m_tier = 1;
-            std::list<EffectTier>::iterator it = (*list)[i].begin();
+            std::vector<EffectTier>::iterator it = (*list)[i].begin();
             while (it != (*list)[i].end())
             {
                 if ((*it) == copy)
@@ -711,7 +711,7 @@ BreakdownItemWeapon * BreakdownItemWeaponEffects::CreateWeaponBreakdown(
 
     // apply the items stat attack modifiers (if any)
     const std::list<AbilityType> & attackAbilities = item.AttackModifier();
-    std::list<AbilityType>::const_iterator amit = attackAbilities.begin();
+    auto amit = attackAbilities.begin();
     while (amit != attackAbilities.end())
     {
         Effect e;
@@ -774,8 +774,8 @@ BreakdownItemWeapon * BreakdownItemWeaponEffects::CreateWeaponBreakdown(
             // now revoke the item specific augments effects
             std::string name;
             name = ss.str();
-            std::list<Effect> effects = augment.Effects();
-            std::list<Effect>::iterator it = effects.begin();
+            std::vector<Effect> effects = augment.Effects();
+            std::vector<Effect>::iterator it = effects.begin();
             while (it != effects.end())
             {
                 if (augment.HasEnterValue()
@@ -795,7 +795,7 @@ BreakdownItemWeapon * BreakdownItemWeaponEffects::CreateWeaponBreakdown(
         }
     }
     // for this weapon, filter in all the cached effects
-    std::list<Effect>::const_iterator it = m_weaponFeatEffects[wt].begin();
+    auto it = m_weaponFeatEffects[wt].begin();
     while (it != m_weaponFeatEffects[wt].end())
     {
         pWeaponBreakdown->UpdateFeatEffect(
@@ -813,7 +813,7 @@ BreakdownItemWeapon * BreakdownItemWeaponEffects::CreateWeaponBreakdown(
                 (*it));
         ++it;
     }
-    std::list<EffectTier>::const_iterator itt = m_weaponEnhancementEffects[wt].begin();
+    std::vector<EffectTier>::const_iterator itt = m_weaponEnhancementEffects[wt].begin();
     while (itt != m_weaponEnhancementEffects[wt].end())
     {
         pWeaponBreakdown->UpdateEnhancementEffect(

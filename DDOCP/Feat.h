@@ -28,8 +28,8 @@ class Feat :
                 size_t level) const;
 
         void VerifyObject(
-                const std::list<EnhancementTree> & allTrees,
-                const std::list<Feat> & allfeats) const;
+                const std::vector<EnhancementTree> & allTrees,
+                const std::vector<Feat> & allfeats) const;
         bool operator<(const Feat & other) const;
         void AddImage(CImageList * pIL) const;
 
@@ -43,16 +43,16 @@ class Feat :
         #define Feat_PROPERTIES(_) \
                 DL_STRING(_, Name) \
                 DL_STRING(_, Description) \
-                DL_OBJECT_LIST(_, Stance, StanceData) \
+                DL_OBJECT_VECTOR(_, Stance, StanceData) \
                 DL_OPTIONAL_SIMPLE(_, size_t, MaxTimesAcquire, 1) \
                 DL_OPTIONAL_OBJECT(_, FeatGroup, Group) \
                 DL_OPTIONAL_STRING(_, Sphere) \
                 DL_OBJECT(_, Requirements, RequirementsToTrain) \
                 DL_ENUM(_, FeatAcquisitionType, Acquire, FeatAcquisition_Unknown, featAcquisitionMap) \
-                DL_OBJECT_LIST(_, AutomaticAcquisition, AutomaticAcquireAt) \
+                DL_OBJECT_VECTOR(_, AutomaticAcquisition, AutomaticAcquireAt) \
                 DL_STRING(_, Icon) \
-                DL_OBJECT_LIST(_, Effect, Effects) \
-                DL_OBJECT_LIST(_, DC, EffectDC)
+                DL_OBJECT_VECTOR(_, Effect, Effects) \
+                DL_OBJECT_VECTOR(_, DC, EffectDC)
 
         DL_DECLARE_ACCESS(Feat_PROPERTIES)
         DL_DECLARE_VARIABLES(Feat_PROPERTIES)

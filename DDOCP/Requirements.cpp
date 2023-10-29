@@ -51,17 +51,17 @@ bool Requirements::Met(
         const Character & charData, 
         const std::vector<size_t> & classLevels,
         size_t totalLevel,
-        const std::list<TrainedFeat> & currentFeats,
+        const std::vector<TrainedFeat> & currentFeats,
         bool includeTomes) const
 {
     bool met = true;
-    std::list<Requirement>::const_iterator it = m_Requires.begin();
+    auto it = m_Requires.begin();
     while (met && it != m_Requires.end())
     {
         met = (*it).Met(charData, classLevels, totalLevel, currentFeats, includeTomes);
         ++it;
     }
-    std::list<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
+    std::vector<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
     while (met && rooIt != OneOf().end())
     {
         met = rooIt->Met(charData, classLevels, totalLevel, currentFeats, includeTomes);
@@ -81,13 +81,13 @@ bool Requirements::CanTrainEnhancement(
 {
     // only need to check any enhancement requirements
     bool met = true;
-    std::list<Requirement>::const_iterator it = m_Requires.begin();
+    auto it = m_Requires.begin();
     while (met && it != m_Requires.end())
     {
         met = (*it).CanTrainEnhancement(charData, trainedRanks);
         ++it;
     }
-    std::list<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
+    std::vector<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
     while (met && rooIt != OneOf().end())
     {
         met = rooIt->CanTrainEnhancement(charData, trainedRanks);
@@ -107,14 +107,14 @@ bool Requirements::IsAllowed(
 {
     // only need to check any enhancement requirements
     bool met = true;
-    std::list<Requirement>::const_iterator it = m_Requires.begin();
+    auto it = m_Requires.begin();
     while (met && it != m_Requires.end())
     {
         // subset, excluding enhancements
         met = (*it).IsAllowed(charData, trainedRanks);
         ++it;
     }
-    std::list<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
+    std::vector<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
     while (met && rooIt != OneOf().end())
     {
          // subset, excluding enhancements
@@ -134,13 +134,13 @@ bool Requirements::CanTrainTree(
         const Character & charData) const
 {
     bool met = true;
-    std::list<Requirement>::const_iterator it = m_Requires.begin();
+    auto it = m_Requires.begin();
     while (met && it != m_Requires.end())
     {
         met = (*it).CanTrainTree(charData);
         ++it;
     }
-    std::list<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
+    std::vector<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
     while (met && rooIt != OneOf().end())
     {
        met = rooIt->CanTrainTree(charData);
@@ -160,13 +160,13 @@ void Requirements::CreateRequirementStrings(
         std::vector<bool> * met,
         size_t level) const
 {
-    std::list<Requirement>::const_iterator it = m_Requires.begin();
+    auto it = m_Requires.begin();
     while (it != m_Requires.end())
     {
         (*it).CreateRequirementStrings(charData, requirements, met, level);
         ++it;
     }
-    std::list<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
+    std::vector<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
     while (rooIt != OneOf().end())
     {
         rooIt->CreateRequirementStrings(charData, requirements, met, level);
@@ -184,7 +184,7 @@ bool Requirements::RequiresEnhancement(
 {
     bool bRequiresIt = false;
     // check all the individual requirements
-    std::list<Requirement>::const_iterator it = m_Requires.begin();
+    auto it = m_Requires.begin();
     while (it != m_Requires.end())
     {
         bRequiresIt |= (*it).RequiresEnhancement(name, selection);
@@ -195,18 +195,18 @@ bool Requirements::RequiresEnhancement(
 
 bool Requirements::VerifyObject(
         std::stringstream * ss,
-        const std::list<EnhancementTree> & allTrees,
-        const std::list<Feat> & allFeats) const
+        const std::vector<EnhancementTree> & allTrees,
+        const std::vector<Feat> & allFeats) const
 {
     bool ok = true;
     // check all the individual requirements
-    std::list<Requirement>::const_iterator it = m_Requires.begin();
+    auto it = m_Requires.begin();
     while (it != m_Requires.end())
     {
         ok &= (*it).VerifyObject(ss, allFeats);
         ++it;
     }
-    std::list<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
+    std::vector<RequiresOneOf>::const_iterator rooIt = OneOf().begin();
     while (rooIt != OneOf().end())
     {
         ok &= rooIt->VerifyObject(ss, allFeats);

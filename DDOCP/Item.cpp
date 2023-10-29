@@ -188,7 +188,7 @@ void Item::VerifyObject() const
         ++it;
     }
     // verify its DC objects
-    std::list<DC>::const_iterator edcit = m_EffectDC.begin();
+    std::vector<DC>::const_iterator edcit = m_EffectDC.begin();
     while (edcit != m_EffectDC.end())
     {
         ok &= (*edcit).VerifyObject(&ss);
@@ -202,12 +202,12 @@ void Item::VerifyObject() const
         ++iacit;
     }
     // check any set bonuses exist
-    const std::list<::SetBonus> & loadedSets = SetBonuses();
-    std::list<std::string>::const_iterator sbit = m_SetBonus.begin();
+    const std::vector<::SetBonus> & loadedSets = SetBonuses();
+    auto sbit = m_SetBonus.begin();
     while (sbit != m_SetBonus.end())
     {
         bool bFound = false;
-        std::list<::SetBonus>::const_iterator sit = loadedSets.begin();
+        std::vector<::SetBonus>::const_iterator sit = loadedSets.begin();
         while (!bFound && sit != loadedSets.end())
         {
             bFound = ((*sit).Name() == (*sbit));
@@ -264,7 +264,7 @@ bool Item::ContainsSearchText(const std::string & searchText) const
         {
             bHasSearchText |= SearchForText(DropLocation(), parsedItem);
         }
-        std::list<std::string>::const_iterator it = m_EffectDescription.begin();
+        auto it = m_EffectDescription.begin();
         while (!bHasSearchText && it != m_EffectDescription.end())
         {
             bHasSearchText |= SearchForText((*it), parsedItem);

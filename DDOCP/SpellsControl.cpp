@@ -166,7 +166,7 @@ void CSpellsControl::OnPaint()
         if (count > 0)
         {
             // get the current trained spells at this level
-            std::list<TrainedSpell> trainedSpells =
+            std::vector<TrainedSpell> trainedSpells =
                     m_pCharacter->TrainedSpells(m_class, spellLevel + 1); // 1 based
             // now work out draw positions
             int top = spellLevel * (c_spellSlotImageSize + c_controlSpacing) - y_offset;
@@ -200,7 +200,7 @@ void CSpellsControl::OnPaint()
                 SpellHitBox hitBox(spellLevel + 1, -(fs+1), spellRect);
                 m_hitBoxes.push_back(hitBox);
                 // show the fixed spell icon
-                std::list<FixedSpell>::iterator it = m_fixedSpells[spellLevel].begin();
+                std::vector<FixedSpell>::iterator it = m_fixedSpells[spellLevel].begin();
                 std::advance(it, fs);
                 const Spell & spell = FindSpellByName((*it).Name());
                 CImage spellImage;
@@ -249,7 +249,7 @@ void CSpellsControl::OnPaint()
                 // show the selected spell icon, if a selected spell
                 if (spellIndex < (int)trainedSpells.size())
                 {
-                    std::list<TrainedSpell>::iterator it = trainedSpells.begin();
+                    std::vector<TrainedSpell>::iterator it = trainedSpells.begin();
                     std::advance(it, spellIndex);
                     const Spell & spell = FindSpellByName((*it).SpellName());
                     CImage spellImage;
@@ -323,7 +323,7 @@ const SpellHitBox * CSpellsControl::FindByPoint(CRect * pRect) const
     ScreenToClient(&point);
     // see if we need to highlight the item under the cursor
     const SpellHitBox * item = NULL;
-    std::list<SpellHitBox>::const_iterator it = m_hitBoxes.begin();
+    std::vector<SpellHitBox>::const_iterator it = m_hitBoxes.begin();
     while (item == NULL && it != m_hitBoxes.end())
     {
         if ((*it).IsInRect(point))
@@ -505,12 +505,12 @@ void CSpellsControl::SetTooltipText(
     if (item.SpellIndex() >= 0)
     {
         // this is a trained spell
-        std::list<TrainedSpell> spells = m_pCharacter->TrainedSpells(
+        std::vector<TrainedSpell> spells = m_pCharacter->TrainedSpells(
                 m_class,
                 item.SpellLevel());
         if ((size_t)item.SpellIndex() < spells.size())
         {
-            std::list<TrainedSpell>::const_iterator si = spells.begin();
+            std::vector<TrainedSpell>::const_iterator si = spells.begin();
             std::advance(si, item.SpellIndex());
             spellName = (*si).SpellName();
             spellLevel = (*si).Level();
@@ -527,7 +527,7 @@ void CSpellsControl::SetTooltipText(
         // negative indexes are fixed spells
         size_t spellIndex = (size_t)abs(item.SpellIndex()) - 1;
         ASSERT(spellIndex < m_fixedSpells[item.SpellLevel()-1].size());
-        std::list<FixedSpell>::const_iterator si = m_fixedSpells[item.SpellLevel()-1].begin();
+        std::vector<FixedSpell>::const_iterator si = m_fixedSpells[item.SpellLevel()-1].begin();
         std::advance(si, spellIndex);
         spellName = (*si).Name();
         spellLevel = (*si).Level();
@@ -686,7 +686,7 @@ void CSpellsControl::OnSpellSelectOk()
     {
         // get the true index of the item as combo is sorted
         sel = m_comboSpellSelect.GetItemData(sel);
-        std::list<TrainedSpell> trainedSpells =
+        std::vector<TrainedSpell> trainedSpells =
                 m_pCharacter->TrainedSpells(m_class, m_editSpellLevel);
         std::vector<Spell> spells = FilterSpells(m_pCharacter, m_class, m_editSpellLevel);
         RemoveTrained(&spells, NULL);
@@ -695,7 +695,7 @@ void CSpellsControl::OnSpellSelectOk()
         if (m_editSpellIndex < trainedSpells.size())
         {
             // need to revoke this spells as replacing current selection
-            std::list<TrainedSpell>::iterator it = trainedSpells.begin();
+            std::vector<TrainedSpell>::iterator it = trainedSpells.begin();
             std::advance(it, m_editSpellIndex);
             m_pCharacter->RevokeSpell(m_class, m_editSpellLevel, (*it).SpellName());
         }
@@ -721,12 +721,12 @@ void CSpellsControl::RemoveTrained(
 {
     // remove already trained spells from the list except the one
     // that is already selected in this slot (if any)
-    std::list<TrainedSpell> trainedSpells =
+    std::vector<TrainedSpell> trainedSpells =
             m_pCharacter->TrainedSpells(m_class, m_editSpellLevel);
     if (m_editSpellIndex < trainedSpells.size())
     {
         // just remove the current selection from the trained list
-        std::list<TrainedSpell>::iterator it = trainedSpells.begin();
+        std::vector<TrainedSpell>::iterator it = trainedSpells.begin();
         std::advance(it, m_editSpellIndex);
         if (currentSelection != NULL)
         {
@@ -736,7 +736,7 @@ void CSpellsControl::RemoveTrained(
     }
     for (size_t si = 0; si < spells->size(); ++si)
     {
-        std::list<TrainedSpell>::iterator it = trainedSpells.begin();
+        std::vector<TrainedSpell>::iterator it = trainedSpells.begin();
         while (it != trainedSpells.end())
         {
             if ((*spells)[si].Name() == (*it).SpellName())
@@ -767,7 +767,7 @@ void CSpellsControl::RevokeFixedSpell(const std::string & spellName, size_t leve
 {
     // remove the named spell from the relevant level
     FixedSpell spell(spellName, level);
-    std::list<FixedSpell>::iterator it = m_fixedSpells[level-1].begin();
+    std::vector<FixedSpell>::iterator it = m_fixedSpells[level-1].begin();
     while (it != m_fixedSpells[level-1].end())
     {
         if ((*it) == spell)
@@ -784,11 +784,11 @@ void CSpellsControl::RevokeFixedSpell(const std::string & spellName, size_t leve
     }
 }
 
-std::list<TrainedSpell> CSpellsControl::FixedSpells(size_t level) const
+std::vector<TrainedSpell> CSpellsControl::FixedSpells(size_t level) const
 {
-    std::list<TrainedSpell> fixedSpells;
+    std::vector<TrainedSpell> fixedSpells;
     // create the list of TrainedSpell from the fixed spell list
-    std::list<FixedSpell>::const_iterator fsit = m_fixedSpells[level].begin();
+    std::vector<FixedSpell>::const_iterator fsit = m_fixedSpells[level].begin();
     while (fsit != m_fixedSpells[level].end())
     {
         TrainedSpell ts;
@@ -801,12 +801,12 @@ std::list<TrainedSpell> CSpellsControl::FixedSpells(size_t level) const
     return fixedSpells;
 }
 
-void CSpellsControl::ApplySpellEffects(const std::list<TrainedSpell> & spells)
+void CSpellsControl::ApplySpellEffects(const std::vector<TrainedSpell> & spells)
 {
     // first determine the caster level for this class
     size_t casterLevel = CasterLevel(m_pCharacter, m_class);
     // now apply the effects for each spell known
-    std::list<TrainedSpell>::const_iterator it = spells.begin();
+    std::vector<TrainedSpell>::const_iterator it = spells.begin();
     while (it != spells.end())
     {
         m_pCharacter->ApplySpellEffects((*it).SpellName(), casterLevel);
@@ -815,11 +815,11 @@ void CSpellsControl::ApplySpellEffects(const std::list<TrainedSpell> & spells)
 }
 
 void CSpellsControl::RevokeSpellEffects(
-        const std::list<TrainedSpell> & spells,
+        const std::vector<TrainedSpell> & spells,
         size_t casterLevel)
 {
     // now revoke the effects for each spell known
-    std::list<TrainedSpell>::const_iterator it = spells.begin();
+    std::vector<TrainedSpell>::const_iterator it = spells.begin();
     while (it != spells.end())
     {
         m_pCharacter->RevokeSpellEffects((*it).SpellName(), casterLevel);

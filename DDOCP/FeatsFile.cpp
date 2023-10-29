@@ -64,7 +64,7 @@ void FeatsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<Feat> & FeatsFile::Feats() const
+const std::vector<Feat> & FeatsFile::Feats() const
 {
     return m_loadedFeats;
 }

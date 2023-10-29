@@ -41,10 +41,10 @@ class BreakdownItemWeaponEffects :
         virtual void UpdateEnhancementEffect(Character * charData, const std::string & enhancementName,  const EffectTier & effect) override;
         virtual void UpdateEnhancementEffectRevoked(Character * charData, const std::string & enhancementName, const EffectTier & effect) override;
     private:
-        void AddToAffectedWeapons(std::vector<std::list<Effect> > * list, const Effect & effect);
-        void RemoveFromAffectedWeapons(std::vector<std::list<Effect> > * list, const Effect & effect);
-        void AddToAffectedWeapons(std::vector<std::list<EffectTier> > * list, const EffectTier & effect);
-        void RemoveFromAffectedWeapons(std::vector<std::list<EffectTier> > * list, const EffectTier & effect);
+        void AddToAffectedWeapons(std::vector<std::vector<Effect> > * list, const Effect & effect);
+        void RemoveFromAffectedWeapons(std::vector<std::vector<Effect> > * list, const Effect & effect);
+        void AddToAffectedWeapons(std::vector<std::vector<EffectTier> > * list, const EffectTier & effect);
+        void RemoveFromAffectedWeapons(std::vector<std::vector<EffectTier> > * list, const EffectTier & effect);
         bool AffectsThisWeapon(WeaponType wt, const Effect & effect);
         bool IsMartialWeapon(WeaponType wt) const;
         bool IsSimpleWeapon(WeaponType wt) const;
@@ -60,9 +60,9 @@ class BreakdownItemWeaponEffects :
                 BreakdownType bt,
                 const Item & item);
 
-        std::vector<std::list<Effect> > m_weaponFeatEffects;
-        std::vector<std::list<Effect> > m_weaponItemEffects;
-        std::vector<std::list<EffectTier> > m_weaponEnhancementEffects;
+        std::vector<std::vector<Effect> > m_weaponFeatEffects;
+        std::vector<std::vector<Effect> > m_weaponItemEffects;
+        std::vector<std::vector<EffectTier> > m_weaponEnhancementEffects;
         MfcControls::CTreeListCtrl * m_pTreeList;
         HTREEITEM m_hItem;
         BreakdownItemWeapon * m_pMainHandWeapon;

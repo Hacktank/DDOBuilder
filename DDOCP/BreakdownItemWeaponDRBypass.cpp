@@ -27,7 +27,7 @@ CString BreakdownItemWeaponDRBypass::Value() const
     std::vector<std::string> effects;
 
     // just append all the items together
-    std::list<ActiveEffect>::const_iterator it = m_otherEffects.begin();
+    auto it = m_otherEffects.begin();
     while (it != m_otherEffects.end())
     {
         AddEffectToVector(&effects, (*it));

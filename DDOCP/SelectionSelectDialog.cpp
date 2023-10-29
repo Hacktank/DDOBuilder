@@ -68,9 +68,9 @@ BOOL CSelectionSelectDialog::OnInitDialog()
 
      // set the button icons and text and enable states
     const Selector & selector = m_item.Selections();
-    const std::list<EnhancementSelection> & selections = selector.Selections();
+    const std::vector<EnhancementSelection> & selections = selector.Selections();
     ASSERT(selections.size() <= c_maxSelections);
-    std::list<EnhancementSelection>::const_iterator it = selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = selections.begin();
     size_t index = 0;
     size_t spentInTree = m_charData.APSpentInTree(m_treeName);
     while (it != selections.end())
@@ -87,9 +87,9 @@ BOOL CSelectionSelectDialog::OnInitDialog()
         m_costs[index] = (*it).Cost(0); // always 1st rank cost
         m_selections[index] = (*it).Name();
         bool excluded = false;
-        const std::list<std::string> & exclusions = selector.Exclude();
+        const std::vector<std::string> & exclusions = selector.Exclude();
         // check all the exclusions
-        std::list<std::string>::const_iterator eit = exclusions.begin();
+        auto eit = exclusions.begin();
         while (eit != exclusions.end())
         {
             const TrainedEnhancement * te = m_charData.IsTrained((*eit), "", m_type);
@@ -113,7 +113,7 @@ BOOL CSelectionSelectDialog::OnInitDialog()
         if ((*it).HasRequirementsToTrain())
         {
             std::vector<size_t> classLevels = m_charData.ClassLevels(m_charData.MaxLevel());
-            std::list<TrainedFeat> trainedFeats = m_charData.CurrentFeats(m_charData.MaxLevel());
+            std::vector<TrainedFeat> trainedFeats = m_charData.CurrentFeats(m_charData.MaxLevel());
             canTrain &= (*it).RequirementsToTrain().Met(
                     m_charData,
                     classLevels,
@@ -195,9 +195,9 @@ LRESULT CSelectionSelectDialog::OnMouseLeave(WPARAM wParam, LPARAM lParam)
 void CSelectionSelectDialog::ShowTip(size_t index, CRect itemRect)
 {
     const Selector & selector = m_item.Selections();
-    const std::list<EnhancementSelection> & selections = selector.Selections();
+    const std::vector<EnhancementSelection> & selections = selector.Selections();
     ASSERT(selections.size() <= c_maxSelections);
-    std::list<EnhancementSelection>::const_iterator it = selections.begin();
+    std::vector<EnhancementSelection>::const_iterator it = selections.begin();
     std::advance(it, index);
 
     if (m_showingTip)

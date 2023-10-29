@@ -3,6 +3,7 @@
 // Implementation of the Observer-Subject pattern
 #include "stdafx.h"
 #include "ObserverSubject.h"
+#include "Utilities.h"
 
 //////////////////////////////////////////////////////////////////////
 
@@ -151,62 +152,29 @@ bool SubjectBase::InsertObserverBase(ObserverBase * pObserver)
 {
     CriticalSectionLock lock(&m_critsec);
 
-    bool alreadyPresent = false;
-
-    // Find the first NULL element to add our subject to or if there are no NULL's (i.e. no free slots)
-    // add it on the end.
-    for (ObserverList::iterator it = m_observers.begin(); 
-            it != m_observers.end() && !alreadyPresent; 
-            it++)
-    {
-        if (*it == pObserver) 
-        { 
-            alreadyPresent = true;
+    // add the new observer to the end of the vector, because if we are currently in a notification cascade it could be missed if its not at the end
+    for (auto& obs : m_observers) {
+        if (obs == pObserver) {
+            // already present
+            return false;
         }
     }
-
-    if (!alreadyPresent)
-    {
-        // no need to worry about adding during a notification as it is a list and
-        // items added to the end do not invalidate any iterators
-        m_observers.push_front(pObserver);
-    }
-
-    // Turn the logic upside down.
-    bool hasBeenAdded = !alreadyPresent;
-    return hasBeenAdded;
+    m_observers.push_back(pObserver);
 }
 
 bool SubjectBase::RemoveObserverBase(ObserverBase * pObserver)
 {
     CriticalSectionLock lock(&m_critsec);
 
-    bool wasRemoved = false;
-    ObserverList::iterator it = m_observers.begin();
-    while (!wasRemoved
-            && it != m_observers.end())
-    {
-        if (*it == pObserver) 
-        { 
-            if (m_notificationLevel > 0)
-            {
-                // during the notification just NULL out anything to be removed
-                // as removing them from the list would invalidate any iterators
-                *it = NULL; 
-            }
-            else
-            {
-                m_observers.erase(it);
-            }
-            wasRemoved = true;
-        }
-        else
-        {
-            it++;
+    for (auto& obs : m_observers) {
+        if (obs == pObserver) {
+            // cannot risk erasing an observer from the vector during a notification cascade, just null it and it will be erased later
+            obs = NULL;
+            return true;
         }
     }
 
-    return wasRemoved;
+    return false;
 }
 
 void SubjectBase::DetachAll()
@@ -233,18 +201,7 @@ void SubjectBase::EndNotification() const
     if (m_notificationLevel == 1)
     {
         // remove any observers that have been NULLed out during the notification
-        ObserverList::iterator it = m_observers.begin();
-        while (it != m_observers.end())
-        {
-            if (*it == NULL)
-            {
-                it = m_observers.erase(it);
-            }
-            else
-            {
-                it++;
-            }
-        }
+        m_observers.erase(std::remove_if(m_observers.begin(), m_observers.end(), [](const auto& item) {return item == NULL; }), m_observers.end());
     }
 
     --m_notificationLevel;

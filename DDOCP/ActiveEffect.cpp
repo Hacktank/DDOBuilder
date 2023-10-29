@@ -263,7 +263,7 @@ ActiveEffect::ActiveEffect(
 ActiveEffect::ActiveEffect(
         BonusType bonusType,
         const std::string & name,
-        const std::list<std::string> & immunities,
+        const std::vector<std::string> & immunities,
         size_t stacks) :
     m_bonusType(bonusType),
     m_immunities(immunities),
@@ -846,7 +846,7 @@ size_t ActiveEffect::NumStacks() const
         else
         {
             // must be a feat count
-            std::list<TrainedFeat> currentFeats = m_pCharacter->CurrentFeats(m_pCharacter->MaxLevel());
+            std::vector<TrainedFeat> currentFeats = m_pCharacter->CurrentFeats(m_pCharacter->MaxLevel());
             count = TrainedCount(currentFeats, m_stacksControl);
         }
     }
@@ -1157,7 +1157,7 @@ std::string ActiveEffect::Description() const
     case ET_immunity:
         if (NumStacks() <= m_immunities.size())
         {
-            std::list<std::string>::const_iterator it = m_immunities.begin();
+            auto it = m_immunities.begin();
             std::advance(it, NumStacks() - 1);
             ss << (*it);
         }

@@ -22,6 +22,8 @@
 #include "SetBonusFile.h"
 #include "IgnoredFeatsFile.h"
 
+#include <algorithm>
+
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -348,7 +350,7 @@ void CDDOCPApp::LoadOptionalBuffs(const std::string & path)
     OptionalBuffsFile file(filename);
     file.Read();
     m_optionalBuffs = file.OptionalBuffs();
-    m_optionalBuffs.sort();
+    std::sort(m_optionalBuffs.begin(), m_optionalBuffs.end());
 }
 
 void CDDOCPApp::LoadSetBonuses(const std::string & path)
@@ -360,12 +362,12 @@ void CDDOCPApp::LoadSetBonuses(const std::string & path)
     SetBonusFile file(filename);
     file.Read();
     m_setBonuses = file.Sets();
-    m_setBonuses.sort();
+    std::sort(m_setBonuses.begin(), m_setBonuses.end());
 }
 
 void CDDOCPApp::VerifyFeats()
 {
-    std::list<Feat>::iterator it = m_allFeats.begin();
+    std::vector<Feat>::iterator it = m_allFeats.begin();
     while (it != m_allFeats.end())
     {
         (*it).VerifyObject(m_enhancementTrees, m_allFeats);
@@ -376,7 +378,7 @@ void CDDOCPApp::VerifyFeats()
 void CDDOCPApp::VerifyEnhancements()
 {
     std::map<std::string, int> names;
-    std::list<EnhancementTree>::iterator it = m_enhancementTrees.begin();
+    std::vector<EnhancementTree>::iterator it = m_enhancementTrees.begin();
     while (it != m_enhancementTrees.end())
     {
         (*it).VerifyObject(&names, m_enhancementTrees, m_allFeats);
@@ -386,7 +388,7 @@ void CDDOCPApp::VerifyEnhancements()
 
 void CDDOCPApp::VerifyAugments()
 {
-    std::list<Augment>::iterator it = m_augments.begin();
+    std::vector<Augment>::iterator it = m_augments.begin();
     while (it != m_augments.end())
     {
         (*it).VerifyObject();
@@ -396,7 +398,7 @@ void CDDOCPApp::VerifyAugments()
 
 void CDDOCPApp::VerifySpells()
 {
-    std::list<Spell>::iterator it = m_spells.begin();
+    std::vector<Spell>::iterator it = m_spells.begin();
     while (it != m_spells.end())
     {
         (*it).VerifyObject();
@@ -406,7 +408,7 @@ void CDDOCPApp::VerifySpells()
 
 void CDDOCPApp::VerifyItems()
 {
-    std::list<Item>::iterator it = m_items.begin();
+    std::vector<Item>::iterator it = m_items.begin();
     while (it != m_items.end())
     {
         (*it).VerifyObject();
@@ -416,7 +418,7 @@ void CDDOCPApp::VerifyItems()
 
 void CDDOCPApp::VerifyOptionalBuffs()
 {
-    std::list<OptionalBuff>::iterator it = m_optionalBuffs.begin();
+    std::vector<OptionalBuff>::iterator it = m_optionalBuffs.begin();
     while (it != m_optionalBuffs.end())
     {
         (*it).VerifyObject();
@@ -426,7 +428,7 @@ void CDDOCPApp::VerifyOptionalBuffs()
 
 void CDDOCPApp::VerifySetBonuses()
 {
-    std::list<SetBonus>::iterator it = m_setBonuses.begin();
+    std::vector<SetBonus>::iterator it = m_setBonuses.begin();
     while (it != m_setBonuses.end())
     {
         (*it).VerifyObject();
@@ -437,7 +439,7 @@ void CDDOCPApp::VerifySetBonuses()
 void CDDOCPApp::SeparateFeats()
 {
     // break each feat out into special sub groups
-    std::list<Feat>::iterator it = m_allFeats.begin();
+    std::vector<Feat>::iterator it = m_allFeats.begin();
     while (it != m_allFeats.end())
     {
         if ((*it).Acquire() == FeatAcquisition_EpicPastLife)
@@ -502,47 +504,50 @@ void CDDOCPApp::SeparateFeats()
         ++it;
     }
     // now sort them in to order
-    m_epicPastLifeFeatsArcane.sort();
-    m_epicPastLifeFeatsDivine.sort();
-    m_epicPastLifeFeatsMartial.sort();
-    m_epicPastLifeFeatsPrimal.sort();
-    m_heroicPastLifeFeats.sort();
-    m_racialPastLifeFeats.sort();
-    m_iconicPastLifeFeats.sort();
-    m_specialFeats.sort();
-    m_universalTreeFeats.sort();
-    m_favorFeats.sort();
-    m_standardFeats.sort();
+    auto lam_sortContainer = [](auto& container) {
+        std::sort(container.begin(), container.end());
+    };
+    lam_sortContainer(m_epicPastLifeFeatsArcane);
+    lam_sortContainer(m_epicPastLifeFeatsDivine);
+    lam_sortContainer(m_epicPastLifeFeatsMartial);
+    lam_sortContainer(m_epicPastLifeFeatsPrimal);
+    lam_sortContainer(m_heroicPastLifeFeats);
+    lam_sortContainer(m_racialPastLifeFeats);
+    lam_sortContainer(m_iconicPastLifeFeats);
+    lam_sortContainer(m_specialFeats);
+    lam_sortContainer(m_universalTreeFeats);
+    lam_sortContainer(m_favorFeats);
+    lam_sortContainer(m_standardFeats);
 }
 
-const std::list<Feat> & CDDOCPApp::AllFeats() const
+const std::vector<Feat> & CDDOCPApp::AllFeats() const
 {
     return m_allFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::StandardFeats() const
+const std::vector<Feat> & CDDOCPApp::StandardFeats() const
 {
     return m_standardFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::HeroicPastLifeFeats() const
+const std::vector<Feat> & CDDOCPApp::HeroicPastLifeFeats() const
 {
     return m_heroicPastLifeFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::RacialPastLifeFeats() const
+const std::vector<Feat> & CDDOCPApp::RacialPastLifeFeats() const
 {
     return m_racialPastLifeFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::IconicPastLifeFeats() const
+const std::vector<Feat> & CDDOCPApp::IconicPastLifeFeats() const
 {
     return m_iconicPastLifeFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::EpicPastLifeFeats(const std::string & sphere) const
+const std::vector<Feat> & CDDOCPApp::EpicPastLifeFeats(const std::string & sphere) const
 {
-    static std::list<Feat> noFeats;
+    static std::vector<Feat> noFeats;
     if (sphere == "Arcane")
     {
         return m_epicPastLifeFeatsArcane;
@@ -562,69 +567,69 @@ const std::list<Feat> & CDDOCPApp::EpicPastLifeFeats(const std::string & sphere)
     return noFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::SpecialFeats() const
+const std::vector<Feat> & CDDOCPApp::SpecialFeats() const
 {
     return m_specialFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::UniversalTreeFeats() const
+const std::vector<Feat> & CDDOCPApp::UniversalTreeFeats() const
 {
     return m_universalTreeFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::DestinyTreeFeats() const
+const std::vector<Feat> & CDDOCPApp::DestinyTreeFeats() const
 {
     return m_destinyTreeFeats;
 }
 
-const std::list<Feat> & CDDOCPApp::FavorFeats() const
+const std::vector<Feat> & CDDOCPApp::FavorFeats() const
 {
     return m_favorFeats;
 }
 
-const std::list<EnhancementTree> & CDDOCPApp::EnhancementTrees() const
+const std::vector<EnhancementTree> & CDDOCPApp::EnhancementTrees() const
 {
     return m_enhancementTrees;
 }
 
-const std::list<Spell> & CDDOCPApp::Spells() const
+const std::vector<Spell> & CDDOCPApp::Spells() const
 {
     return m_spells;
 }
 
-const std::list<Item> & CDDOCPApp::Items() const
+const std::vector<Item> & CDDOCPApp::Items() const
 {
     return m_items;
 }
 
-const std::list<Augment> & CDDOCPApp::Augments() const
+const std::vector<Augment> & CDDOCPApp::Augments() const
 {
     return m_augments;
 }
 
-const std::list<GuildBuff> & CDDOCPApp::GuildBuffs() const
+const std::vector<GuildBuff> & CDDOCPApp::GuildBuffs() const
 {
     return m_guildBuffs;
 }
 
-const std::list<OptionalBuff> & CDDOCPApp::OptionalBuffs() const
+const std::vector<OptionalBuff> & CDDOCPApp::OptionalBuffs() const
 {
     return m_optionalBuffs;
 }
 
-const std::list<SetBonus> & CDDOCPApp::SetBonuses() const
+const std::vector<SetBonus> & CDDOCPApp::SetBonuses() const
 {
     return m_setBonuses;
 }
 
 // CDDOCPApp message handlers
 
-void CDDOCPApp::UpdateIgnoreList(const std::list<std::string> & itemList)
+void CDDOCPApp::UpdateIgnoreList(const std::vector<std::string> & itemList)
 {
     m_ignoreList = itemList;
 }
 
-const std::list<std::string> & CDDOCPApp::IgnoreList() const
+const std::vector<std::string> & CDDOCPApp::IgnoreList() const
 {
     return m_ignoreList;
 }

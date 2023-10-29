@@ -100,15 +100,15 @@ void CSpecialFeatsView::DoDataExchange(CDataExchange* pDX)
     CDDOCPApp * pDDOApp = dynamic_cast<CDDOCPApp*>(pApp);
     if (pDDOApp != NULL)
     {
-        const std::list<Feat> & heroicPastLifeFeats = pDDOApp->HeroicPastLifeFeats();
-        const std::list<Feat> & racialPastLifeFeats = pDDOApp->RacialPastLifeFeats();
-        const std::list<Feat> & iconicPastLifeFeats = pDDOApp->IconicPastLifeFeats();
-        const std::list<Feat> & epicPastLifeFeatsArcane = pDDOApp->EpicPastLifeFeats("Arcane");
-        const std::list<Feat> & epicPastLifeFeatsDivine = pDDOApp->EpicPastLifeFeats("Divine");
-        const std::list<Feat> & epicPastLifeFeatsMartial = pDDOApp->EpicPastLifeFeats("Martial");
-        const std::list<Feat> & epicPastLifeFeatsPrimal = pDDOApp->EpicPastLifeFeats("Primal");
-        const std::list<Feat> & specialFeats = pDDOApp->SpecialFeats();
-        const std::list<Feat> & favorFeats = pDDOApp->FavorFeats();
+        const std::vector<Feat> & heroicPastLifeFeats = pDDOApp->HeroicPastLifeFeats();
+        const std::vector<Feat> & racialPastLifeFeats = pDDOApp->RacialPastLifeFeats();
+        const std::vector<Feat> & iconicPastLifeFeats = pDDOApp->IconicPastLifeFeats();
+        const std::vector<Feat> & epicPastLifeFeatsArcane = pDDOApp->EpicPastLifeFeats("Arcane");
+        const std::vector<Feat> & epicPastLifeFeatsDivine = pDDOApp->EpicPastLifeFeats("Divine");
+        const std::vector<Feat> & epicPastLifeFeatsMartial = pDDOApp->EpicPastLifeFeats("Martial");
+        const std::vector<Feat> & epicPastLifeFeatsPrimal = pDDOApp->EpicPastLifeFeats("Primal");
+        const std::vector<Feat> & specialFeats = pDDOApp->SpecialFeats();
+        const std::vector<Feat> & favorFeats = pDDOApp->FavorFeats();
         m_heroicSelectionViews.reserve(heroicPastLifeFeats.size());
         m_racialSelectionViews.reserve(racialPastLifeFeats.size());
         m_iconicSelectionViews.reserve(iconicPastLifeFeats.size());
@@ -133,7 +133,7 @@ void CSpecialFeatsView::DoDataExchange(CDataExchange* pDX)
 
 void CSpecialFeatsView::CreateFeatWindows(
         CStatic * groupWindow,
-        const std::list<Feat> & featList,
+        const std::vector<Feat> & featList,
         std::vector<CFeatSelectionDialog *> * dialogs,
         TrainableFeatTypes type)
 {
@@ -149,7 +149,7 @@ void CSpecialFeatsView::CreateFeatWindows(
             c_windowSizeX + c_controlSpacing,
             c_windowSizeY + c_controlSpacing);
     itemRect += CPoint(0, wndRect.bottom);
-    std::list<Feat>::const_iterator li = featList.begin();
+    std::vector<Feat>::const_iterator li = featList.begin();
     for (size_t fi = 0; fi < featList.size(); ++fi)
     {
         // show a feat selection dialog

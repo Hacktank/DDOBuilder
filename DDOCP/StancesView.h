@@ -7,14 +7,15 @@
 #include "StanceButton.h"
 #include "InfoTip.h"
 #include "WeaponGroup.h"
+#include <memory>
 
 struct SliderItem
 {
 public:
     UINT m_sliderControlId;
     std::string m_name;
-    CStatic * m_label;
-    CSliderCtrl * m_slider;
+    std::unique_ptr<CStatic> m_label;
+    std::unique_ptr<CSliderCtrl> m_slider;
     size_t m_creationCount;
     int m_position;
     int m_sliderMin;
@@ -24,20 +25,13 @@ public:
             m_creationCount(0),
             m_position(0),
             m_sliderMin(0),
-            m_sliderMax(0),
-            m_label(NULL),
-            m_slider(NULL)
+            m_sliderMax(0)
     {
     }
     void CreateControls()
     {
-        m_label = new CStatic;
-        m_slider = new CSliderCtrl;
-    };
-    ~SliderItem()
-    {
-        delete m_label;
-        delete m_slider;
+        m_label = std::make_unique<CStatic>();
+        m_slider = std::make_unique<CSliderCtrl>();
     };
 };
 
@@ -107,9 +101,10 @@ class CStancesView :
         void ShowTip(const CStanceButton & item, CRect itemRect);
         void HideTip();
         void SetTooltipText(const CStanceButton & item, CPoint tipTopLeft, CPoint tipAlternate);
-        void UpdateSliders(const Effect & effect, bool bApply);
-        std::list<SliderItem>::iterator GetSlider(const Effect & effect, bool bCreateIfMissing);
-        std::list<SliderItem>::iterator GetSlider(UINT controlId);
+        void UpdateSlidersForEffect(const Effect & effect, bool bApply);
+        std::vector<SliderItem>::iterator CreateSliderForEffect(const Effect& effect);
+        std::vector<SliderItem>::iterator GetSlider(const Effect & effect);
+        std::vector<SliderItem>::iterator GetSlider(UINT controlId);
         void AddToWeaponGroup(const Effect & effect);
         void RemoveFromWeaponGroup(const Effect & effect);
         void StanceActivated(
@@ -125,7 +120,7 @@ class CStancesView :
 
         CDocument * m_pDocument;
         Character * m_pCharacter;
-        std::list<SliderItem> m_sliders;
+        std::vector<SliderItem> m_sliders;
         CStatic m_staticHiddenSizer;
         CStatic m_userStances;
         CStatic m_userStancesArcane;
@@ -153,5 +148,5 @@ class CStancesView :
         const CStanceButton * m_pTooltipItem;
         int m_nextStanceId;
         int m_nextSliderId;
-        std::list<WeaponGroup> m_weaponGroups;
+        std::vector<WeaponGroup> m_weaponGroups;
 };

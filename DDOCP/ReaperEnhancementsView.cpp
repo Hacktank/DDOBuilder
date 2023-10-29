@@ -163,8 +163,8 @@ std::vector<EnhancementTree> CReaperEnhancementsView::DetermineTrees()
 {
     // the three standard reaper trees are always the ones available
     std::vector<EnhancementTree> trees;
-    const std::list<EnhancementTree> & allTrees = EnhancementTrees();
-    std::list<EnhancementTree>::const_iterator it = allTrees.begin();
+    const std::vector<EnhancementTree> & allTrees = EnhancementTrees();
+    std::vector<EnhancementTree>::const_iterator it = allTrees.begin();
     while (it != allTrees.end())
     {
         // get all the trees that are compatible with the race/class setup

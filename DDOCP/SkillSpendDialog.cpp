@@ -174,8 +174,8 @@ void CSkillSpendDialog::PopulateItems()
         for (size_t level = 0; level < MAX_CLASS_LEVELS; ++level)
         {
             const LevelTraining & levelData = m_pCharacter->LevelData(level);
-            const std::list<TrainedSkill> & ts = levelData.TrainedSkills();
-            std::list<TrainedSkill>::const_iterator it = ts.begin();
+            const std::vector<TrainedSkill> & ts = levelData.TrainedSkills();
+            std::vector<TrainedSkill>::const_iterator it = ts.begin();
             std::vector<size_t> skillRanks(Skill_Count, 0);
             while (it != ts.end())
             {
@@ -200,10 +200,10 @@ void CSkillSpendDialog::PopulateItems()
                     {
                         text.Format("%d", fullRanks);
                     }
-                    // its a cross class skill, show in multiples of ½
+                    // its a cross class skill, show in multiples of ï¿½
                     if (skillRanks[skill] % 2 != 0)
                     {
-                        text += "½";
+                        text += "ï¿½";
                     }
                 }
                 m_skillsList.SetItemText(index, 1 + level, text);
@@ -480,8 +480,8 @@ void CSkillSpendDialog::OnRightClickSkillsList(NMHDR*, LRESULT* pResult)
             int level = pt.x - 1;
             // revoke a rank if they have trained ranks at this level
             const LevelTraining & levelData = m_pCharacter->LevelData(level);
-            const std::list<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
-            std::list<TrainedSkill>::const_iterator it = trainedSkills.begin();
+            const std::vector<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
+            std::vector<TrainedSkill>::const_iterator it = trainedSkills.begin();
             bool hasTrainedRanks = false;
             while (it != trainedSkills.end())
             {
@@ -638,8 +638,8 @@ void CSkillSpendDialog::OnButtonClearThisSkill()
         {
             rankRevoked = false;
             // revoke a rank if they have trained ranks at this level
-            const std::list<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
-            std::list<TrainedSkill>::const_iterator it = trainedSkills.begin();
+            const std::vector<TrainedSkill> & trainedSkills = levelData.TrainedSkills();
+            std::vector<TrainedSkill>::const_iterator it = trainedSkills.begin();
             while (it != trainedSkills.end())
             {
                 if ((*it).Skill() == skill)
@@ -671,8 +671,8 @@ void CSkillSpendDialog::OnButtonClearAllSkills()
         {
             rankRevoked = false;
             // revoke all trained ranks for all skills at this level
-            std::list<TrainedSkill> trainedSkills = levelData.TrainedSkills();
-            std::list<TrainedSkill>::const_iterator it = trainedSkills.begin();
+            std::vector<TrainedSkill> trainedSkills = levelData.TrainedSkills();
+            std::vector<TrainedSkill>::const_iterator it = trainedSkills.begin();
             while (it != trainedSkills.end())
             {
                 // don't re-evaluate feats etc on each skill point revoke

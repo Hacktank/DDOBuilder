@@ -199,7 +199,7 @@ void Spell::VerifyObject() const
         ++eit;
     }
     // verify stance objects
-    std::list<Stance>::const_iterator sit = m_StanceData.begin();
+    auto sit = m_StanceData.begin();
     while (sit != m_StanceData.end())
     {
         ok &= (*sit).VerifyObject(&ss);

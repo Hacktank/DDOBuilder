@@ -14,7 +14,7 @@ class AugmentsFile :
         ~AugmentsFile(void);
 
         void Read();
-        const std::list<Augment> & Augments() const;
+        const std::vector<Augment> & Augments() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -24,7 +24,7 @@ class AugmentsFile :
         void EndElement();
 
         std::string m_filename;
-        std::list<Augment> m_loadedAugments;
+        std::vector<Augment> m_loadedAugments;
         size_t m_loadTotal;
 };
 

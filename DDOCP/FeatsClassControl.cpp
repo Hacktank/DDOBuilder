@@ -41,14 +41,14 @@ CFeatsClassControl::CFeatsClassControl() :
     m_classImagesLarge.Add(&classImagesLarge, (CBitmap*)NULL);
 
     // create the image list for the feats
-    const std::list<Feat> & allFeats = StandardFeats();
+    const std::vector<Feat> & allFeats = StandardFeats();
     m_imagesFeats.Create(
             32,
             32,
             ILC_COLOR32,
             0,
             allFeats.size());
-    std::list<Feat>::const_iterator it = allFeats.begin();
+    std::vector<Feat>::const_iterator it = allFeats.begin();
     while (it != allFeats.end())
     {
         (*it).AddImage(&m_imagesFeats);
@@ -1433,8 +1433,8 @@ void CFeatsClassControl::SetClassLevel(ClassType ct, size_t level)
 size_t CFeatsClassControl::FeatImageIndex(const std::string & name) const
 {
     size_t featImageIndex = 0;
-    const std::list<Feat> & allFeats = StandardFeats();
-    std::list<Feat>::const_iterator it = allFeats.begin();
+    const std::vector<Feat> & allFeats = StandardFeats();
+    std::vector<Feat>::const_iterator it = allFeats.begin();
     while (it != allFeats.end())
     {
         if ((*it).Name() == name)

@@ -47,8 +47,8 @@ class Item :
                 DL_STRING(_, Description) \
                 DL_OPTIONAL_STRING(_, DropLocation) \
                 DL_SIMPLE(_, size_t, MinLevel, 0) \
-                DL_STRING_LIST(_, EffectDescription) \
-                DL_STRING_LIST(_, DRBypass) \
+                DL_STRING_VECTOR(_, EffectDescription) \
+                DL_STRING_VECTOR(_, DRBypass) \
                 DL_OPTIONAL_OBJECT(_, Requirements, RequirementsToUse) \
                 DL_OPTIONAL_OBJECT(_, Dice, DamageDice) \
                 DL_OPTIONAL_OBJECT(_, ItemSpecificEffects, ItemEffects) \
@@ -60,14 +60,14 @@ class Item :
                 DL_OPTIONAL_ENUM(_, ArmorType, Armor, Armor_Unknown, armorTypeMap) \
                 DL_OBJECT(_, EquipmentSlot, Slots) \
                 DL_OPTIONAL_OBJECT(_, EquipmentSlot, RestrictedSlots) \
-                DL_STRING_LIST(_, SetBonus) \
+                DL_STRING_VECTOR(_, SetBonus) \
                 DL_OBJECT_VECTOR(_, Effect, Effects) \
                 DL_OBJECT_VECTOR(_, ItemAugment, Augments) \
                 DL_OBJECT_VECTOR(_, SlotUpgrade, SlotUpgrades) \
                 DL_FLAG(_, IsGreensteel) \
                 DL_FLAG(_, MinorArtifact) \
-                DL_OBJECT_LIST(_, Stance, Stances) \
-                DL_OBJECT_LIST(_, DC, EffectDC) \
+                DL_OBJECT_VECTOR(_, Stance, Stances) \
+                DL_OBJECT_VECTOR(_, DC, EffectDC) \
                 DL_OPTIONAL_OBJECT(_, SentientJewel, SentientIntelligence)
 
         DL_DECLARE_ACCESS(Item_PROPERTIES)

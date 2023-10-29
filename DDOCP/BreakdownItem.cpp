@@ -7,6 +7,8 @@
 #include "GlobalSupportFunctions.h"
 #include "TreeListCtrl.h"
 
+#include "Utilities.h"
+
 BreakdownItem::BreakdownItem(
         BreakdownType type,
         MfcControls::CTreeListCtrl * treeList,
@@ -40,10 +42,10 @@ void BreakdownItem::AddItems(CListCtrl * pControl)
     // add all the items
     AddActiveItems(m_otherEffects, pControl, false);
     AddActiveItems(m_effects, pControl, false);
-    std::list<ActiveEffect> itemEffects = m_itemEffects;
-    std::list<ActiveEffect> inactiveEffects;
-    std::list<ActiveEffect> nonStackingEffects;
-    std::list<ActiveEffect> temporaryEffects;
+    std::vector<ActiveEffect> itemEffects = m_itemEffects;
+    std::vector<ActiveEffect> inactiveEffects;
+    std::vector<ActiveEffect> nonStackingEffects;
+    std::vector<ActiveEffect> temporaryEffects;
     RemoveInactive(&itemEffects, &inactiveEffects);
     RemoveNonStacking(&itemEffects, &nonStackingEffects);
     RemoveTemporary(&itemEffects, &temporaryEffects);
@@ -140,10 +142,10 @@ double BreakdownItem::Total() const
     total += SumItems(m_otherEffects, false);
     total += SumItems(m_effects, false);
 
-    std::list<ActiveEffect> itemEffects = m_itemEffects;
-    std::list<ActiveEffect> inactiveEffects;
-    std::list<ActiveEffect> nonStackingEffects;
-    std::list<ActiveEffect> temporaryEffects;
+    std::vector<ActiveEffect> itemEffects = m_itemEffects;
+    std::vector<ActiveEffect> inactiveEffects;
+    std::vector<ActiveEffect> nonStackingEffects;
+    std::vector<ActiveEffect> temporaryEffects;
     RemoveInactive(&itemEffects, &inactiveEffects);
     RemoveNonStacking(&itemEffects, &nonStackingEffects);
     RemoveTemporary(&itemEffects, &temporaryEffects);
@@ -174,12 +176,12 @@ double BreakdownItem::CappedTotal() const
 }
 
 void BreakdownItem::AddActiveItems(
-        const std::list<ActiveEffect> & effects,
+        const std::vector<ActiveEffect> & effects,
         CListCtrl * pControl,
         bool bShowMultiplier)
 {
     // add all the breakdown items from this particular list
-    std::list<ActiveEffect>::const_iterator it = effects.begin();
+    std::vector<ActiveEffect>::const_iterator it = effects.begin();
     while (it != effects.end())
     {
         // only add active items when it has an active stance flag
@@ -214,11 +216,11 @@ void BreakdownItem::AddActiveItems(
 }
 
 void BreakdownItem::AddActivePercentageItems(
-        const std::list<ActiveEffect> & effects,
+        const std::vector<ActiveEffect> & effects,
         CListCtrl * pControl)
 {
     // add all the breakdown items from this particular list
-    std::list<ActiveEffect>::const_iterator it = effects.begin();
+    std::vector<ActiveEffect>::const_iterator it = effects.begin();
     while (it != effects.end())
     {
         // only add active items when it has an active stance flag and is a percentage
@@ -253,12 +255,12 @@ void BreakdownItem::AddActivePercentageItems(
 }
 
 void BreakdownItem::AddDeactiveItems(
-        const std::list<ActiveEffect> & effects,
+        const std::vector<ActiveEffect> & effects,
         CListCtrl * pControl,
         bool bShowMultiplier)
 {
     // add all inactive breakdown items from this particular list
-    std::list<ActiveEffect>::const_iterator it = effects.begin();
+    std::vector<ActiveEffect>::const_iterator it = effects.begin();
     while (it != effects.end())
     {
         // only add inactive items when it has a stance flag
@@ -292,11 +294,11 @@ void BreakdownItem::AddDeactiveItems(
 }
 
 double BreakdownItem::SumItems(
-        const std::list<ActiveEffect> & effects,
+        const std::vector<ActiveEffect> & effects,
         bool bApplyMultiplier) const
 {
     double total = StacksByMultiplication() ? 100.0 : 0.0;
-    std::list<ActiveEffect>::const_iterator it = effects.begin();
+    std::vector<ActiveEffect>::const_iterator it = effects.begin();
     while (it != effects.end())
     {
         // only count the active items in the total
@@ -327,11 +329,11 @@ double BreakdownItem::SumItems(
 }
 
 double BreakdownItem::DoPercentageEffects(
-        const std::list<ActiveEffect> & effects,
+        const std::vector<ActiveEffect> & effects,
         double total) const
 {
     double amountAdded = 0;
-    std::list<ActiveEffect>::const_iterator it = effects.begin();
+    std::vector<ActiveEffect>::const_iterator it = effects.begin();
     while (it != effects.end())
     {
         // only count the active items in the total
@@ -390,7 +392,7 @@ void BreakdownItem::RemoveFirstAbility(
     {
         if (m_mainAbility[i] == as)
         {
-            m_mainAbility.erase(m_mainAbility.begin() + i);
+            Utilities::vectorQuickErase(m_mainAbility, i);
             break;      // done
         }
     }
@@ -427,7 +429,7 @@ void BreakdownItem::RemoveFirstAbility(
     {
         if (m_mainAbility[i] == as)
         {
-            m_mainAbility.erase(m_mainAbility.begin() + i);
+            Utilities::vectorQuickErase(m_mainAbility, i);
             break;      // done
         }
     }
@@ -558,21 +560,21 @@ void BreakdownItem::RevokeItemEffect(const ActiveEffect & effect)
 }
 
 void BreakdownItem::RemoveInactive(
-        std::list<ActiveEffect> * effects,
-        std::list<ActiveEffect> * inactiveEffects) const
+        std::vector<ActiveEffect> * effects,
+        std::vector<ActiveEffect> * inactiveEffects) const
 {
     // add all inactive breakdown items from this particular list
     inactiveEffects->clear(); // ensure empty
 
-    std::list<ActiveEffect>::iterator it = effects->begin();
+    std::vector<ActiveEffect>::iterator it = effects->begin();
     while (it != effects->end())
     {
         // only add inactive items when it has a stance flag
         if (!(*it).IsActive(m_pCharacter, m_weapon))
         {
             // add the item to be removed into the inactive list
-            inactiveEffects->push_back((*it));
-            it = effects->erase(it);      // remove from source list
+            inactiveEffects->push_back(std::move(*it));
+            it = Utilities::vectorQuickErase(*effects, it); // remove from source list
         }
         else
         {
@@ -582,8 +584,8 @@ void BreakdownItem::RemoveInactive(
 }
 
 void BreakdownItem::RemoveNonStacking(
-        std::list<ActiveEffect> * effects,
-        std::list<ActiveEffect> * nonStackingEffects) const
+        std::vector<ActiveEffect> * effects,
+        std::vector<ActiveEffect> * nonStackingEffects) const
 {
     // the same effect type can come from multiple sources in the form of
     // buffs or equipment effects. To avoid these giving increased values
@@ -592,12 +594,12 @@ void BreakdownItem::RemoveNonStacking(
     nonStackingEffects->clear();        // ensure empty
     // look at each item in the list and see if it is a lesser or duplicate
     // of another effect
-    std::list<ActiveEffect>::iterator sit = effects->begin();
+    std::vector<ActiveEffect>::iterator sit = effects->begin();
     while (sit != effects->end())
     {
         bool removeIt = false;
         // now compare it to all other items in the same list
-        std::list<ActiveEffect>::iterator tit = effects->begin();
+        std::vector<ActiveEffect>::iterator tit = effects->begin();
         while (!removeIt && tit != effects->end())
         {
             // don't compare the item against itself
@@ -611,8 +613,8 @@ void BreakdownItem::RemoveNonStacking(
         if (removeIt)
         {
             // add the item to be removed into the non stacking list
-            nonStackingEffects->push_back((*sit));
-            sit = effects->erase(sit);      // remove from source list
+            nonStackingEffects->push_back(std::move(*sit));
+            sit = Utilities::vectorQuickErase(*effects, sit); // remove from source list
         }
         else
         {
@@ -623,19 +625,19 @@ void BreakdownItem::RemoveNonStacking(
 }
 
 void BreakdownItem::RemoveTemporary(
-        std::list<ActiveEffect> * effects,
-        std::list<ActiveEffect> * temporaryEffects) const
+        std::vector<ActiveEffect> * effects,
+        std::vector<ActiveEffect> * temporaryEffects) const
 {
     // any bonus type of "Temporary" is added after percentage multipliers
     temporaryEffects->clear();        // ensure empty
-    std::list<ActiveEffect>::iterator sit = effects->begin();
+    std::vector<ActiveEffect>::iterator sit = effects->begin();
     while (sit != effects->end())
     {
         if ((*sit).Bonus() == Bonus_temporary)
         {
             // move it to the other list
-            temporaryEffects->push_back((*sit));
-            sit = effects->erase(sit);      // remove from source list
+            temporaryEffects->push_back(std::move(*sit));
+            sit = Utilities::vectorQuickErase(*effects, sit); // remove from source list
         }
         else
         {
@@ -646,13 +648,13 @@ void BreakdownItem::RemoveTemporary(
 }
 
 void BreakdownItem::AddEffect(
-        std::list<ActiveEffect> * effectList,
+        std::vector<ActiveEffect> * effectList,
         const ActiveEffect & effect)
 {
     // if an identical effect is already in the list, increase its stacking
     // else add a new item
     bool found = false;
-    std::list<ActiveEffect>::iterator it = effectList->begin();
+    std::vector<ActiveEffect>::iterator it = effectList->begin();
     while (!found && it != effectList->end())
     {
         // amount per level effects need to keep individual stacks of things
@@ -674,13 +676,13 @@ void BreakdownItem::AddEffect(
 }
 
 void BreakdownItem::RevokeEffect(
-        std::list<ActiveEffect> * effectList,
+        std::vector<ActiveEffect> * effectList,
         const ActiveEffect & effect)
 {
     // if an identical effect is already in the list, decrease its stacking
     // and remove if all stacks gone
     bool found = false;
-    std::list<ActiveEffect>::iterator it = effectList->begin();
+    std::vector<ActiveEffect>::iterator it = effectList->begin();
     while (!found && it != effectList->end())
     {
         if (effect == (*it))
@@ -690,7 +692,7 @@ void BreakdownItem::RevokeEffect(
             bool deleteIt = (*it).RevokeStack();        // true if no stacks left
             if (deleteIt)
             {
-                it = effectList->erase(it);
+                it = Utilities::vectorQuickErase(*effectList, it);
             }
             break;
         }
@@ -749,10 +751,10 @@ bool BreakdownItem::UpdateTreeItemTotals()
     return itemChanged;
 }
 
-bool BreakdownItem::UpdateTreeItemTotals(std::list<ActiveEffect> * list)
+bool BreakdownItem::UpdateTreeItemTotals(std::vector<ActiveEffect> * list)
 {
     bool itemChanged = false;
-    std::list<ActiveEffect>::iterator it = list->begin();
+    std::vector<ActiveEffect>::iterator it = list->begin();
     while (it != list->end())
     {
         if ((*it).IsAmountPerAP())
@@ -770,11 +772,11 @@ bool BreakdownItem::UpdateTreeItemTotals(std::list<ActiveEffect> * list)
 }
 
 bool BreakdownItem::UpdateEffectAmounts(
-        std::list<ActiveEffect> * list,
+        std::vector<ActiveEffect> * list,
         BreakdownType bt)
 {
     bool itemChanged = false;
-    std::list<ActiveEffect>::iterator it = list->begin();
+    std::vector<ActiveEffect>::iterator it = list->begin();
     while (it != list->end())
     {
         if ((*it).HasBreakdownDependency(bt))
@@ -789,10 +791,10 @@ bool BreakdownItem::UpdateEffectAmounts(
     return itemChanged;
 }
 
-bool BreakdownItem::UpdateEffectAmounts(std::list<ActiveEffect> * list, ClassType type)
+bool BreakdownItem::UpdateEffectAmounts(std::vector<ActiveEffect> * list, ClassType type)
 {
     bool itemChanged = false;
-    std::list<ActiveEffect>::iterator it = list->begin();
+    std::vector<ActiveEffect>::iterator it = list->begin();
     while (it != list->end())
     {
         if ((*it).BasedOnClassLevel(type))
@@ -834,9 +836,9 @@ bool BreakdownItem::GetActiveEffect(
     {
         // convert the first enum entry to a string. can only handle 1 DR Bypass
         // per effect object.
-        std::list<std::string> enumsToString;
-        std::list<DamageReductionType> drs = effect.DR();
-        std::list<DamageReductionType>::const_iterator it = drs.begin();
+        std::vector<std::string> enumsToString;
+        const std::list<DamageReductionType> drs = effect.DR();
+        auto it = drs.begin();
         if (it != drs.end())
         {
             enumsToString.push_back((LPCTSTR)EnumEntryText((*it), drTypeMap));
@@ -1296,8 +1298,8 @@ double BreakdownItem::GetEffectValue(BonusType bt) const
 {
     // now we have the list look for and sum all items with the given effect type
     double total = 0.0;
-    std::list<ActiveEffect> allActiveEffects = AllActiveEffects();
-    std::list<ActiveEffect>::iterator it = allActiveEffects.begin();
+    std::vector<ActiveEffect> allActiveEffects = AllActiveEffects();
+    std::vector<ActiveEffect>::iterator it = allActiveEffects.begin();
     while (it != allActiveEffects.end())
     {
         if ((*it).Bonus() == bt)
@@ -1309,17 +1311,17 @@ double BreakdownItem::GetEffectValue(BonusType bt) const
     return total;
 }
 
-std::list<ActiveEffect> BreakdownItem::AllActiveEffects() const
+std::vector<ActiveEffect> BreakdownItem::AllActiveEffects() const
 {
     // build a list of all the current active effects
-    std::list<ActiveEffect> allActiveEffects;
+    std::vector<ActiveEffect> allActiveEffects;
     allActiveEffects = m_otherEffects;
     allActiveEffects.insert(allActiveEffects.end(), m_effects.begin(), m_effects.end());
-    std::list<ActiveEffect> itemEffects = m_itemEffects;
-    std::list<ActiveEffect> inactiveEffects;
-    std::list<ActiveEffect> nonStackingEffects;
+    std::vector<ActiveEffect> itemEffects = m_itemEffects;
+    std::vector<ActiveEffect> inactiveEffects;
+    std::vector<ActiveEffect> nonStackingEffects;
     RemoveInactive(&itemEffects, &inactiveEffects);
     RemoveNonStacking(&itemEffects, &nonStackingEffects);
     allActiveEffects.insert(allActiveEffects.end(), itemEffects.begin(), itemEffects.end());
-    return allActiveEffects;
+    return std::move(allActiveEffects);
 }

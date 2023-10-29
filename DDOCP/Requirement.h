@@ -24,7 +24,7 @@ class Requirement :
                 const Character & charData,
                 const std::vector<size_t> & classLevels,
                 size_t totalLevel,
-                const std::list<TrainedFeat> & currentFeats,
+                const std::vector<TrainedFeat> & currentFeats,
                 bool includeTomes) const;
         bool CanTrainEnhancement(
                 const Character & charData,
@@ -44,7 +44,7 @@ class Requirement :
 
         bool VerifyObject(
                 std::stringstream * ss,
-                const std::list<Feat> & allFeats) const;
+                const std::vector<Feat> & allFeats) const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(

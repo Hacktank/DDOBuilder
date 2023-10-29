@@ -52,7 +52,7 @@ class CEpicDestinyViewU51 :
 
         virtual void UpdateTotalChanged(BreakdownItem * item, BreakdownType type) override;
     private:
-        std::list<EnhancementTree> DetermineTrees();
+        std::vector<EnhancementTree> DetermineTrees();
         void CreateEnhancementWindows();
         void DestroyEnhancementWindows();
         void UpdateEnhancementWindows();
@@ -71,7 +71,7 @@ class CEpicDestinyViewU51 :
         };
         CDocument * m_pDocument;
         Character * m_pCharacter;
-        std::list<EnhancementTree> m_availableTrees;
+        std::vector<EnhancementTree> m_availableTrees;
         CComboBox m_comboTreeSelect[MST_Number];
         CIconButton m_destinyTrees[13];
         CStatic m_staticPreview;

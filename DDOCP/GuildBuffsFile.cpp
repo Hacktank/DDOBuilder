@@ -65,7 +65,7 @@ void GuildBuffsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<GuildBuff> & GuildBuffsFile::GuildBuffs() const
+const std::vector<GuildBuff> & GuildBuffsFile::GuildBuffs() const
 {
     return m_loadedGuildBuffs;
 }

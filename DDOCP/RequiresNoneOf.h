@@ -19,7 +19,7 @@ class RequiresNoneOf :
                 const Character & charData, 
                 const std::vector<size_t> & classLevels,
                 size_t totalLevel,
-                const std::list<TrainedFeat> & currentFeats,
+                const std::vector<TrainedFeat> & currentFeats,
                 bool includeTomes) const;
         bool CanTrainEnhancement(
             const Character & charData,
@@ -34,7 +34,7 @@ class RequiresNoneOf :
 
         bool VerifyObject(
                 std::stringstream * ss,
-                const std::list<Feat> & allFeats) const;
+                const std::vector<Feat> & allFeats) const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -45,7 +45,7 @@ class RequiresNoneOf :
 
         #define RequiresNoneOf_PROPERTIES(_) \
                 DL_OPTIONAL_STRING(_, DisplayDescription) \
-                DL_OBJECT_LIST(_, Requirement, Requirements)
+                DL_OBJECT_VECTOR(_, Requirement, Requirements)
 
         DL_DECLARE_ACCESS(RequiresNoneOf_PROPERTIES)
         DL_DECLARE_VARIABLES(RequiresNoneOf_PROPERTIES)

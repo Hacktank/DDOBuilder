@@ -139,7 +139,7 @@ void CSLAControl::OnPaint()
                 m_hitBoxes.push_back(hitBox);
             }
             // show the fixed SLA icon
-            std::list<SLA>::iterator it = m_SLAs.begin();
+            std::vector<SLA>::iterator it = m_SLAs.begin();
             std::advance(it, fs);
             const Spell & spell = FindSpellByName((*it).Name());
             CImage spellImage;
@@ -206,7 +206,7 @@ const SLAHitBox * CSLAControl::FindByPoint(CRect * pRect) const
     ScreenToClient(&point);
     // see if we need to highlight the item under the cursor
     const SLAHitBox * item = NULL;
-    std::list<SLAHitBox>::const_iterator it = m_hitBoxes.begin();
+    std::vector<SLAHitBox>::const_iterator it = m_hitBoxes.begin();
     while (item == NULL && it != m_hitBoxes.end())
     {
         if ((*it).IsInRect(point))
@@ -309,7 +309,7 @@ void CSLAControl::SetTooltipText(
 {
     // find the SLA to show info about
     std::string slaName;
-    std::list<SLA>::const_iterator si = m_SLAs.begin();
+    std::vector<SLA>::const_iterator si = m_SLAs.begin();
     std::advance(si, item.SLAIndex());
     slaName = (*si).Name();
     // now we have the spell name, look it up
@@ -328,7 +328,7 @@ void CSLAControl::AddSLA(const std::string & slaName, size_t stacks)
 {
     // add the spell at the relevant level if not exist already
     bool found = false;
-    std::list<SLA>::iterator it = m_SLAs.begin();
+    std::vector<SLA>::iterator it = m_SLAs.begin();
     while (!found && it != m_SLAs.end())
     {
         if ((*it).Name() == slaName)
@@ -353,7 +353,7 @@ void CSLAControl::AddSLA(const std::string & slaName, size_t stacks)
 void CSLAControl::RevokeSLA(const std::string & slaName)
 {
     // remove the named spell from the relevant level
-    std::list<SLA>::iterator it = m_SLAs.begin();
+    std::vector<SLA>::iterator it = m_SLAs.begin();
     while (it != m_SLAs.end())
     {
         if ((*it).Name() == slaName)
@@ -375,7 +375,7 @@ void CSLAControl::RevokeSLA(const std::string & slaName)
     }
 }
 
-const std::list<SLA> & CSLAControl::SLAs() const
+const std::vector<SLA> & CSLAControl::SLAs() const
 {
     return m_SLAs;
 }

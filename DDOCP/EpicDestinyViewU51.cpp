@@ -238,15 +238,15 @@ BOOL CEpicDestinyViewU51::OnEraseBkgnd(CDC* pDC)
     return OnEraseBackground(this, pDC, controlsNotToBeErased);
 }
 
-std::list<EnhancementTree> CEpicDestinyViewU51::DetermineTrees()
+std::vector<EnhancementTree> CEpicDestinyViewU51::DetermineTrees()
 {
-    std::list<EnhancementTree> trees;
+    std::vector<EnhancementTree> trees;
     // see which destiny trees are available
     if (m_pCharacter != NULL)
     {
         // just find all the available epic destiny trees
-        const std::list<EnhancementTree> & allTrees = EnhancementTrees();
-        std::list<EnhancementTree>::const_iterator it = allTrees.begin();
+        const std::vector<EnhancementTree> & allTrees = EnhancementTrees();
+        std::vector<EnhancementTree>::const_iterator it = allTrees.begin();
         while (it != allTrees.end())
         {
             if ((*it).HasIsEpicDestiny()
@@ -269,7 +269,7 @@ std::list<EnhancementTree> CEpicDestinyViewU51::DetermineTrees()
             {
                 // we have a tree selected here, is it in the new list of trees available?
                 bool found = false;
-                std::list<EnhancementTree>::iterator tit = trees.begin();
+                std::vector<EnhancementTree>::iterator tit = trees.begin();
                 while (!found && tit != trees.end())
                 {
                     if ((*tit).Name() == treeName)
@@ -299,7 +299,7 @@ std::list<EnhancementTree> CEpicDestinyViewU51::DetermineTrees()
 
         // now that we have the tree list, assign them to unused tree selections
         // if there are any left
-        std::list<EnhancementTree>::iterator tit = trees.begin();
+        std::vector<EnhancementTree>::iterator tit = trees.begin();
         while (tit != trees.end())
         {
             if (!selTrees.IsTreePresent((*tit).Name()))
@@ -441,7 +441,7 @@ void CEpicDestinyViewU51::PopulateTreeCombo(
     // now add any trees which are not already selected
     int sel = 0;        // assume "No selection"
     const SelectedDestinyTrees & selTrees = m_pCharacter->DestinyTrees();
-    std::list<EnhancementTree>::iterator tit = m_availableTrees.begin();
+    std::vector<EnhancementTree>::iterator tit = m_availableTrees.begin();
     while (tit != m_availableTrees.end())
     {
         if (!selTrees.IsTreePresent((*tit).Name())
@@ -494,7 +494,7 @@ LRESULT CEpicDestinyViewU51::OnUpdateTrees(WPARAM wParam, LPARAM lParam)
 void CEpicDestinyViewU51::UpdateTrees()
 {
     // only update if there is a change in actual trees
-    std::list<EnhancementTree> trees = DetermineTrees();
+    std::vector<EnhancementTree> trees = DetermineTrees();
     if (trees != m_availableTrees)
     {
         // yup, they have changed
@@ -611,8 +611,8 @@ void CEpicDestinyViewU51::AddCustomButtons()
     CDDOCPApp * pDDOApp = dynamic_cast<CDDOCPApp*>(pApp);
     if (pDDOApp != NULL)
     {
-        const std::list<Feat> & claimedDestinyTreeFeats = pDDOApp->DestinyTreeFeats();
-        std::list<Feat>::const_iterator it = claimedDestinyTreeFeats.begin();
+        const std::vector<Feat> & claimedDestinyTreeFeats = pDDOApp->DestinyTreeFeats();
+        std::vector<Feat>::const_iterator it = claimedDestinyTreeFeats.begin();
         size_t buttonIndex = 0;
         while (it != claimedDestinyTreeFeats.end())
         {
@@ -649,7 +649,7 @@ void CEpicDestinyViewU51::OnClaimTree(UINT nID)
     }
     m_destinyTrees[id].SetSelected(!trained);
     // ensure displayed trees are shown
-    std::list<EnhancementTree> trees = DetermineTrees();
+    std::vector<EnhancementTree> trees = DetermineTrees();
     if (trees != m_availableTrees)
     {
         // yup, they have changed

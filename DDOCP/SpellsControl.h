@@ -78,7 +78,7 @@ class CSpellsControl :
         void UpdateSpells(size_t oldCasterLevel);
         void AddFixedSpell(const std::string & spellName, size_t level);
         void RevokeFixedSpell(const std::string & spellName, size_t level);
-        std::list<TrainedSpell> FixedSpells(size_t level) const;
+        std::vector<TrainedSpell> FixedSpells(size_t level) const;
 
         CSize RequiredSize();
 
@@ -112,22 +112,22 @@ class CSpellsControl :
         void RemoveTrained(
                 std::vector<Spell> * spells,
                 std::string * currentSelection);
-        void ApplySpellEffects(const std::list<TrainedSpell> & spells);
-        void RevokeSpellEffects(const std::list<TrainedSpell> & spells, size_t casterLevel);
+        void ApplySpellEffects(const std::vector<TrainedSpell> & spells);
+        void RevokeSpellEffects(const std::vector<TrainedSpell> & spells, size_t casterLevel);
         void ProcessScrollBars(int cx, int cy);
 
         Character * m_pCharacter;
         ClassType m_class;
         CSize m_bitmapSize;
         CBitmap m_cachedDisplay;
-        std::list<SpellHitBox> m_hitBoxes;
+        std::vector<SpellHitBox> m_hitBoxes;
         CSpellTip m_tooltip;
         bool m_showingTip;
         bool m_tipCreated;
         std::vector<size_t> m_spellsPerLevel;
         const SpellHitBox * m_pTooltipItem;
-        std::list<TrainedSpell> m_trainedSpells[MAX_SPELL_LEVEL];
-        std::list<FixedSpell> m_fixedSpells[MAX_SPELL_LEVEL];
+        std::vector<TrainedSpell> m_trainedSpells[MAX_SPELL_LEVEL];
+        std::vector<FixedSpell> m_fixedSpells[MAX_SPELL_LEVEL];
         CComboBoxTooltip m_comboSpellSelect;
         CImageList m_spellImagesList;
         size_t m_editSpellLevel;

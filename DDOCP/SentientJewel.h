@@ -38,8 +38,8 @@ class SentientJewel :
         #define SentientJewel_PROPERTIES(_) \
                 DL_OPTIONAL_STRING(_, Personality) \
                 DL_SIMPLE(_, size_t, NumFiligrees, 0) \
-                DL_OBJECT_LIST(_, WeaponFiligree, Filigrees) \
-                DL_OBJECT_LIST(_, ArtifactFiligree, ArtifactFiligrees) \
+                DL_OBJECT_VECTOR(_, WeaponFiligree, Filigrees) \
+                DL_OBJECT_VECTOR(_, ArtifactFiligree, ArtifactFiligrees) \
                 /* all following is for backwards compatibility */ \
                 DL_FLAG(_, SentientSpark) \
                 DL_OPTIONAL_STRING(_, Filigree1) \

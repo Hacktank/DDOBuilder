@@ -22,7 +22,7 @@ class Requirements :
                 const Character & charData,
                 const std::vector<size_t> & classLevels,
                 size_t totalLevel,
-                const std::list<TrainedFeat> & currentFeats,
+                const std::vector<TrainedFeat> & currentFeats,
                 bool includeTomes) const;
         bool CanTrainEnhancement(
                 const Character & charData,
@@ -40,8 +40,8 @@ class Requirements :
         bool RequiresEnhancement(const std::string& name, const std::string& selection) const;
         bool VerifyObject(
                 std::stringstream * ss,
-                const std::list<EnhancementTree> & allTrees,
-                const std::list<Feat> & allFeats) const;
+                const std::vector<EnhancementTree> & allTrees,
+                const std::vector<Feat> & allFeats) const;
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
                 const XmlLib::SaxString & name,
@@ -50,8 +50,8 @@ class Requirements :
         virtual void EndElement();
 
         #define Requirements_PROPERTIES(_) \
-                DL_OBJECT_LIST(_, Requirement, Requires) \
-                DL_OBJECT_LIST(_, RequiresOneOf, OneOf) \
+                DL_OBJECT_VECTOR(_, Requirement, Requires) \
+                DL_OBJECT_VECTOR(_, RequiresOneOf, OneOf) \
                 DL_OPTIONAL_OBJECT(_, RequiresNoneOf, NoneOf)
 
         DL_DECLARE_ACCESS(Requirements_PROPERTIES)

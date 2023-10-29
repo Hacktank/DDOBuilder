@@ -78,8 +78,8 @@ void CSelfAndPartyBuffsView::OnInitialUpdate()
 
     m_bPopulating = true;
     // add the items to the list
-    const std::list<OptionalBuff> & buffs = OptionalBuffs();
-    std::list<OptionalBuff>::const_iterator it = buffs.begin();
+    const std::vector<OptionalBuff> & buffs = OptionalBuffs();
+    std::vector<OptionalBuff>::const_iterator it = buffs.begin();
     while (it != buffs.end())
     {
         m_listBuffs.InsertItem(m_listBuffs.GetItemCount(), (*it).Name().c_str(), 0);
@@ -171,13 +171,13 @@ void CSelfAndPartyBuffsView::CheckSelectedItems()
     {
         // set the check state of all the items selected for this character
         m_bPopulating = true;
-        const std::list<std::string> & enabledBuffs = m_pCharacter->EnabledSelfAndPartyBuffs();
+        const std::vector<std::string> & enabledBuffs = m_pCharacter->EnabledSelfAndPartyBuffs();
         for (size_t i = 0; i < (size_t)m_listBuffs.GetItemCount(); ++i)
         {
             CString item = m_listBuffs.GetItemText(i, 0);
             // see if its in our list of activated buffs
             bool bActive = false;
-            std::list<std::string>::const_iterator it = enabledBuffs.begin();
+            auto it = enabledBuffs.begin();
             while (!bActive && it != enabledBuffs.end())
             {
                 if ((*it) == (LPCTSTR)item)

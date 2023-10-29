@@ -14,7 +14,7 @@ class SpellsFile :
         ~SpellsFile(void);
 
         void Read();
-        const std::list<Spell> & Spells() const;
+        const std::vector<Spell> & Spells() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -24,7 +24,7 @@ class SpellsFile :
         void EndElement();
 
         std::string m_filename;
-        std::list<Spell> m_loadedSpells;
+        std::vector<Spell> m_loadedSpells;
         size_t m_loadTotal;
 };
 

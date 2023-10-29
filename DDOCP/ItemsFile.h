@@ -14,7 +14,7 @@ class ItemsFile :
         ~ItemsFile(void);
 
         void ReadFiles();
-        const std::list<Item> & Items() const;
+        const std::vector<Item> & Items() const;
 
     protected:
         XmlLib::SaxContentElementInterface * StartElement(
@@ -26,7 +26,7 @@ class ItemsFile :
     private:
         bool ReadFile(const std::string & filename);
         std::string m_path;
-        std::list<Item> m_loadedItems;
+        std::vector<Item> m_loadedItems;
         size_t m_loadTotal;
 };
 

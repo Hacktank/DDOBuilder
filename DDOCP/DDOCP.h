@@ -31,26 +31,26 @@ class CDDOCPApp :
         virtual BOOL InitInstance();
         virtual int ExitInstance();
 
-        const std::list<Feat> & AllFeats() const;
-        const std::list<Feat> & StandardFeats() const;
-        const std::list<Feat> & HeroicPastLifeFeats() const;
-        const std::list<Feat> & RacialPastLifeFeats() const;
-        const std::list<Feat> & IconicPastLifeFeats() const;
-        const std::list<Feat> & EpicPastLifeFeats(const std::string & sphere) const;
-        const std::list<Feat> & SpecialFeats() const;
-        const std::list<Feat> & UniversalTreeFeats() const;
-        const std::list<Feat> & DestinyTreeFeats() const;
-        const std::list<Feat> & FavorFeats() const;
+        const std::vector<Feat> & AllFeats() const;
+        const std::vector<Feat> & StandardFeats() const;
+        const std::vector<Feat> & HeroicPastLifeFeats() const;
+        const std::vector<Feat> & RacialPastLifeFeats() const;
+        const std::vector<Feat> & IconicPastLifeFeats() const;
+        const std::vector<Feat> & EpicPastLifeFeats(const std::string & sphere) const;
+        const std::vector<Feat> & SpecialFeats() const;
+        const std::vector<Feat> & UniversalTreeFeats() const;
+        const std::vector<Feat> & DestinyTreeFeats() const;
+        const std::vector<Feat> & FavorFeats() const;
 
-        const std::list<EnhancementTree> & EnhancementTrees() const;
-        const std::list<Spell> & Spells() const;
-        const std::list<Item> & Items() const;
-        const std::list<Augment> & Augments() const;
-        const std::list<GuildBuff> & GuildBuffs() const;
-        const std::list<OptionalBuff> & OptionalBuffs() const;
-        const std::list<SetBonus> & SetBonuses() const;
-        const std::list<std::string> & IgnoreList() const;
-        void UpdateIgnoreList(const std::list<std::string> & itemList);
+        const std::vector<EnhancementTree> & EnhancementTrees() const;
+        const std::vector<Spell> & Spells() const;
+        const std::vector<Item> & Items() const;
+        const std::vector<Augment> & Augments() const;
+        const std::vector<GuildBuff> & GuildBuffs() const;
+        const std::vector<OptionalBuff> & OptionalBuffs() const;
+        const std::vector<SetBonus> & SetBonuses() const;
+        const std::vector<std::string> & IgnoreList() const;
+        void UpdateIgnoreList(const std::vector<std::string> & itemList);
 
 
         virtual void PreLoadState();
@@ -83,27 +83,27 @@ class CDDOCPApp :
         void VerifySetBonuses();    // verify all are consistent
         CCustomContextMenuManager m_ourMenuManager; // construction of object replaces default implementation created in InitContextMenuManager
         // global data loaded at start up
-        std::list<Feat> m_allFeats;
-        std::list<Feat> m_standardFeats;
-        std::list<Feat> m_heroicPastLifeFeats;
-        std::list<Feat> m_racialPastLifeFeats;
-        std::list<Feat> m_iconicPastLifeFeats;
-        std::list<Feat> m_epicPastLifeFeatsArcane;
-        std::list<Feat> m_epicPastLifeFeatsDivine;
-        std::list<Feat> m_epicPastLifeFeatsMartial;
-        std::list<Feat> m_epicPastLifeFeatsPrimal;
-        std::list<Feat> m_specialFeats;
-        std::list<Feat> m_universalTreeFeats;
-        std::list<Feat> m_destinyTreeFeats;
-        std::list<Feat> m_favorFeats;
-        std::list<EnhancementTree> m_enhancementTrees;
-        std::list<Spell> m_spells;
-        std::list<Item> m_items;
-        std::list<Augment> m_augments;
-        std::list<GuildBuff> m_guildBuffs;
-        std::list<OptionalBuff> m_optionalBuffs;
-        std::list<SetBonus> m_setBonuses;
-        std::list<std::string> m_ignoreList;
+        std::vector<Feat> m_allFeats;
+        std::vector<Feat> m_standardFeats;
+        std::vector<Feat> m_heroicPastLifeFeats;
+        std::vector<Feat> m_racialPastLifeFeats;
+        std::vector<Feat> m_iconicPastLifeFeats;
+        std::vector<Feat> m_epicPastLifeFeatsArcane;
+        std::vector<Feat> m_epicPastLifeFeatsDivine;
+        std::vector<Feat> m_epicPastLifeFeatsMartial;
+        std::vector<Feat> m_epicPastLifeFeatsPrimal;
+        std::vector<Feat> m_specialFeats;
+        std::vector<Feat> m_universalTreeFeats;
+        std::vector<Feat> m_destinyTreeFeats;
+        std::vector<Feat> m_favorFeats;
+        std::vector<EnhancementTree> m_enhancementTrees;
+        std::vector<Spell> m_spells;
+        std::vector<Item> m_items;
+        std::vector<Augment> m_augments;
+        std::vector<GuildBuff> m_guildBuffs;
+        std::vector<OptionalBuff> m_optionalBuffs;
+        std::vector<SetBonus> m_setBonuses;
+        std::vector<std::string> m_ignoreList;
 };
 
 extern CDDOCPApp theApp;

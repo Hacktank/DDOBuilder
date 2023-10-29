@@ -11,6 +11,7 @@
 #include "SLAControl.h"
 #include "StancesView.h"
 #include <numeric>
+#include <algorithm>
 
 CForumExportDlg::CForumExportDlg(Character * pCharacter) :
     CDialogEx(CForumExportDlg::IDD),
@@ -355,17 +356,17 @@ void CForumExportDlg::AddCharacterHeader(std::stringstream & forumExport)
 void CForumExportDlg::AddPastLives(std::stringstream & forumExport)
 {
     // add the special feats (past lives and other feats such as inherent)
-    std::list<TrainedFeat> feats = m_pCharacter->SpecialFeats().Feats();
+    std::vector<TrainedFeat> feats = m_pCharacter->SpecialFeats().Feats();
     if (feats.size() > 0)
     {
         if (feats.size() > 1)
         {
             // combine duplicates in the list
-            std::list<TrainedFeat>::iterator it = feats.begin();
+            auto it = feats.begin();
             while (it != feats.end())
             {
                 // look at all following items and combine if required
-                std::list<TrainedFeat>::iterator nit = it;
+                auto nit = it;
                 ++nit;          // start from next element
                 while (nit != feats.end())
                 {
@@ -385,7 +386,7 @@ void CForumExportDlg::AddPastLives(std::stringstream & forumExport)
             }
         }
         // sort the feats before output
-        feats.sort();
+        std::sort(feats.begin(), feats.end());
         AddFeats(forumExport, "Heroic Past Lives", TFT_HeroicPastLife, feats);
         AddFeats(forumExport, "Racial Past Lives", TFT_RacialPastLife, feats);
         AddFeats(forumExport, "Iconic Past Lives", TFT_IconicPastLife, feats);
@@ -397,17 +398,17 @@ void CForumExportDlg::AddPastLives(std::stringstream & forumExport)
 void CForumExportDlg::AddSpecialFeats(std::stringstream & forumExport)
 {
     // add the special feats (past lives and other feats such as inherent)
-    std::list<TrainedFeat> feats = m_pCharacter->SpecialFeats().Feats();
+    std::vector<TrainedFeat> feats = m_pCharacter->SpecialFeats().Feats();
     if (feats.size() > 0)
     {
         if (feats.size() > 1)
         {
             // combine duplicates in the list
-            std::list<TrainedFeat>::iterator it = feats.begin();
+            auto it = feats.begin();
             while (it != feats.end())
             {
                 // look at all following items and combine if required
-                std::list<TrainedFeat>::iterator nit = it;
+                auto nit = it;
                 ++nit;          // start from next element
                 while (nit != feats.end())
                 {
@@ -427,7 +428,7 @@ void CForumExportDlg::AddSpecialFeats(std::stringstream & forumExport)
             }
         }
         // sort the feats before output
-        feats.sort();
+        std::sort(feats.begin(), feats.end());
         AddFeats(forumExport, "Special Feats", TFT_SpecialFeat, feats);
         forumExport << "\r\n";
     }
@@ -437,10 +438,10 @@ void CForumExportDlg::AddFeats(
         std::stringstream & forumExport,
         const std::string & heading,
         TrainableFeatTypes type,
-        const std::list<TrainedFeat> & feats) const
+        const std::vector<TrainedFeat> & feats) const
 {
     bool first = true;
-    std::list<TrainedFeat>::const_iterator it = feats.begin();
+    auto it = feats.begin();
     while (it != feats.end())
     {
         if ((*it).Type() == type)
@@ -663,8 +664,8 @@ void CForumExportDlg::AddGrantedFeats(std::stringstream & forumExport)
     {
         forumExport << "Granted Feats\r\n";
         forumExport << "------------------------------------------------------------------------------------------\r\n";
-        const std::list<TrainedFeat> & grantedFeats = m_pCharacter->GrantedFeats();
-        std::list<TrainedFeat>::const_iterator it = grantedFeats.begin();
+        const std::vector<TrainedFeat> & grantedFeats = m_pCharacter->GrantedFeats();
+        auto it = grantedFeats.begin();
         while (it != grantedFeats.end())
         {
             forumExport << (*it).FeatName();
@@ -698,8 +699,8 @@ void CForumExportDlg::AddAutomaticFeats(std::stringstream & forumExport)
         forumExport << std::left << className;
         // now add the automatic feats
         const FeatsListObject & automaticFeats = levelData.AutomaticFeats();
-        const std::list<TrainedFeat> & feats = automaticFeats.Feats();
-        std::list<TrainedFeat>::const_iterator it = feats.begin();
+        const std::vector<TrainedFeat> & feats = automaticFeats.Feats();
+        auto it = feats.begin();
         bool first = true;
         while (it != feats.end())
         {
@@ -808,8 +809,8 @@ void CForumExportDlg::AddConsolidatedFeats(std::stringstream & forumExport)
         }
         // now add the automatic feats
         const FeatsListObject & automaticFeats = levelData.AutomaticFeats();
-        const std::list<TrainedFeat> & feats = automaticFeats.Feats();
-        std::list<TrainedFeat>::const_iterator it = feats.begin();
+        const std::vector<TrainedFeat> & feats = automaticFeats.Feats();
+        auto it = feats.begin();
         while (it != feats.end())
         {
             if (!first)
@@ -878,8 +879,8 @@ void CForumExportDlg::AddSelfAndPartyBuffs(std::stringstream & forumExport)
 {
     forumExport << "Self and Party Buffs\r\n";
     forumExport << "------------------------------------------------------------------------------------------\r\n";
-    const std::list<std::string> & buffs = m_pCharacter->SelfAndPartyBuffs();
-    std::list<std::string>::const_iterator it = buffs.begin();
+    const std::vector<std::string> & buffs = m_pCharacter->SelfAndPartyBuffs();
+    auto it = buffs.begin();
     while (it != buffs.end())
     {
         forumExport << (*it) << "\r\n";
@@ -921,8 +922,8 @@ void CForumExportDlg::AddSkills(std::stringstream & forumExport)
         for (size_t level = 0; level < MAX_CLASS_LEVELS; ++level)
         {
             const LevelTraining & levelData = m_pCharacter->LevelData(level);
-            const std::list<TrainedSkill> & ts = levelData.TrainedSkills();
-            std::list<TrainedSkill>::const_iterator it = ts.begin();
+            const std::vector<TrainedSkill> & ts = levelData.TrainedSkills();
+            std::vector<TrainedSkill>::const_iterator it = ts.begin();
             std::vector<size_t> skillRanks(Skill_Count, 0);
             while (it != ts.end())
             {
@@ -941,7 +942,7 @@ void CForumExportDlg::AddSkills(std::stringstream & forumExport)
                 }
                 else
                 {
-                    // its a cross class skill, show in multiples of ½
+                    // its a cross class skill, show in multiples of ï¿½
                     text = "";
                     int fullRanks = (skillRanks[skill] / 2);
                     if (fullRanks > 0)
@@ -950,7 +951,7 @@ void CForumExportDlg::AddSkills(std::stringstream & forumExport)
                     }
                     if (skillRanks[skill] % 2 != 0)
                     {
-                        text += "½";
+                        text += "ï¿½";
                     }
                 }
                 forumExport.fill(' ');
@@ -995,8 +996,8 @@ void CForumExportDlg::AddSkillsAtLevel(size_t level, std::stringstream & forumEx
 {
     // get the ranks spent in each skill for this level
     const LevelTraining & levelData = m_pCharacter->LevelData(level);
-    const std::list<TrainedSkill> & ts = levelData.TrainedSkills();
-    std::list<TrainedSkill>::const_iterator it = ts.begin();
+    const std::vector<TrainedSkill> & ts = levelData.TrainedSkills();
+    std::vector<TrainedSkill>::const_iterator it = ts.begin();
     std::vector<size_t> skillRanks(Skill_Count, 0);
     while (it != ts.end())
     {
@@ -1203,10 +1204,10 @@ void CForumExportDlg::AddEnhancementTree(
     // TreeName: <name> - Points spent : xxx
     // <List of enhancements by display name>
     forumExport << treeSpend.TreeName() << " - Points spent: " << treeSpend.Spent() << "\r\n";
-    const std::list<TrainedEnhancement> & enhancements = treeSpend.Enhancements();
+    const std::vector<TrainedEnhancement> & enhancements = treeSpend.Enhancements();
 
     // output each enhancement by buy index
-    std::list<TrainedEnhancement>::const_iterator it = enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = enhancements.begin();
     while (it != enhancements.end())
     {
         const EnhancementTreeItem * item = FindEnhancement((*it).EnhancementName());
@@ -1252,9 +1253,9 @@ void CForumExportDlg::AddEpicDestinyTree(
     // TreeName: <name> - Points spent : xxx
     // <List of enhancements by display name>
     forumExport << treeSpend.TreeName() << " - Points spent: " << treeSpend.Spent() << "\r\n";
-    const std::list<TrainedEnhancement> & enhancements = treeSpend.Enhancements();
+    const std::vector<TrainedEnhancement> & enhancements = treeSpend.Enhancements();
 
-    std::list<TrainedEnhancement>::const_iterator it = enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = enhancements.begin();
     while (it != enhancements.end())
     {
         const EnhancementTreeItem * item = FindEnhancement((*it).EnhancementName());
@@ -1300,9 +1301,9 @@ void CForumExportDlg::AddReaperTree(
     // TreeName: <name> - Points spent : xxx
     // <List of enhancements by display name>
     forumExport << treeSpend.TreeName() << " - Points spent: " << treeSpend.Spent() << "\r\n";
-    const std::list<TrainedEnhancement> & enhancements = treeSpend.Enhancements();
+    const std::vector<TrainedEnhancement> & enhancements = treeSpend.Enhancements();
 
-    std::list<TrainedEnhancement>::const_iterator it = enhancements.begin();
+    std::vector<TrainedEnhancement>::const_iterator it = enhancements.begin();
     while (it != enhancements.end())
     {
         const EnhancementTreeItem * item = FindEnhancement((*it).EnhancementName());
@@ -1413,7 +1414,7 @@ void CForumExportDlg::AddSpells(std::stringstream & forumExport)
                 for (size_t spellLevel = 0; spellLevel < spellSlots.size(); ++spellLevel)
                 {
                     // now output each fixed spell
-                    std::list<TrainedSpell> fixedSpells = m_pCharacter->FixedSpells(
+                    std::vector<TrainedSpell> fixedSpells = m_pCharacter->FixedSpells(
                             (ClassType)ci, spellLevel); // 0 based
                     AddSpellList(
                             forumExport,
@@ -1422,7 +1423,7 @@ void CForumExportDlg::AddSpells(std::stringstream & forumExport)
                             spellLevel,
                             spellSlots.size());
                     // now output each selected spell
-                    std::list<TrainedSpell> trainedSpells = m_pCharacter->TrainedSpells(
+                    std::vector<TrainedSpell> trainedSpells = m_pCharacter->TrainedSpells(
                             (ClassType)ci, spellLevel + 1); // 1 based
                     AddSpellList(
                             forumExport,
@@ -1444,11 +1445,11 @@ void CForumExportDlg::AddSpells(std::stringstream & forumExport)
 void CForumExportDlg::AddSpellList(
         std::stringstream & forumExport,
         ClassType ct,
-        const std::list<TrainedSpell> & spellList,
+        const std::vector<TrainedSpell> & spellList,
         size_t spellLevel,
         size_t maxSpellLevel) const
 {
-    std::list<TrainedSpell>::const_iterator it = spellList.begin();
+    std::vector<TrainedSpell>::const_iterator it = spellList.begin();
     while (it != spellList.end())
     {
         forumExport.width(1);
@@ -1481,8 +1482,8 @@ void CForumExportDlg::AddSLAs(std::stringstream & forumExport)
     const CSLAControl * slaControl = pMainWnd->GetSLAControl();
     if (slaControl != NULL)
     {
-        const std::list<SLA> & slas = slaControl->SLAs();
-        std::list<SLA>::const_iterator it = slas.begin();
+        const std::vector<SLA> & slas = slaControl->SLAs();
+        std::vector<SLA>::const_iterator it = slas.begin();
         while (it != slas.end())
         {
             if (first)
@@ -1632,8 +1633,8 @@ void CForumExportDlg::ExportGear(
             if (!bSimple)
             {
                 // show effect descriptions up to the first encountered ":" character
-                const std::list<std::string> & eds = item.EffectDescription();
-                std::list<std::string>::const_iterator it = eds.begin();
+                const std::vector<std::string> & eds = item.EffectDescription();
+                auto it = eds.begin();
                 while (it != eds.end())
                 {
                     std::string processedDescription = (*it);
@@ -1667,8 +1668,8 @@ void CForumExportDlg::ExportGear(
                     forumExport << "\r\n";
                     const Augment & aug = FindAugmentByName(augments[i].SelectedAugment());
                     // also include any of the effect descriptions it may have
-                    const std::list<std::string> & eds = aug.EffectDescription();
-                    std::list<std::string>::const_iterator it = eds.begin();
+                    const std::vector<std::string> & eds = aug.EffectDescription();
+                    auto it = eds.begin();
                     while (it != eds.end())
                     {
                         CString processedDescription = (*it).c_str();
@@ -1692,8 +1693,8 @@ void CForumExportDlg::ExportGear(
                 }
             }
             // show any set bonuses (update name if suppressed)
-            const std::list<std::string> & sets = item.SetBonus();
-            std::list<std::string>::const_iterator sit = sets.begin();
+            const std::vector<std::string> & sets = item.SetBonus();
+            auto sit = sets.begin();
             while (sit != sets.end())
             {
                 const SetBonus& set = FindSetBonus((*sit));
@@ -1763,8 +1764,8 @@ void CForumExportDlg::ExportGear(
 void CForumExportDlg::AddAlternateGear(std::stringstream & forumExport)
 {
     // export all other gear layouts except the current one
-    const std::list<EquippedGear> & setups = m_pCharacter->GearSetups();
-    std::list<EquippedGear>::const_iterator it = setups.begin();
+    const std::vector<EquippedGear> & setups = m_pCharacter->GearSetups();
+    std::vector<EquippedGear>::const_iterator it = setups.begin();
     while (it != setups.end())
     {
         if ((*it).Name() != m_pCharacter->ActiveGear())

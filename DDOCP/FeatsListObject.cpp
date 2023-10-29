@@ -75,7 +75,7 @@ void FeatsListObject::TrainAlternateFeat(
 {
     // you can only set an alternate feat for a feat that has already been trained
     bool found = false;
-    std::list<TrainedFeat>::iterator it = m_Feats.begin();
+    auto it = m_Feats.begin();
     while (!found && it != m_Feats.end())
     {
         if ((*it).Type() == type
@@ -93,7 +93,7 @@ std::string FeatsListObject::RevokeFeat(TrainableFeatTypes type)
     std::string revokedFeat;
     // find the feat in the list and remove it
     bool found = false;
-    std::list<TrainedFeat>::iterator it = m_Feats.begin();
+    auto it = m_Feats.begin();
     while (it != m_Feats.end())
     {
         if ((*it).Type() == type)
@@ -114,7 +114,7 @@ void FeatsListObject::RevokeAllFeats(TrainableFeatTypes type)
 {
     // revoke all trained feats of a specific type
     // e.g. all Automatic feats
-    std::list<TrainedFeat>::iterator it = m_Feats.begin();
+    auto it = m_Feats.begin();
     while (it != m_Feats.end())
     {
         if ((*it).Type() == type)
@@ -132,7 +132,7 @@ void FeatsListObject::RevokeAllFeats(TrainableFeatTypes type)
 
 std::string FeatsListObject::FeatName(TrainableFeatTypes type) const
 {
-    std::list<TrainedFeat>::const_iterator it = m_Feats.begin();
+    auto it = m_Feats.begin();
     while (it != m_Feats.end())
     {
         if ((*it).Type() == type)

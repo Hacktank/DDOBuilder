@@ -53,7 +53,7 @@ void EnhancementsFile::Save()
         if (ok)
         {
             writer.StartDocument(f_saxElementName);
-            std::list<EnhancementTree>::iterator it = m_loadedTrees.begin();
+            std::vector<EnhancementTree>::iterator it = m_loadedTrees.begin();
             while (it != m_loadedTrees.end())
             {
                 (*it).Write(&writer);
@@ -100,7 +100,7 @@ void EnhancementsFile::EndElement()
     SaxContentElement::EndElement();
 }
 
-const std::list<EnhancementTree> & EnhancementsFile::EnhancementTrees() const
+const std::vector<EnhancementTree> & EnhancementsFile::EnhancementTrees() const
 {
     return m_loadedTrees;
 }

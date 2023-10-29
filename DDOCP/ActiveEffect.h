@@ -79,7 +79,7 @@ class ActiveEffect
         ActiveEffect(
                 BonusType bonusType,
                 const std::string & name,
-                const std::list<std::string> & immunities,
+                const std::vector<std::string> & immunities,
                 size_t stacks);
         ActiveEffect(
                 BonusType bonusType,
@@ -149,7 +149,7 @@ class ActiveEffect
         std::string m_tree;                 // non blank if total depends on number of AP spent in tree
         BreakdownType m_bt;                 // specific breakdown we may be dependent on
         std::vector<std::string> m_feats;   // non blank if only active when a specific feat is trained
-        std::list<std::string> m_immunities;
+        std::vector<std::string> m_immunities;
         std::list<DamageReductionType> m_drTypes;
         // amount per trained level
         double m_amountPerLevel;
