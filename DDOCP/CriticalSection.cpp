@@ -14,18 +14,31 @@ CriticalSection::~CriticalSection()
     DeleteCriticalSection(&m_criticalSection);
 }
 
+void CriticalSection::lock() const {
+    EnterCriticalSection(&m_criticalSection);
+}
+
+void CriticalSection::unlock() const {
+    assert(m_criticalSection.OwningThread);
+
+    if (m_criticalSection.OwningThread)
+        LeaveCriticalSection(&m_criticalSection);
+}
+
 //////////////////////////////////////////////////////////////////////
 
 // Take a lock on the critical section. This will be released by the destructor.
-CriticalSectionLock::CriticalSectionLock(const CriticalSection * critSec) :
-    m_pCriticalSection(critSec)
+CriticalSectionLock::CriticalSectionLock(const CriticalSection* critSec)
 {
-    EnterCriticalSection(&(m_pCriticalSection->m_criticalSection));
+    assert(critSec);
+    m_pCriticalSection = critSec;
+    m_pCriticalSection->lock();
 }
 
 // Release a lock on the critical section.
 CriticalSectionLock::~CriticalSectionLock()
 {
-    LeaveCriticalSection(&(m_pCriticalSection->m_criticalSection));
+    if (m_pCriticalSection != NULL)
+        m_pCriticalSection->unlock();
 }
 

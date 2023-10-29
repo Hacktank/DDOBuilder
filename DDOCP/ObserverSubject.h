@@ -40,8 +40,7 @@ class ObserverBase
 
         typedef std::vector<SubjectBase *> SubjectList;
         SubjectList m_subjects;
-
-        CriticalSection m_critsec;
+        mutable CriticalSection m_critsec;
 
     friend class SubjectBase;
 };
@@ -77,7 +76,7 @@ class SubjectBase
         void BeginNotification() const;
         void EndNotification() const;
 
-        CriticalSection m_critsec;
+        mutable CriticalSection m_critsec;
         mutable ObserverList m_observers;
 
     private:

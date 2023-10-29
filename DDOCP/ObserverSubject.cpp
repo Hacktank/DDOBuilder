@@ -40,7 +40,9 @@ bool ObserverBase::InsertSubjectBase(SubjectBase * subject)
             it != m_subjects.end() && !alreadyPresent;
             it++)
     {
-        if (*it == subject) 
+        if (*it == nullptr) continue;
+
+        if (*it == subject)
         { 
             alreadyPresent = true;
         }
@@ -58,6 +60,8 @@ bool ObserverBase::InsertSubjectBase(SubjectBase * subject)
 
 bool ObserverBase::RemoveSubjectBase(SubjectBase * subject)
 {
+    if (m_subjects.size() == 0) return false;
+
     CriticalSectionLock lock(&m_critsec);
 
     bool wasRemoved = false;
@@ -65,7 +69,9 @@ bool ObserverBase::RemoveSubjectBase(SubjectBase * subject)
     while (!wasRemoved
             && it != m_subjects.end()) 
     {
-        if (*it == subject) 
+        if (*it == nullptr) continue;
+
+        if (*it == subject)
         { 
             m_subjects.erase(it); 
             wasRemoved = true;
@@ -85,6 +91,7 @@ void ObserverBase::DetachAll()
     CriticalSectionLock lock(&m_critsec);
     for (SubjectList::iterator it = m_subjects.begin(); it != m_subjects.end(); it++)
     {
+        if (*it == nullptr) continue;
         (*it)->RemoveObserverBase(this);
     }
     m_subjects.clear();
@@ -102,6 +109,7 @@ void ObserverBase::AttachAll(const ObserverBase & copy)
 
     for (SubjectList::iterator it = m_subjects.begin(); it != m_subjects.end(); it++)
     {
+        if (*it == nullptr) continue;
         (*it)->InsertObserverBase(this);
     }
 }
@@ -183,6 +191,7 @@ void SubjectBase::DetachAll()
     ASSERT(m_notificationLevel == 0);
     for (ObserverList::iterator it = m_observers.begin(); it != m_observers.end(); it++)
     {
+        if (*it == nullptr) continue;
         (*it)->RemoveSubjectBase(this);
     }
     m_observers.clear();

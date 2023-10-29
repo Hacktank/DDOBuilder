@@ -18,10 +18,13 @@ class CriticalSection
         CriticalSection();
         ~CriticalSection();
 
+        void lock() const;
+        void unlock() const;
+
     private:
         // cannot be copied or assigned
-        CriticalSection(const CriticalSection & other);
-        const CriticalSection & operator=(const CriticalSection & other);
+        CriticalSection(const CriticalSection & other) = delete;
+        CriticalSection& operator=(const CriticalSection & other) = delete;
 
         mutable CRITICAL_SECTION m_criticalSection;
 
@@ -31,13 +34,25 @@ class CriticalSection
 class CriticalSectionLock
 {
     public:
-        CriticalSectionLock(const CriticalSection * critSec);
+        CriticalSectionLock(const CriticalSection* critSec);
         virtual ~CriticalSectionLock();
 
-    private:
-        // cannot be copied or assigned
-        CriticalSectionLock(const CriticalSectionLock & other);
-        const CriticalSectionLock & operator=(const CriticalSectionLock & other);
+        // move constructor
+        CriticalSectionLock(CriticalSectionLock&& other) noexcept {
+            m_pCriticalSection = other.m_pCriticalSection;
+            other.m_pCriticalSection = nullptr;
+        }
 
-        const CriticalSection * m_pCriticalSection;
+        // move assignment only
+        CriticalSectionLock& operator=(CriticalSectionLock&& other) noexcept {
+            m_pCriticalSection = other.m_pCriticalSection;
+            other.m_pCriticalSection = nullptr;
+        }
+
+    private:
+        // no copying
+        CriticalSectionLock(CriticalSectionLock& other) = delete;
+        CriticalSectionLock& operator=(const CriticalSectionLock& other) = delete;
+
+        mutable const CriticalSection * m_pCriticalSection;
 };
