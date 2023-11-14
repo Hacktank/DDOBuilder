@@ -19,7 +19,7 @@ void CriticalSection::lock() const {
 }
 
 void CriticalSection::unlock() const {
-    assert(m_criticalSection.OwningThread);
+    ASSERT(m_criticalSection.OwningThread);
 
     if (m_criticalSection.OwningThread)
         LeaveCriticalSection(&m_criticalSection);
@@ -30,7 +30,7 @@ void CriticalSection::unlock() const {
 // Take a lock on the critical section. This will be released by the destructor.
 CriticalSectionLock::CriticalSectionLock(const CriticalSection* critSec)
 {
-    assert(critSec);
+    ASSERT(critSec);
     m_pCriticalSection = critSec;
     m_pCriticalSection->lock();
 }

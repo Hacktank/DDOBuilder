@@ -168,6 +168,7 @@ bool SubjectBase::InsertObserverBase(ObserverBase * pObserver)
         }
     }
     m_observers.push_back(pObserver);
+    return true;
 }
 
 bool SubjectBase::RemoveObserverBase(ObserverBase * pObserver)
